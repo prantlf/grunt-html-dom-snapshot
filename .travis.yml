@@ -3,6 +3,7 @@ language: node_js
 cache:
   directories:
     - node_modules
+    - ~/.npm
 notifications:
   email: false
 node_js:
@@ -14,6 +15,8 @@ before_install:
 before_script :
   - npm install -g grunt-cli
   - npm prune
+after_success:
+  - npm run semantic-release
 branches:
   except:
     - /^v\d+\.\d+\.\d+$/
