@@ -1,6 +1,8 @@
 'use strict';
 
 module.exports = function (grunt) {
+  const coverage = process.env.GRUNT_HTML_DOM_SNAPSHOT_COVERAGE;
+
   require('time-grunt')(grunt);
 
   grunt.initConfig({
@@ -11,6 +13,35 @@ module.exports = function (grunt) {
         '<%= nodeunit.tests %>'
       ]
 	},
+
+    instrument: {
+      files: 'tasks/*.js',
+      options: {
+        lazy: true,
+        basePath: 'coverage/'
+      }
+    },
+
+    storeCoverage: {
+      options: {
+        dir: 'coverage'
+      }
+    },
+
+    makeReport: {
+      src: 'coverage/coverage.json',
+      options: {
+        type: 'lcov',
+        dir: 'coverage',
+        print: 'detail'
+      }
+    },
+
+    coveralls: {
+      tests: {
+        src: 'coverage/lcov.info'
+      }
+    },
 
     nodeunit: {
       tests: ['test/*.js']
@@ -25,6 +56,7 @@ module.exports = function (grunt) {
     },
 
     clean: {
+      coverage: ['coverage/**'],
       snapshots: ['test/snapshots/*']
     },
 
@@ -101,13 +133,26 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-nodeunit');
+  grunt.loadNpmTasks('grunt-coveralls');
   grunt.loadNpmTasks('grunt-eslint');
+  grunt.loadNpmTasks('grunt-istanbul');
   grunt.loadNpmTasks('grunt-selenium-standalone');
-  grunt.loadTasks('tasks');
+  grunt.loadTasks(coverage ? 'coverage/tasks' : 'tasks');
 
-  grunt.registerTask('default', [
-    'eslint', 'selenium_standalone:serverConfig:install',
+  grunt.registerTask('default', coverage ?
+    ['jshint', 'clean', 'instrument', 'embedFonts', 'nodeunit',
+     'storeCoverage', 'makeReport'] :
+    ['jshint', 'clean:tests', 'embedFonts', 'nodeunit']);
+  grunt.registerTask('default', coverage ? [
+    'clean', 'eslint', 'instrument',
+    'selenium_standalone:serverConfig:install',
     'selenium_standalone:serverConfig:start',
-    'connect', 'clean', 'html-dom-snapshot', 'nodeunit',
-    'selenium_standalone:serverConfig:stop']);
+    'connect', 'html-dom-snapshot',
+    'selenium_standalone:serverConfig:stop',
+    'nodeunit', 'storeCoverage', 'makeReport'] : [
+    'clean', 'eslint',
+    'selenium_standalone:serverConfig:install',
+    'selenium_standalone:serverConfig:start',
+    'connect', 'html-dom-snapshot',
+    'selenium_standalone:serverConfig:stop', 'nodeunit']);
 };

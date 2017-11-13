@@ -26,7 +26,9 @@
     "node": ">= 4"
   },
   "scripts": {
-    "test": "grunt"
+    "test": "grunt",
+    "check_coverage": "grunt instrument && GRUNT_HTML_DOM_SNAPSHOT_COVERAGE=1 grunt",
+    "post_coverage": "grunt coveralls"
   },
   "dependencies": {
     "mkdirp": "^0.5.1",
@@ -37,7 +39,9 @@
     "grunt-contrib-clean": "^1.1.0",
     "grunt-contrib-connect": "^1.0.2",
     "grunt-contrib-nodeunit": "^1.0.0",
+    "grunt-coveralls": "^1.0.1",
     "grunt-eslint": "^20.1.0",
+    "grunt-istanbul": "^0.8.0",
     "grunt-selenium-standalone": "^1.0.1",
     "phantomjs-prebuilt": "^2.1.16",
     "time-grunt": "^1.4.0"
