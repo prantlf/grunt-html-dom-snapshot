@@ -317,6 +317,14 @@ grunt.registerTask('default', [
   'htmllint', 'accessibility']);
 ```
 
+The installation of the necessary Grunt tasks:
+
+```bash
+npm install grunt-html-dom-snapshot grunt-selenium-standalone \
+            grunt-contrib-clean grunt-contrib-connect \
+            grunt-accessibility grunt-html --save-dev
+```
+
 ## Contributing
 
 In lieu of a formal styleguide, take care to maintain the existing coding
