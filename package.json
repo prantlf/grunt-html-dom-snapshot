@@ -27,8 +27,8 @@
   },
   "scripts": {
     "test": "grunt",
-    "check_coverage": "grunt instrument && GRUNT_HTML_DOM_SNAPSHOT_COVERAGE=1 grunt",
-    "post_coverage": "grunt coveralls",
+    "coverage": "grunt instrument && GRUNT_HTML_DOM_SNAPSHOT_COVERAGE=1 grunt",
+    "coveralls": "test `node --version | cut -c 2` -eq 8 && npm run coverage && grunt coveralls",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "dependencies": {
