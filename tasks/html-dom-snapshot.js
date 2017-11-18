@@ -84,6 +84,10 @@ module.exports = function (grunt) {
       if (url) {
         grunt.verbose.writeln('Taking a snapshot of ' + url + '...');
       } else {
+        if (!(file || wait)) {
+          throw new Error('Missing parameters "url", "file" or "wait" ' +
+              'in the target "' + target + '".');
+        }
         grunt.verbose.writeln('Preparing the next snapshot...');
       }
       return client.setViewportSize(pageOptions.viewport)

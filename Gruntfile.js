@@ -130,6 +130,31 @@ module.exports = function (grunt) {
             file: 'dynamic-third.html'
           }
         ]
+      },
+      'no-input': {
+        options: {
+          force: true
+        },
+        pages: [
+          {}
+        ]
+      },
+      'invalid-file': {
+        options: {
+          force: true
+        },
+        '//': {
+          url: 'http://localhost:8881'
+        }
+      },
+      'invalid-dest': {
+        options: {
+          dest: '//',
+          force: true
+        },
+        dummy: {
+          url: 'http://localhost:8881'
+        }
       }
     },
 
