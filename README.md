@@ -436,6 +436,7 @@ your code using Grunt.
 
 ## Release History
 
+ * 2017-11-18   v0.1.0   Allow separate navigation, page interaction and saving snapshots
  * 2017-11-12   v0.0.1   Initial release
 
 ## License
