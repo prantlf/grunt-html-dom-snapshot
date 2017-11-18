@@ -131,8 +131,10 @@ If the sub-task contains a property `pages`, this property is supposed to point 
 
 ### Parameters
 
+One of the `file`, `url` ans `wait` oarameters has to be present.
+
 #### file
-Type: `String` (mandatory)
+Type: `String`
 
 Name of the file to write the snapshot to.
 
@@ -143,8 +145,10 @@ Name of the file to write the snapshot to.
 }
 ```
 
+If it is omitted, the object will save no snashot. It can still change location or wait for some change.
+
 #### url
-Type: `String` (mandatory)
+Type: `String`
 
 URL to connect the web browser to for taking the snapshot.
 
@@ -154,6 +158,8 @@ URL to connect the web browser to for taking the snapshot.
   url: 'http://google.com'
 }
 ```
+
+If it is omitted, the object will reuse the previous location. It can wait for a further change and/or save another snapshot.
 
 #### options
 Type: `Object` (optional)
@@ -233,6 +239,38 @@ If the selector is prefixed by "!", the waiting waiting will stop, if the node d
 }
 ```
 
+If `wait` is omitted, the task will advance to another item without delay. It can still save a snapshot immediately.
+
+### Parameter Combinations
+
+The following array of objects within the `pages` parameter will change location, make a snapshot immediately to save the server-side pre-rendered content, then another one to see the progress after the first 500 milliseconds and yet another one, once the search form is ready. Then it submits the form by clicking on the "Search" button, waits until the search results are displayed and makes one final snapshot.
+
+```js
+{
+  url: 'http://localhost/app'
+  file: 'initial.html'
+},
+{
+  wait: 500,
+  file: 'after-500ms.html'
+},
+{
+  wait: '#search',
+  file: 'form-ready.html'
+},
+{
+  wait: function (browser) {
+    return browser.click('#search')
+        .waitForExist('#results', 1000);
+  },
+  file: 'results-shown.html'
+}
+```
+
+Other Grunt tasks can run later and validate, compare or otherwise process the page content in different stages of the "Search" scenario.
+
+Navigating to other location, interacting with the page, waiting for some effect to show and saving a snapshot can be divided to different objects in the `pages` array. However, at least One of the `file`, `url` ans `wait` oarameters has to be present in ever object.
+
 ### Loading
 
 Load the plugin in `Gruntfile.js`:
@@ -292,7 +330,7 @@ grunt.initConfig({
       seleniumVersion: '3.7.1',
       seleniumDownloadURL: 'http://selenium-release.storage.googleapis.com',
       drivers: {
-        chrome: { // http://chromedriver.storage.googleapis.com/
+        chrome: {
           version: '2.33',
           arch: process.arch,
           baseURL: 'https://chromedriver.storage.googleapis.com'

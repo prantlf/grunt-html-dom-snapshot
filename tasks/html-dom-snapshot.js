@@ -34,9 +34,10 @@ module.exports = function (grunt) {
             dest: 'snapshots',
             force: false
           }),
+          target = this.target,
           pages = data.pages || [
             Object.assign({
-              file: this.target
+              file: target
             }, data)
           ],
           client = webdriverio.remote({
@@ -76,12 +77,18 @@ module.exports = function (grunt) {
     }
 
     function takeSnapshot(page) {
-      const url = page.url,
-            pageOptions = Object.assign({}, options, page.options || {});
-      grunt.verbose.writeln('Taking a snapshot of ' + url + '...');
+      const pageOptions = Object.assign({}, options, page.options || {}),
+            url = page.url,
+            file = page.file;
+      var wait = page.wait;
+      if (url) {
+        grunt.verbose.writeln('Taking a snapshot of ' + url + '...');
+      } else {
+        grunt.verbose.writeln('Preparing the next snapshot...');
+      }
       return client.setViewportSize(pageOptions.viewport)
         .then(function () {
-          return client.url(url);
+          return url && client.url(url);
         })
         .then(waitForContent)
         .then(function () {
@@ -90,9 +97,8 @@ module.exports = function (grunt) {
         .then(saveContent);
 
       function waitForContent() {
-        var wait = page.wait;
         if (!Array.isArray(wait)) {
-          wait = [wait];
+          wait = wait ? [wait] : [];
         }
         return wait.reduce(function (promise, wait) {
           return promise.then(function () {
@@ -114,21 +120,23 @@ module.exports = function (grunt) {
       }
 
       function saveContent(html) {
-        const dest = pageOptions.dest,
-              target = path.join(dest, page.file);
-        grunt.verbose.writeln('Writing the snapshot to ' + target + '...');
-        return ensureDirectory(dest)
-          .then(function () {
-            return new Promise(function (resolve, reject) {
-              fs.writeFile(target, pageOptions.doctype + html, function (error) {
-                if (error) {
-                  reject(error);
-                } else {
-                  resolve();
-                }
+        const dest = pageOptions.dest;
+        if (file) {
+          const target = path.join(dest, file);
+          grunt.verbose.writeln('Writing the snapshot to ' + target + '...');
+          return ensureDirectory(dest)
+            .then(function () {
+              return new Promise(function (resolve, reject) {
+                fs.writeFile(target, pageOptions.doctype + html, function (error) {
+                  if (error) {
+                    reject(error);
+                  } else {
+                    resolve();
+                  }
+                });
               });
             });
-          });
+        }
       }
     }
   });

@@ -68,7 +68,7 @@ module.exports = function (grunt) {
         dest: 'test/snapshots'
       },
       'single-target.html': {
-        url: 'http://localhost:8881/test/pages/single-target.html',
+        url: 'http://localhost:8881/test/pages/single-target.html'
       },
       others: {
         pages: [
@@ -112,6 +112,22 @@ module.exports = function (grunt) {
             },
             file: 'no-doctype.html',
             url: 'http://localhost:8881/test/pages/no-doctype.html'
+          },
+          {
+            url: 'http://localhost:8881/test/pages/dynamic-multiple.html'
+          },
+          {
+            file: 'dynamic-first.html'
+          },
+          {
+            wait: '.second',
+            file: 'dynamic-second.html'
+          },
+          {
+            wait: '.third'
+          },
+          {
+            file: 'dynamic-third.html'
           }
         ]
       }
@@ -139,10 +155,6 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-selenium-standalone');
   grunt.loadTasks(coverage ? 'coverage/tasks' : 'tasks');
 
-  grunt.registerTask('default', coverage ?
-    ['jshint', 'clean', 'instrument', 'embedFonts', 'nodeunit',
-     'storeCoverage', 'makeReport'] :
-    ['jshint', 'clean:tests', 'embedFonts', 'nodeunit']);
   grunt.registerTask('default', coverage ? [
     'clean', 'eslint', 'instrument',
     'selenium_standalone:serverConfig:install',

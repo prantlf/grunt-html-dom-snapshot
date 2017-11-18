@@ -65,5 +65,19 @@ exports['html-dom-snapshot'] = {
     const pages = readPages('no-doctype.html');
     test.equal(pages.expected, pages.actual, 'no-doctype.html');
     test.done();
+  },
+
+  'dynamic-multiple': function (test) {
+    const original = readPage('pages/dynamic-multiple.html'),
+          first = readPage('snapshots/dynamic-first.html'),
+          second = readPage('snapshots/dynamic-second.html'),
+          third = readPage('snapshots/dynamic-third.html');
+    var expected = original;
+    test.equal(expected, first, 'dynamic-first.html');
+    expected = original.replace('<body class="first">', '<body class="first second">');
+    test.equal(expected, second, 'dynamic-second.html');
+    expected = original.replace('<body class="first">', '<body class="first second third">');
+    test.equal(expected, third, 'dynamic-third.html');
+    test.done();
   }
 };
