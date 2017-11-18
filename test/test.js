@@ -3,15 +3,15 @@
 const fs = require('fs');
 
 function readPages(name) {
-  function readPage(path) {
-    const content = fs.readFileSync('test/' + path).toString();
-    return content.replace(/\r\n/g, '\n');
-  }
-
   return {
     expected: readPage('pages/' + name),
     actual: readPage('snapshots/' + name)
   }
+}
+
+function readPage(path) {
+  const content = fs.readFileSync('test/' + path).toString();
+  return content.replace(/\r|\n/g, '');
 }
 
 exports['html-dom-snapshot'] = {
