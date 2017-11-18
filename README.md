@@ -149,12 +149,12 @@ File names for snapshots can be used as sub-task names. Separate sub-tasks initi
 }
 ```
 
-If the sub-task contains a property `pages`, this property is supposed to point to an array of commands - navigations and other browser interactions, waiting for browser states and making snapshots. They share the same instance of the webdriver, which improves the performance:
+If the sub-task contains a property `commands`, this property is supposed to point to an array of command objects - navigations and other browser interactions, waiting for browser states and making snapshots. They share the same instance of the webdriver, which improves the performance:
 
 ```js
 'html-dom-snapshot': {
   all: {
-    pages: [
+    commands: [
       {
         file: 'google.html',
         url: 'https://google.com'
@@ -282,7 +282,7 @@ If `wait` is omitted, the task will advance to another item without delay. It ca
 
 ### Parameter Combinations
 
-The following array of commands within the `pages` property will change location, make a snapshot immediately to save the server-side pre-rendered content, then another one to see the progress after the first 500 milliseconds and yet another one, once the search form is ready. Then it submits the form by clicking on the "Search" button, waits until the search results are displayed and makes one final snapshot.
+The following array of commands within the `commands` property will change location, make a snapshot immediately to save the server-side pre-rendered content, then another one to see the progress after the first 500 milliseconds and yet another one, once the search form is ready. Then it submits the form by clicking on the "Search" button, waits until the search results are displayed and makes one final snapshot.
 
 ```js
 {
@@ -308,7 +308,7 @@ The following array of commands within the `pages` property will change location
 
 Other Grunt tasks can run later and validate, compare or otherwise process the page content in different stages of the "Search" scenario.
 
-Navigating to other location, interacting with the page, waiting for some effect to show and saving a snapshot can be divided to different objects in the `pages` array. However, at least One of the `file`, `url` ans `wait` oarameters has to be present in ever object.
+Navigating to other location, interacting with the page, waiting for some effect to show and saving a snapshot can be divided to different objects in the `commands` array. However, at least One of the `file`, `url` ans `wait` oarameters has to be present in ever object.
 
 When the commands become too many, you can divide them per page or per other criterion, which corresponds with a scenario and load them from separate modules:
 
@@ -326,7 +326,7 @@ The module for Addressbook would look like this:
 ```js
 module.exports = {
   options: {...},
-  pages: [
+  commands: [
     {
       url: 'https://localhost/addressbook'
       wait: '#addressbook.complete'

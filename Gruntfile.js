@@ -71,7 +71,7 @@ module.exports = function (grunt) {
         url: 'http://localhost:8881/test/pages/single-target.html'
       },
       others: {
-        pages: [
+        commands: [
           {
             file: 'static.html',
             url: 'http://localhost:8881/test/pages/static.html'
@@ -135,7 +135,7 @@ module.exports = function (grunt) {
         options: {
           force: true
         },
-        pages: [
+        commands: [
           {}
         ]
       },
@@ -143,9 +143,12 @@ module.exports = function (grunt) {
         options: {
           force: true
         },
-        '//': {
-          url: 'http://localhost:8881'
-        }
+        pages: [
+          {
+            url: 'http://localhost:8881',
+            file: '//'
+          }
+        ]
       },
       'invalid-dest': {
         options: {

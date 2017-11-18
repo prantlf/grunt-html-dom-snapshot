@@ -35,7 +35,12 @@ module.exports = function (grunt) {
             force: false
           }),
           target = this.target,
-          pages = data.pages || [
+          pages = data.pages;
+    if (pages) {
+      grunt.log.warn('The property "pages" is deprecated. ' +
+          'Use "commands" with the same content.');
+    }
+    const commands = data.commands || pages || [
             Object.assign({
               file: target
             }, data)
@@ -43,26 +48,34 @@ module.exports = function (grunt) {
           client = webdriverio.remote({
             desiredCapabilities: options.browserCapabilities
           });
+    var urlCount = 0,
+        fileCount = 0;
 
-      client.init()
-            .then(function () {
-              return pages.reduce(function (promise, page) {
-                return promise.then(function () {
-                  return takeSnapshot(page);
-                });
-              }, Promise.resolve());
-            })
-            .then(function () {
-              grunt.log.ok(pages.length + ' snapshot(s) created.');
-              return client.end();
-            })
-            .catch(function (error) {
-              grunt.verbose.error(error.stack);
-              grunt.log.error(error);
-              const warn = options.force ? grunt.log.warn : grunt.fail.warn;
-              warn('Taking snapshot(s) failed.');
-            })
-            .then(done);
+    client.init()
+          .then(function () {
+            return commands.reduce(function (promise, command) {
+              return promise.then(function () {
+                return performCommand(command);
+              });
+            }, Promise.resolve());
+          })
+          .then(function () {
+            grunt.log.ok(commands.length + ' ' +
+                grunt.util.pluralize(commands.length, 'comand/comands') +
+                ' performed, ' + urlCount + ' ' +
+                grunt.util.pluralize(urlCount, 'page/pages') +
+                ' visited, ' + fileCount + ' ' +
+                grunt.util.pluralize(fileCount, 'file/files') +
+                ' written.');
+            return client.end();
+          })
+          .catch(function (error) {
+            grunt.verbose.error(error.stack);
+            grunt.log.error(error);
+            const warn = options.force ? grunt.log.warn : grunt.fail.warn;
+            warn('Taking snapshots failed.');
+          })
+          .then(done);
 
     function ensureDirectory(name) {
       return new Promise(function (resolve, reject) {
@@ -76,13 +89,14 @@ module.exports = function (grunt) {
       });
     }
 
-    function takeSnapshot(page) {
-      const pageOptions = Object.assign({}, options, page.options || {}),
-            url = page.url,
-            file = page.file;
-      var wait = page.wait;
+    function performCommand(command) {
+      const commandOptions = Object.assign({}, options, command.options || {}),
+            url = command.url,
+            file = command.file;
+      var wait = command.wait;
       if (url) {
         grunt.verbose.writeln('Taking a snapshot of ' + url + '...');
+        ++urlCount;
       } else {
         if (!(file || wait)) {
           throw new Error('Missing parameters "url", "file" or "wait" ' +
@@ -90,7 +104,8 @@ module.exports = function (grunt) {
         }
         grunt.verbose.writeln('Preparing the next snapshot...');
       }
-      return client.setViewportSize(pageOptions.viewport)
+
+      return client.setViewportSize(commandOptions.viewport)
         .then(function () {
           return url && client.url(url);
         })
@@ -111,9 +126,9 @@ module.exports = function (grunt) {
             } else if (typeof wait === 'string') {
               if (wait.charAt(0) === '!') {
                 return client.waitForExist(wait.substr(1).trim(),
-                    pageOptions.selectorTimeout, true);
+                    commandOptions.selectorTimeout, true);
               }
-              return client.waitForExist(wait, pageOptions.selectorTimeout);
+              return client.waitForExist(wait, commandOptions.selectorTimeout);
             } else if (typeof wait === 'number') {
               return new Promise(function (resolve) {
                 setTimeout(resolve, wait);
@@ -124,17 +139,18 @@ module.exports = function (grunt) {
       }
 
       function saveContent(html) {
-        const dest = pageOptions.dest;
+        const dest = commandOptions.dest;
         if (file) {
           const target = path.join(dest, file);
           grunt.verbose.writeln('Writing the snapshot to ' + target + '...');
           return ensureDirectory(dest)
             .then(function () {
               return new Promise(function (resolve, reject) {
-                fs.writeFile(target, pageOptions.doctype + html, function (error) {
+                fs.writeFile(target, commandOptions.doctype + html, function (error) {
                   if (error) {
                     reject(error);
                   } else {
+                    ++fileCount;
                     resolve();
                   }
                 });
