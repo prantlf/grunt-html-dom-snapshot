@@ -2,7 +2,7 @@
 
 [![NPM Downloads](https://nodei.co/npm/grunt-html-dom-snapshot.png?downloads=true&stars=true)](https://www.npmjs.com/package/grunt-html-dom-snapshot)
 
-This module provides a grunt multi-task for taking snapshots of the HTML markup on web pages - their immediate DOM content - and saving them to files. It can be used to obtain content of web pages, which are built dynamically by JavaScript, and check it for validity and accessibility. It uses [webdriverio] and [Selenium] to control the selected web browser.
+This module provides a grunt multi-task for taking "snapshots| of the HTML markup on web pages - of their immediate DOM content - and saving them to HTML files. It can be used to obtain content of web pages, which are built dynamically by JavaScript, and check it for validity and accessibility. It uses [webdriverio] and [Selenium] to control the selected web browser.
 
 ## Installation
 
@@ -25,7 +25,7 @@ Add the `html-dom-snapshot` entry with the task configuration to the options of 
 grunt.initConfig({
   'html-dom-snapshot': {
     'google.html': {
-      url: 'http://www.google.com'
+      url: 'https://www.google.com'
     }
   }
 });
@@ -50,9 +50,9 @@ Default options support the most usual usage scenario:
     doctype: '<!DOCTYPE html>',
     dest: 'snapshots',
     force: false
-  }
+  },
   'google.html': {
-    url: 'http://www.google.com'
+    url: 'https://www.google.com'
   }
 }
 ```
@@ -63,7 +63,46 @@ Default options support the most usual usage scenario:
 Type: `Object`
 Default value: see above
 
-Chooses the web browser to take snapshots with. Passed as `desiredCapabilities` to `webdriverio.remote`.
+Chooses the web browser to take snapshots with. Passed as `desiredCapabilities` to `webdriverio.remote`. This object has to contain the property `browserName` and optionally other properties depending on the web browser driver. The followintg browser names are the most usually used: `chrome`, `edge`, `firefox`, `ie`, `phantomjs`, `safari`. Depending on what browser you specify, you will need to load the corresponding Selenium driver. These are the current versions of the corresponding Selenium drivers:
+
+```js
+'selenium_standalone': {
+  serverConfig: {
+    seleniumVersion: '3.7.1',
+    seleniumDownloadURL: 'http://selenium-release.storage.googleapis.com',
+    drivers: {
+      // http://chromedriver.storage.googleapis.com/
+      chrome: {
+        version: '2.33',
+        arch: process.arch,
+        baseURL: 'https://chromedriver.storage.googleapis.com'
+      },
+      // https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
+      edge: {
+        version: '5.16299'
+      },
+      // https://github.com/mozilla/geckodriver/releases
+      firefox: {
+        version: '0.19.1'
+      },
+      // https://selenium-release.storage.googleapis.com/
+      ie: {
+        version: '3.7.0',
+        arch: 'ia32'
+      },
+      // https://bitbucket.org/ariya/phantomjs/downloads/
+      phantomjs: {
+        version: '2.1.1'
+      },
+      // https://selenium-release.storage.googleapis.com/
+      safari: {
+        version: '2.48'
+      }
+    }
+  }
+}
+```
+
 
 #### viewport
 Type: `Object`
@@ -75,13 +114,13 @@ Resizes the web browser viewport to the specified `width` and `height` values (i
 Type: `Number`
 Default value: 10000
 
-Maximum waiting time, until a DOM node with the selector specified by the `wait` parameter appearts or disappears. Taking the snapshot fails, if this time is exceeded.
+Maximum waiting time, until a DOM node with the selector specified by the `wait` property appears or disappears. Taking the snapshot fails, if this time is exceeded.
 
 #### doctype
 Type: `String`
 Default value: '<!DOCTYPE html>'
 
-Sets the HTML doctype to be written to the file with the snapshot. The API of [webdriverio] does not support getting its value. HTML validators require the doctype and to make the integration with other tasks easier it can be written to the snapshot file using this option.
+Sets the HTML doctype to be written to the file with the snapshot. [WebdriverIO API] does not support getting its value. HTML validators require the doctype and to make the integration with other tasks easier it can be written to the snapshot file using this option.
 
 #### dest
 Type: `String`
@@ -93,7 +132,7 @@ Destination directory to write the page snapshots to. It will be created if it d
 Type: `Boolean`
 Default value: false
 
-Suppresses failures, which happened during taking snapshots. Instead of making the Grunt fail, the errors will be written only to the console.
+If set to `true`, it suppresses failures, which happened during taking snapshots. Instead of making the Grunt fail, the errors will be written only to the console.
 
 ### Sub-tasks
 
@@ -102,15 +141,15 @@ File names for snapshots can be used as sub-task names. Separate sub-tasks initi
 ```js
 'html-dom-snapshot': {
   'google.html': {
-    url: 'http://google.com'
+    url: 'https://google.com'
   },
   'github.html': {
-    url: 'http://github.com'
+    url: 'https://github.com'
   }
 }
 ```
 
-If the sub-task contains a property `pages`, this property is supposed to point to an array of snapshot requests. They share the same instance of the webdriver, which improves the performance:
+If the sub-task contains a property `pages`, this property is supposed to point to an array of commands - navigations and other browser interactions, waiting for browser states and making snapshots. They share the same instance of the webdriver, which improves the performance:
 
 ```js
 'html-dom-snapshot': {
@@ -118,11 +157,11 @@ If the sub-task contains a property `pages`, this property is supposed to point 
     pages: [
       {
         file: 'google.html',
-        url: 'http://google.com'
+        url: 'https://google.com'
       },
       {
         file: 'github.html',
-        url: 'http://github.com'
+        url: 'https://github.com'
       }
     ]
   }
@@ -131,7 +170,7 @@ If the sub-task contains a property `pages`, this property is supposed to point 
 
 ### Parameters
 
-One of the `file`, `url` ans `wait` oarameters has to be present.
+One of the `file`, `url` ans `wait` properties has to be present in every command.
 
 #### file
 Type: `String`
@@ -141,7 +180,7 @@ Name of the file to write the snapshot to.
 ```js
 {
   file: 'google.html',
-  url: 'http://google.com'
+  url: 'https://google.com'
 }
 ```
 
@@ -155,7 +194,7 @@ URL to connect the web browser to for taking the snapshot.
 ```js
 {
   file: 'google.html',
-  url: 'http://google.com'
+  url: 'https://google.com'
 }
 ```
 
@@ -169,7 +208,7 @@ Options specific for taking snapshot of a one particular page. They will be merg
 ```js
 {
   file: 'google.html',
-  url: 'http://google.com',
+  url: 'https://google.com',
   options: {
     viewport: {
       width: 1600,
@@ -189,7 +228,7 @@ Delays taking of the snapshot until a condition s met depending on the value typ
 ```js
 {
   file: 'google.html',
-  url: 'http://google.com',
+  url: 'https://google.com',
   wait: 1000
 }
 ```
@@ -199,7 +238,7 @@ Delays taking of the snapshot until a condition s met depending on the value typ
 ```js
 {
   file: 'google.html',
-  url: 'http://google.com',
+  url: 'https://google.com',
   wait: '#footer'
 }
 ```
@@ -209,17 +248,17 @@ If the selector is prefixed by "!", the waiting waiting will stop, if the node d
 ```js
 {
   file: 'google.html',
-  url: 'http://google.com',
+  url: 'https://google.com',
   wait: '!.gsfi'
 }
 ```
 
-`Function` - callback, which is supposed to return a `Promise`. Once this promise is resolved, the waiting will stop. The callback obtains the [webdriverio] client instance:
+`Function` - callback, which is supposed to return a `Promise`. Once this promise is resolved, the waiting will stop. The callback obtains the [webdriverio] client instance and can use [WebdriverIO API] to interact with the browser:
 
 ```js
 {
   file: 'google.html',
-  url: 'http://google.com',
+  url: 'https://google.com',
   wait: function (browser) {
     return browser.waitForExist('#footer', 1000);
   }
@@ -231,7 +270,7 @@ If the selector is prefixed by "!", the waiting waiting will stop, if the node d
 ```js
 {
   file: 'google.html',
-  url: 'http://google.com',
+  url: 'https://google.com',
   wait: [
     wait: '!.gsfi',
     200
@@ -243,11 +282,11 @@ If `wait` is omitted, the task will advance to another item without delay. It ca
 
 ### Parameter Combinations
 
-The following array of objects within the `pages` parameter will change location, make a snapshot immediately to save the server-side pre-rendered content, then another one to see the progress after the first 500 milliseconds and yet another one, once the search form is ready. Then it submits the form by clicking on the "Search" button, waits until the search results are displayed and makes one final snapshot.
+The following array of commands within the `pages` property will change location, make a snapshot immediately to save the server-side pre-rendered content, then another one to see the progress after the first 500 milliseconds and yet another one, once the search form is ready. Then it submits the form by clicking on the "Search" button, waits until the search results are displayed and makes one final snapshot.
 
 ```js
 {
-  url: 'http://localhost/app'
+  url: 'https://localhost/app'
   file: 'initial.html'
 },
 {
@@ -270,6 +309,32 @@ The following array of objects within the `pages` parameter will change location
 Other Grunt tasks can run later and validate, compare or otherwise process the page content in different stages of the "Search" scenario.
 
 Navigating to other location, interacting with the page, waiting for some effect to show and saving a snapshot can be divided to different objects in the `pages` array. However, at least One of the `file`, `url` ans `wait` oarameters has to be present in ever object.
+
+When the commands become too many, you can divide them per page or per other criterion, which corresponds with a scenario and load them from separate modules:
+
+```js
+'html-dom-snapshot': {
+  addressbook: require('./test/scenarios/addressbook'),
+  calendar: require('./test/scenarios/calendar'),
+  inbox: require('./test/scenarios/inbox'),
+  tasks: require('./test/scenarios/tasks')
+}
+```
+
+The module for Addressbook would look like this:
+
+```js
+module.exports = {
+  options: {...},
+  pages: [
+    {
+      url: 'https://localhost/addressbook'
+      wait: '#addressbook.complete'
+    },
+    ...
+  ]
+}
+```
 
 ### Loading
 
@@ -309,7 +374,7 @@ grunt.initConfig({
 
   'html-dom-snapshot': { // Takes new snapshots.
     'index.html': {
-      url: 'http://localhost:8881'
+      url: 'https://localhost:8881'
     }
   },
 
@@ -328,7 +393,7 @@ grunt.initConfig({
   'selenium_standalone': { // Provides a local Selenium server.
     serverConfig: {
       seleniumVersion: '3.7.1',
-      seleniumDownloadURL: 'http://selenium-release.storage.googleapis.com',
+      seleniumDownloadURL: 'https://selenium-release.storage.googleapis.com',
       drivers: {
         chrome: {
           version: '2.33',
@@ -379,14 +444,15 @@ Copyright (c) 2017 Ferdinand Prantl
 
 Licensed under the MIT license.
 
-[node]: http://nodejs.org
-[npm]: http://npmjs.org
+[node]: https://nodejs.org
+[npm]: https://npmjs.org
 [package.json]: https://docs.npmjs.com/files/package.json
 [Grunt]: https://gruntjs.com
-[Gruntfile]: http://gruntjs.com/sample-gruntfile
+[Gruntfile]: https://gruntjs.com/sample-gruntfile
 [Getting Gtarted]: https://github.com/gruntjs/grunt/wiki/Getting-started
 [Selenium]: http://www.seleniumhq.org/download/
 [webdriverio]: http://webdriver.io/
+[WebdriverIO API]: http://webdriver.io/api.html
 [selenium-standalone]: https://github.com/zs-zs/grunt-selenium-standalone
 [grunt-contrib-connect]: https://github.com/gruntjs/grunt-contrib-connect
 [grunt-html]: https://github.com/jzaefferer/grunt-html
