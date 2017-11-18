@@ -3,8 +3,6 @@
 module.exports = function (grunt) {
   const coverage = process.env.GRUNT_HTML_DOM_SNAPSHOT_COVERAGE;
 
-  require('time-grunt')(grunt);
-
   grunt.initConfig({
     eslint: {
       target: [
