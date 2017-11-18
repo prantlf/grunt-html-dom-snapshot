@@ -428,6 +428,18 @@ npm install grunt-html-dom-snapshot grunt-selenium-standalone \
             grunt-accessibility grunt-html --save-dev
 ```
 
+### Notes
+
+You will need to install [Java] 8 or newer to get the Selenium server running via the [selenium-standalone] Grunt task.
+
+If you want to use the PhantomJS driver, you will need to install the `phantomjs-prebuilt` module:
+
+```shell
+$ npm install phantomjs-prebuilt --save-dev
+```
+
+The `phantomjs` binary will be accessible in `./node_modules/.bin`. If you do not start the Selenium server using `npm test` or other `npm run` command, you will had to add this directory to your `PATH`, otherwise the PhantomJS driver will not find the executable.
+
 ## Contributing
 
 In lieu of a formal styleguide, take care to maintain the existing coding
@@ -458,3 +470,4 @@ Licensed under the MIT license.
 [grunt-contrib-connect]: https://github.com/gruntjs/grunt-contrib-connect
 [grunt-html]: https://github.com/jzaefferer/grunt-html
 [grunt-accessibility]: https://github.com/yargalot/grunt-accessibility
+[Java]: https://java.com/en/download/
