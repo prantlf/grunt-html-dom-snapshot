@@ -4,6 +4,8 @@
 
 This module provides a grunt multi-task for taking "snapshots" of the HTML markup on web pages - of their immediate DOM content - and saving them to HTML files. It can be used to obtain content of web pages, which are built dynamically by JavaScript, and check it for validity and accessibility. It uses [webdriverio] and [Selenium] to control the selected web browser.
 
+![Sample page](https://raw.githubusercontent.com/prantlf/grunt-html-dom-snapshot/master/assets/sample-page.png) ![Right arrow](https://raw.githubusercontent.com/prantlf/grunt-html-dom-snapshot/master/assets/arrow-right.png) ![Sample snapshot](https://raw.githubusercontent.com/prantlf/grunt-html-dom-snapshot/master/assets/sample-snapshot.png)
+
 ## Installation
 
 You need [node >= 4][node], [npm] and [grunt >= 0.4.5][Grunt] installed
