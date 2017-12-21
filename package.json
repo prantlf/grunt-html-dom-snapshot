@@ -29,11 +29,11 @@
     "test": "grunt",
     "coverage": "grunt instrument && GRUNT_HTML_DOM_SNAPSHOT_COVERAGE=1 grunt",
     "coveralls": "test `node --version | cut -c 2` -eq 8 && npm run coverage && grunt coveralls",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+    "semantic-release": "semantic-release"
   },
   "dependencies": {
     "mkdirp": "^0.5.1",
-    "webdriverio": "^4.9.6"
+    "webdriverio": "^4.9.11"
   },
   "devDependencies": {
     "grunt": "^1.0.1",
@@ -45,7 +45,7 @@
     "grunt-istanbul": "^0.8.0",
     "grunt-selenium-standalone": "^1.0.1",
     "phantomjs-prebuilt": "^2.1.16",
-    "semantic-release": "^8.2.0"
+    "semantic-release": "^11.0.2"
   },
   "peerDependencies": {
     "grunt": ">=0.4.5"
