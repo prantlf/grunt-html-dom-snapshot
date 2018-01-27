@@ -1,6 +1,6 @@
 {
   "name": "grunt-html-dom-snapshot",
-  "description": "Takes snapshots of the HTML markup on web pages - their immediate DOM content.",
+  "description": "Takes snapshots of the HTML markup on web pages - their immediate DOM content - and screenshots of their viewport - how they look like.",
   "version": "0.0.0-development",
   "homepage": "https://github.com/prantlf/grunt-html-dom-snapshot",
   "author": {
@@ -26,6 +26,7 @@
     "node": ">= 4"
   },
   "scripts": {
+    "lint": "grunt eslint",
     "test": "grunt",
     "coverage": "grunt instrument && GRUNT_HTML_DOM_SNAPSHOT_COVERAGE=1 grunt",
     "coveralls": "test `node --version | cut -c 2` -eq 8 && npm run coverage && grunt coveralls",
@@ -33,7 +34,7 @@
   },
   "dependencies": {
     "mkdirp": "^0.5.1",
-    "webdriverio": "^4.9.11"
+    "webdriverio": "^4.10.1"
   },
   "devDependencies": {
     "grunt": "^1.0.1",
@@ -45,14 +46,17 @@
     "grunt-istanbul": "^0.8.0",
     "grunt-selenium-standalone": "^1.0.1",
     "phantomjs-prebuilt": "^2.1.16",
-    "semantic-release": "^11.0.2"
+    "semantic-release": "^12.2.5"
   },
   "peerDependencies": {
     "grunt": ">=0.4.5"
   },
   "keywords": [
     "grunt-tasks",
+    "testing",
     "html",
-    "snapshots"
+    "browser",
+    "snapshots",
+    "screenshots"
   ]
 }

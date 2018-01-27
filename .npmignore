@@ -8,4 +8,5 @@ coverage
 Gruntfile.js
 node_modules
 npm-debug.log
+test/screenshots
 test/snapshots

@@ -6,6 +6,18 @@ This module provides a grunt multi-task for taking "snapshots" of the HTML marku
 
 ![Sample page](https://raw.githubusercontent.com/prantlf/grunt-html-dom-snapshot/master/assets/sample-page.png) ![Right arrow](https://raw.githubusercontent.com/prantlf/grunt-html-dom-snapshot/master/assets/arrow-right.png) ![Sample snapshot](https://raw.githubusercontent.com/prantlf/grunt-html-dom-snapshot/master/assets/sample-snapshot.png)
 
+In addition, recent versions can save "screenshots" of browser viewport at the same time to support visual testing by comparing the look of the page with the baseline picture.
+
+Additional Grunt tasks, which are usually used to support test automation:
+
+* [grunt-accessibility] - checks accessibility of HTML markup according to the [WCAG] standard
+* [grunt-accessibility-html-report-converter] - converts JSON report of `grunt-accessibility` to HTML
+* [grunt-contrib-connect] - starts a static web server to server testing pages for the web browser
+* [grunt-html] - validates HTML markup according to the [W3C HTML] standard
+* [grunt-html-html-report-converter] - converts JSON report of `grunt-html` to HTML
+* [grunt-reg-viz] - compares images and generates report with differences
+* [grunt-selenium-standalone] - runs a standalone Selenium server
+
 ## Installation
 
 You need [node >= 4][node], [npm] and [grunt >= 0.4.5][Grunt] installed
@@ -26,7 +38,7 @@ Add the `html-dom-snapshot` entry with the task configuration to the options of 
 ```js
 grunt.initConfig({
   'html-dom-snapshot': {
-    'google.html': {
+    'google': {
       url: 'https://www.google.com'
     }
   }
@@ -50,10 +62,10 @@ Default options support the most usual usage scenario:
     },
     selectorTimeout: 10000,
     doctype: '<!DOCTYPE html>',
-    dest: 'snapshots',
+    snapshots: 'snapshots',
     force: false
   },
-  'google.html': {
+  'google': {
     url: 'https://www.google.com'
   }
 }
@@ -65,17 +77,17 @@ Default options support the most usual usage scenario:
 Type: `Object`
 Default value: see above
 
-Chooses the web browser to take snapshots with. Passed as `desiredCapabilities` to `webdriverio.remote`. This object has to contain the property `browserName` and optionally other properties depending on the web browser driver. The followintg browser names are the most usually used: `chrome`, `edge`, `firefox`, `ie`, `phantomjs`, `safari`. Depending on what browser you specify, you will need to load the corresponding Selenium driver. These are the current versions of the corresponding Selenium drivers:
+Chooses the web browser to take snapshots with. Passed as `desiredCapabilities` to `webdriverio.remote`. This object has to contain the property `browserName` and optionally other properties depending on the web browser driver. The following browser names are the most usually used: `chrome`, `edge`, `firefox`, `ie`, `phantomjs`, `safari`. Depending on what browser you specify, you will need to load the corresponding Selenium driver. These are current versions of the drivers:
 
 ```js
 'selenium_standalone': {
   serverConfig: {
-    seleniumVersion: '3.7.1',
+    seleniumVersion: '3.8.1', // 3.7.1 or older i sneeded for phantomjs
     seleniumDownloadURL: 'http://selenium-release.storage.googleapis.com',
     drivers: {
       // http://chromedriver.storage.googleapis.com/
       chrome: {
-        version: '2.33',
+        version: '2.35',
         arch: process.arch,
         baseURL: 'https://chromedriver.storage.googleapis.com'
       },
@@ -89,16 +101,16 @@ Chooses the web browser to take snapshots with. Passed as `desiredCapabilities` 
       },
       // https://selenium-release.storage.googleapis.com/
       ie: {
-        version: '3.7.0',
+        version: '3.8.0',
         arch: 'ia32'
-      },
-      // https://bitbucket.org/ariya/phantomjs/downloads/
-      phantomjs: {
-        version: '2.1.1'
       },
       // https://selenium-release.storage.googleapis.com/
       safari: {
         version: '2.48'
+      },
+      // https://bitbucket.org/ariya/phantomjs/downloads/
+      phantomjs: {
+        version: '2.1.1'
       }
     }
   }
@@ -124,11 +136,17 @@ Default value: '<!DOCTYPE html>'
 
 Sets the HTML doctype to be written to the file with the snapshot. [WebdriverIO API] does not support getting its value. HTML validators require the doctype and to make the integration with other tasks easier it can be written to the snapshot file using this option.
 
-#### dest
+#### snapshots
 Type: `String`
 Default value: 'snapshots'
 
-Destination directory to write the page snapshots to. It will be created if it does not exist.
+Destination directory to write the page snapshots to. It will be created if it does not exist. If set to `null`, snapshots will not be saved. It can be used to have only screenshots saved.
+
+#### screenshots
+Type: `String`
+Default value: null
+
+Destination directory to write the viewport screenshots to. It will be created if it does not exist. Default value is `null`, which means, that no screenshots will be written out.
 
 #### force
 Type: `Boolean`
@@ -142,10 +160,10 @@ File names for snapshots can be used as sub-task names. Separate sub-tasks initi
 
 ```js
 'html-dom-snapshot': {
-  'google.html': {
+  'google': {
     url: 'https://google.com'
   },
-  'github.html': {
+  'github': {
     url: 'https://github.com'
   }
 }
@@ -158,17 +176,19 @@ If the sub-task contains a property `commands`, this property is supposed to poi
   all: {
     commands: [
       {
-        file: 'google.html',
+        file: 'google',
         url: 'https://google.com'
       },
       {
-        file: 'github.html',
+        file: 'github',
         url: 'https://github.com'
       }
     ]
   }
 }
 ```
+
+You can use sub-tasks and commands to create test scenarios and execute them separately, or all of them.
 
 ### Parameters
 
@@ -177,16 +197,18 @@ One of the `file`, `url` ans `wait` properties has to be present in every comman
 #### file
 Type: `String`
 
-Name of the file to write the snapshot to.
+Name of the file to write the snapshot to. If it does not end with ".html" or ".htm", the extension ".html" will be appended to it.
+
+If writing screenshots is enabled, the same name will be used for the file with the screenshot; just without the extension ".html" or ".htm", if the file name ends to it, and with the extension ".png" appended to the file name instead.
 
 ```js
 {
-  file: 'google.html',
+  file: 'google',
   url: 'https://google.com'
 }
 ```
 
-If it is omitted, the object will save no snashot. It can still change location or wait for some change.
+If it is omitted, the object will save no snapshot (and no screenshot). It can still change location or wait for some change.
 
 #### url
 Type: `String`
@@ -195,7 +217,7 @@ URL to connect the web browser to for taking the snapshot.
 
 ```js
 {
-  file: 'google.html',
+  file: 'google',
   url: 'https://google.com'
 }
 ```
@@ -209,7 +231,7 @@ Options specific for taking snapshot of a one particular page. They will be merg
 
 ```js
 {
-  file: 'google.html',
+  file: 'google',
   url: 'https://google.com',
   options: {
     viewport: {
@@ -229,7 +251,7 @@ Delays taking of the snapshot until a condition s met depending on the value typ
 
 ```js
 {
-  file: 'google.html',
+  file: 'google',
   url: 'https://google.com',
   wait: 1000
 }
@@ -239,7 +261,7 @@ Delays taking of the snapshot until a condition s met depending on the value typ
 
 ```js
 {
-  file: 'google.html',
+  file: 'google',
   url: 'https://google.com',
   wait: '#footer'
 }
@@ -249,7 +271,7 @@ If the selector is prefixed by "!", the waiting waiting will stop, if the node d
 
 ```js
 {
-  file: 'google.html',
+  file: 'google',
   url: 'https://google.com',
   wait: '!.gsfi'
 }
@@ -259,7 +281,7 @@ If the selector is prefixed by "!", the waiting waiting will stop, if the node d
 
 ```js
 {
-  file: 'google.html',
+  file: 'google',
   url: 'https://google.com',
   wait: function (browser) {
     return browser.waitForExist('#footer', 1000);
@@ -271,7 +293,7 @@ If the selector is prefixed by "!", the waiting waiting will stop, if the node d
 
 ```js
 {
-  file: 'google.html',
+  file: 'google',
   url: 'https://google.com',
   wait: [
     wait: '!.gsfi',
@@ -293,24 +315,24 @@ The following array of commands within the `commands` property will change locat
 },
 {
   wait: 500,
-  file: 'after-500ms.html'
+  file: 'after-500ms'
 },
 {
   wait: '#search',
-  file: 'form-ready.html'
+  file: 'form-ready'
 },
 {
   wait: function (browser) {
     return browser.click('#search')
         .waitForExist('#results', 1000);
   },
-  file: 'results-shown.html'
+  file: 'results-shown'
 }
 ```
 
 Other Grunt tasks can run later and validate, compare or otherwise process the page content in different stages of the "Search" scenario.
 
-Navigating to other location, interacting with the page, waiting for some effect to show and saving a snapshot can be divided to different objects in the `commands` array. However, at least One of the `file`, `url` ans `wait` oarameters has to be present in ever object.
+Navigating to other location, interacting with the page, waiting for some effect to show and saving a snapshot can be divided to different objects in the `commands` array. However, at least One of the `file`, `url` ans `wait` parameters has to be present in ever object.
 
 When the commands become too many, you can divide them per page or per other criterion, which corresponds with a scenario and load them from separate modules:
 
@@ -375,7 +397,7 @@ grunt.initConfig({
   },
 
   'html-dom-snapshot': { // Takes new snapshots.
-    'index.html': {
+    'index': {
       url: 'https://localhost:8881'
     }
   },
@@ -394,11 +416,11 @@ grunt.initConfig({
 
   'selenium_standalone': { // Provides a local Selenium server.
     serverConfig: {
-      seleniumVersion: '3.7.1',
+      seleniumVersion: '3.8.1',
       seleniumDownloadURL: 'https://selenium-release.storage.googleapis.com',
       drivers: {
         chrome: {
-          version: '2.33',
+          version: '2.35',
           arch: process.arch,
           baseURL: 'https://chromedriver.storage.googleapis.com'
         }
@@ -440,7 +462,7 @@ If you want to use the PhantomJS driver, you will need to install the `phantomjs
 $ npm install phantomjs-prebuilt --save-dev
 ```
 
-The `phantomjs` binary will be accessible in `./node_modules/.bin`. If you do not start the Selenium server using `npm test` or other `npm run` command, you will had to add this directory to your `PATH`, otherwise the PhantomJS driver will not find the executable.
+The `phantomjs` binary will be accessible in `./node_modules/.bin`. If you do not start the Selenium server using `npm test` or other `npm run` command, you will had to add this directory to your `PATH`, otherwise the PhantomJS driver will not find the executable. Additionally, PhantomJS 2.1.1 works only with the Selenium driver version 3.7.1 or older.
 
 ## Contributing
 
@@ -450,12 +472,13 @@ your code using Grunt.
 
 ## Release History
 
+ * 2018-01-27   v0.2.0   Allow saving screenshots in addition to snapshots
  * 2017-11-18   v0.1.0   Allow separate navigation, page interaction and saving snapshots
  * 2017-11-12   v0.0.1   Initial release
 
 ## License
 
-Copyright (c) 2017 Ferdinand Prantl
+Copyright (c) 2017-2018 Ferdinand Prantl
 
 Licensed under the MIT license.
 
@@ -469,7 +492,12 @@ Licensed under the MIT license.
 [webdriverio]: http://webdriver.io/
 [WebdriverIO API]: http://webdriver.io/api.html
 [selenium-standalone]: https://github.com/zs-zs/grunt-selenium-standalone
-[grunt-contrib-connect]: https://github.com/gruntjs/grunt-contrib-connect
-[grunt-html]: https://github.com/jzaefferer/grunt-html
-[grunt-accessibility]: https://github.com/yargalot/grunt-accessibility
 [Java]: https://java.com/en/download/
+[W3C HTML]: https://www.w3.org/standards/techs/html
+[WCAG]: https://www.w3.org/WAI/intro/wcag
+[grunt-accessibility]: https://github.com/yargalot/grunt-accessibility
+[grunt-accessibility-html-report-converter]: https://github.com/prantlf/grunt-accessibility-html-report-converter[grunt-contrib-connect]: https://github.com/gruntjs/grunt-contrib-connect
+[grunt-html]: https://github.com/jzaefferer/grunt-html
+[grunt-html-html-report-converter]: https://github.com/prantlf/grunt-html-html-report-converter
+[grunt-reg-viz]: https://github.com/prantlf/grunt-reg-viz
+[grunt-selenium-standalone]: https://github.com/zs-zs/grunt-selenium-standalone

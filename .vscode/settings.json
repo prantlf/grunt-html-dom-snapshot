@@ -4,6 +4,7 @@
     "coverage": true,
     "node_modules": true,
     "npm-debug.log": true,
+    "test/screenshots": true,
     "test/snapshots": true
   }
 }

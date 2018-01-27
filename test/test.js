@@ -16,14 +16,18 @@ function readPage(path) {
 
 exports['html-dom-snapshot'] = {
   'single-target': function (test) {
-    const pages = readPages('single-target.html');
+    const pages = readPages('single-target.html'),
+          screenshot = fs.existsSync('test/screenshots/single-target.png');
     test.equal(pages.expected, pages.actual, 'single-target.html');
+    test.ok(!screenshot, 'single-target.png');
     test.done();
   },
 
   'static': function (test) {
-    const pages = readPages('static.html');
-    test.equal(pages.expected, pages.actual, 'static.html');
+    const snapshot = fs.existsSync('test/snapshots/static.html'),
+          screenshot = fs.readFileSync('test/screenshots/static.png');
+    test.ok(!snapshot, 'static.html');
+    test.ok(screenshot, 'static.png');
     test.done();
   },
 
@@ -36,8 +40,10 @@ exports['html-dom-snapshot'] = {
 
   'dynamic': function (test) {
     const pages = readPages('dynamic.html'),
-          expected = pages.expected.replace('<body>', '<body class="dynamic">');
+          expected = pages.expected.replace('<body>', '<body class="dynamic">'),
+          screenshot = fs.readFileSync('test/screenshots/dynamic.png');
     test.equal(expected, pages.actual, 'dynamic.html');
+    test.ok(screenshot, 'dynamic.png');
     test.done();
   },
 

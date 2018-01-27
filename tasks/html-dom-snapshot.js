@@ -1,10 +1,11 @@
 // grunt-html-dom-snapshot
 // https://github.com/prantlf/grunt-html-dom-snapshot
 //
-// Copyright (c) 2017 Ferdinand Prantl
+// Copyright (c) 2017-2018 Ferdinand Prantl
 // Licensed under the MIT license.
 //
-// Takes snapshots of the HTML markup on web pages - their immediate DOM content.
+// Takes snapshots of the HTML markup on web pages - their immediate DOM
+// content - and screenshots of their viewport - how they look like.
 
 'use strict';
 
@@ -14,7 +15,7 @@ const fs = require('fs'),
 
 module.exports = function (grunt) {
   grunt.registerMultiTask('html-dom-snapshot',
-      'Takes snapshots of the HTML markup on web pages - their immediate DOM content.', function () {
+      'Takes snapshots of the HTML markup on web pages - their immediate DOM content - and screenshots of their viewport - how they look like.', function () {
     const webdriverio = require('webdriverio'),
           done = this.async(),
           data = this.data,
@@ -31,14 +32,22 @@ module.exports = function (grunt) {
             },
             selectorTimeout: 10000,
             doctype: '<!DOCTYPE html>',
-            dest: 'snapshots',
+            snapshots: 'snapshots',
             force: false
           }),
           target = this.target,
-          pages = data.pages;
+          pages = data.pages,
+          snapshots = options.dest;
+    var lastViewport = options.viewport;
     if (pages) {
       grunt.log.warn('The property "pages" is deprecated. ' +
-          'Use "commands" with the same content.');
+                     'Use "commands" with the same content.');
+    }
+    if (snapshots) {
+      grunt.log.warn('The property "dest" is deprecated. ' +
+                     'Use "snapshots" with the same content.');
+      options.snapshots = snapshots;
+      delete options.dest;
     }
     const commands = data.commands || pages || [
             Object.assign({
@@ -49,9 +58,11 @@ module.exports = function (grunt) {
             desiredCapabilities: options.browserCapabilities
           });
     var urlCount = 0,
-        fileCount = 0;
+        snapshotCount = 0,
+        screenshotCount = 0;
 
     client.init()
+          .setViewportSize(lastViewport)
           .then(function () {
             return commands.reduce(function (promise, command) {
               return promise.then(function () {
@@ -61,11 +72,13 @@ module.exports = function (grunt) {
           })
           .then(function () {
             grunt.log.ok(commands.length + ' ' +
-                grunt.util.pluralize(commands.length, 'comand/comands') +
+                grunt.util.pluralize(commands.length, 'command/commands') +
                 ' performed, ' + urlCount + ' ' +
                 grunt.util.pluralize(urlCount, 'page/pages') +
-                ' visited, ' + fileCount + ' ' +
-                grunt.util.pluralize(fileCount, 'file/files') +
+                ' visited, ' + snapshotCount + ' ' +
+                grunt.util.pluralize(snapshotCount, 'snapshot/snapshots') +
+                ' and ' + screenshotCount + ' ' +
+                grunt.util.pluralize(screenshotCount, 'screenshot/screenshots') +
                 ' written.');
             return client.end();
           })
@@ -92,28 +105,51 @@ module.exports = function (grunt) {
     function performCommand(command) {
       const commandOptions = Object.assign({}, options, command.options || {}),
             url = command.url,
-            file = command.file;
-      var wait = command.wait;
+            file = command.file,
+            viewport = commandOptions.viewport,
+            screenshots = commandOptions.screenshots;
+      var wait = command.wait,
+          snapshots = commandOptions.dest,
+          viewportSet;
+      if (snapshots) {
+        grunt.log.warn('The property "dest" is deprecated. ' +
+                       'Use "snapshots" with the same content.');
+      } else {
+        snapshots = commandOptions.snapshots;
+      }
       if (url) {
         grunt.verbose.writeln('Taking a snapshot of ' + url + '...');
         ++urlCount;
       } else {
         if (!(file || wait)) {
           throw new Error('Missing parameters "url", "file" or "wait" ' +
-              'in the target "' + target + '".');
+                          'in the target "' + target + '".');
         }
         grunt.verbose.writeln('Preparing the next snapshot...');
       }
-
-      return client.setViewportSize(commandOptions.viewport)
+      if (viewport.width !== lastViewport.width ||
+          viewport.height !== lastViewport.height) {
+        lastViewport = viewport;
+        viewportSet = client.setViewportSize(viewport);
+      } else {
+        viewportSet = Promise.resolve();
+      }
+      return viewportSet
         .then(function () {
           return url && client.url(url);
         })
         .then(waitForContent)
         .then(function () {
-          return client.getHTML('html');
-        })
-        .then(saveContent);
+          if (snapshots && screenshots) {
+            return Promise.all([makeSnapshot(), makeScreenshot()]);
+          }
+          if (snapshots) {
+            return makeSnapshot();
+          }
+          if (screenshots) {
+            return makeScreenshot();
+          }
+        });
 
       function waitForContent() {
         if (!Array.isArray(wait)) {
@@ -138,19 +174,56 @@ module.exports = function (grunt) {
         }, Promise.resolve());
       }
 
+      function makeSnapshot() {
+        return client.getHTML('html')
+                     .then(saveContent);
+      }
+
+      function makeScreenshot() {
+        return client.saveScreenshot()
+                     .then(saveImage);
+      }
+
       function saveContent(html) {
-        const dest = commandOptions.dest;
         if (file) {
-          const target = path.join(dest, file);
+          const testFile = file.toLowerCase(),
+                htmlFile = testFile.endsWith('.html') ||
+                           testFile.endsWith('.htm') ? file : file + '.html',
+                target = path.join(snapshots, htmlFile);
           grunt.verbose.writeln('Writing the snapshot to ' + target + '...');
-          return ensureDirectory(dest)
+          return ensureDirectory(snapshots)
             .then(function () {
               return new Promise(function (resolve, reject) {
                 fs.writeFile(target, commandOptions.doctype + html, function (error) {
                   if (error) {
                     reject(error);
                   } else {
-                    ++fileCount;
+                    ++snapshotCount;
+                    resolve();
+                  }
+                });
+              });
+            });
+        }
+      }
+
+      function saveImage(png) {
+        if (file) {
+          const testFile = file.toLowerCase(),
+                baseFile = testFile.endsWith('.html') ?
+                           file.substr(0, file.length - 5) :
+                           testFile.endsWith('.htm') ?
+                           file.substr(0, file.length - 4) : file,
+                target = path.join(screenshots, baseFile + '.png');
+          grunt.verbose.writeln('Writing the screenshot to ' + target + '...');
+          return ensureDirectory(screenshots)
+            .then(function () {
+              return new Promise(function (resolve, reject) {
+                fs.writeFile(target, png, function (error) {
+                  if (error) {
+                    reject(error);
+                  } else {
+                    ++screenshotCount;
                     resolve();
                   }
                 });

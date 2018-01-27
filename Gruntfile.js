@@ -10,7 +10,7 @@ module.exports = function (grunt) {
         'tasks/*.js',
         '<%= nodeunit.tests %>'
       ]
-	},
+    },
 
     instrument: {
       files: 'tasks/*.js',
@@ -55,7 +55,8 @@ module.exports = function (grunt) {
 
     clean: {
       coverage: ['coverage/**'],
-      snapshots: ['test/snapshots/*']
+      snapshots: ['test/snapshots/*'],
+      screenshots: ['test/screenshots/*']
     },
 
     'html-dom-snapshot': {
@@ -63,7 +64,7 @@ module.exports = function (grunt) {
         browserCapabilities: {
           browserName: 'phantomjs'
         },
-        dest: 'test/snapshots'
+        snapshots: 'test/snapshots'
       },
       'single-target.html': {
         url: 'http://localhost:8881/test/pages/single-target.html'
@@ -71,26 +72,39 @@ module.exports = function (grunt) {
       others: {
         commands: [
           {
+            options: {
+              snapshots: null,
+              screenshots: 'test/screenshots'
+            },
             file: 'static.html',
             url: 'http://localhost:8881/test/pages/static.html'
           },
           {
-            file: 'delayed.html',
+            file: 'delayed',
             url: 'http://localhost:8881/test/pages/delayed.html',
             wait: 200
           },
           {
-            file: 'dynamic.html',
+            options: {
+              screenshots: 'test/screenshots'
+            },
+            file: 'dynamic',
             url: 'http://localhost:8881/test/pages/dynamic.html',
             wait: '.dynamic'
           },
           {
-            file: 'dynamic-reverse.html',
+            options: {
+              viewport: {
+                width: 1600,
+                height: 900
+              }
+            },
+            file: 'dynamic-reverse',
             url: 'http://localhost:8881/test/pages/dynamic-reverse.html',
             wait: '!.dynamic'
           },
           {
-            file: 'dynamic-delayed.html',
+            file: 'dynamic-delayed',
             url: 'http://localhost:8881/test/pages/dynamic-delayed.html',
             wait: [
               '.dynamic',
@@ -98,7 +112,7 @@ module.exports = function (grunt) {
             ]
           },
           {
-            file: 'dynamic-custom.html',
+            file: 'dynamic-custom',
             url: 'http://localhost:8881/test/pages/dynamic-custom.html',
             wait: function (browser) {
               return browser.waitForExist('.dynamic', 1000);
@@ -108,24 +122,24 @@ module.exports = function (grunt) {
             options: {
               doctype: ''
             },
-            file: 'no-doctype.html',
+            file: 'no-doctype',
             url: 'http://localhost:8881/test/pages/no-doctype.html'
           },
           {
             url: 'http://localhost:8881/test/pages/dynamic-multiple.html'
           },
           {
-            file: 'dynamic-first.html'
+            file: 'dynamic-first'
           },
           {
             wait: '.second',
-            file: 'dynamic-second.html'
+            file: 'dynamic-second'
           },
           {
             wait: '.third'
           },
           {
-            file: 'dynamic-third.html'
+            file: 'dynamic-third'
           }
         ]
       },
@@ -139,28 +153,45 @@ module.exports = function (grunt) {
       },
       'invalid-file': {
         options: {
+          screenshots: 'test/screenshots',
           force: true
         },
         pages: [
           {
             url: 'http://localhost:8881',
-            file: '//'
+            file: '/\\//\\'
           }
         ]
       },
       'invalid-dest': {
         options: {
-          dest: '//',
+          dest: '/ /',
           force: true
         },
         dummy: {
-          url: 'http://localhost:8881'
+          url: 'http://localhost:8881',
+          file: 'dummy'
         }
+      },
+      'invalid-screenshots': {
+        options: {
+          screenshots: '/ /',
+          force: true
+        },
+        pages: [
+          {
+            url: 'http://localhost:8881',
+            file: 'dummy'
+          }
+        ]
       }
     },
 
     'selenium_standalone': {
-      serverConfig: {
+      options: {
+        stopOnExit: true
+      },
+      server: {
         seleniumVersion: '3.7.1',
         seleniumDownloadURL: 'http://selenium-release.storage.googleapis.com',
         drivers: {
@@ -181,16 +212,14 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-selenium-standalone');
   grunt.loadTasks(coverage ? 'coverage/tasks' : 'tasks');
 
-  grunt.registerTask('default', coverage ? [
-    'clean', 'eslint', 'instrument',
-    'selenium_standalone:serverConfig:install',
-    'selenium_standalone:serverConfig:start',
-    'connect', 'html-dom-snapshot',
-    'selenium_standalone:serverConfig:stop',
-    'nodeunit', 'storeCoverage', 'makeReport'] : [
-    'clean', 'eslint',
-    'selenium_standalone:serverConfig:install',
-    'selenium_standalone:serverConfig:start',
-    'connect', 'html-dom-snapshot',
-    'selenium_standalone:serverConfig:stop', 'nodeunit']);
+  const start = ['clean', 'eslint'],
+        instrument = coverage ? ['instrument'] : [],
+        test = ['selenium_standalone:server:install',
+                'selenium_standalone:server:start',
+                'connect', 'html-dom-snapshot',
+                'selenium_standalone:server:stop', 'nodeunit'],
+        report = coverage ? ['storeCoverage', 'makeReport'] : [];
+  grunt.registerTask('default', start.concat(instrument)
+                                     .concat(test)
+                                     .concat(report));
 };
