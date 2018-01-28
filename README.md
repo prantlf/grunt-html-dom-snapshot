@@ -18,6 +18,21 @@ Additional Grunt tasks, which are usually used to support test automation:
 * [grunt-reg-viz] - compares images and generates report with differences
 * [grunt-selenium-standalone] - runs a standalone Selenium server
 
+# Table of Contents
+
+- [Installation](#installation)
+- [Configuration](#configuration)
+  - [Options](#options)
+  - [Sub-tasks](#sub-tasks)
+  - [Instructions](#instructions)
+  - [Instruction Combinations](#instruction-combinations)
+  - [Loading](#loading)
+- [Build](#build)
+- [Example](#example)
+- [Contributing](#contributing)
+- [Release History](#release-history)
+- [License](#license)
+
 ## Installation
 
 You need [node >= 4][node], [npm] and [grunt >= 0.4.5][Grunt] installed
@@ -83,7 +98,7 @@ Chooses the web browser to take snapshots with. Passed as `desiredCapabilities` 
 ```js
 'selenium_standalone': {
   serverConfig: {
-    seleniumVersion: '3.8.1', // 3.7.1 or older i sneeded for phantomjs
+    seleniumVersion: '3.8.1', // 3.7.1 or older is needed for phantomjs
     seleniumDownloadURL: 'http://selenium-release.storage.googleapis.com',
     drivers: {
       // http://chromedriver.storage.googleapis.com/
@@ -462,7 +477,7 @@ When the commands become too many, you can divide them per page or per other cri
 }
 ```
 
-The module for Addressbook would look like this:
+The module for the address book implementation would look like this:
 
 ```js
 module.exports = {
@@ -498,6 +513,8 @@ or integrate it to your build sequence in `Gruntfile.js`:
 ```js
 grunt.registerTask('default', ['html-dom-snapshot', ...]);
 ```
+
+## Example
 
 When [webdriverio] is called, it needs to connect to a [Selenium] server. The easiest way, how to get it running is using the [selenium-standalone] Grunt task, which downloads, starts and stop the server. If the usage scenario is to validate static files or a mocked web application, a local web server like [grunt-contrib-connect] is usually added. And additional checking tasks like [grunt-html] pr [grunt-accessibility]. The complete Grunt initialization could look like this:
 
@@ -589,9 +606,9 @@ your code using Grunt.
 
 ## Release History
 
- * 2018-01-27   v0.2.0   Allow saving screenshots in addition to snapshots
- * 2017-11-18   v0.1.0   Allow separate navigation, page interaction and saving snapshots
- * 2017-11-12   v0.0.1   Initial release
+ * 2018-01-27  [v0.2.0]  Allow saving screenshots in addition to snapshots
+ * 2017-11-18  [v0.1.0]  Allow separate navigation, page interaction and saving snapshots
+ * 2017-11-12  [v0.0.1]  Initial release
 
 ## License
 
@@ -613,10 +630,12 @@ Licensed under the MIT license.
 [W3C HTML]: https://www.w3.org/standards/techs/html
 [WCAG]: https://www.w3.org/WAI/intro/wcag
 [grunt-accessibility]: https://github.com/yargalot/grunt-accessibility
-[grunt-accessibility-html-report-converter]: https://github.com/prantlf/grunt-accessibility-html-report-converter
-[grunt-contrib-connect]: https://github.com/gruntjs/grunt-contrib-connect
+[grunt-accessibility-html-report-converter]: https://github.com/prantlf/grunt-accessibility-html-report-converter[grunt-contrib-connect]: https://github.com/gruntjs/grunt-contrib-connect
 [grunt-html]: https://github.com/jzaefferer/grunt-html
 [grunt-html-html-report-converter]: https://github.com/prantlf/grunt-html-html-report-converter
 [grunt-reg-viz]: https://github.com/prantlf/grunt-reg-viz
 [grunt-selenium-standalone]: https://github.com/zs-zs/grunt-selenium-standalone
 [keyboard key identifiers]: https://w3c.github.io/webdriver/webdriver-spec.html#keyboard-actions
+[v0.2.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v0.2.0
+[v0.1.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v0.1.0
+[v0.0.1]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v0.0.1
