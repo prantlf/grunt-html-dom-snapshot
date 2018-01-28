@@ -613,7 +613,8 @@ Licensed under the MIT license.
 [W3C HTML]: https://www.w3.org/standards/techs/html
 [WCAG]: https://www.w3.org/WAI/intro/wcag
 [grunt-accessibility]: https://github.com/yargalot/grunt-accessibility
-[grunt-accessibility-html-report-converter]: https://github.com/prantlf/grunt-accessibility-html-report-converter[grunt-contrib-connect]: https://github.com/gruntjs/grunt-contrib-connect
+[grunt-accessibility-html-report-converter]: https://github.com/prantlf/grunt-accessibility-html-report-converter
+[grunt-contrib-connect]: https://github.com/gruntjs/grunt-contrib-connect
 [grunt-html]: https://github.com/jzaefferer/grunt-html
 [grunt-html-html-report-converter]: https://github.com/prantlf/grunt-html-html-report-converter
 [grunt-reg-viz]: https://github.com/prantlf/grunt-reg-viz
