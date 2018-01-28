@@ -76,21 +76,21 @@ module.exports = function (grunt) {
               snapshots: null,
               screenshots: 'test/screenshots'
             },
-            file: 'static.html',
-            url: 'http://localhost:8881/test/pages/static.html'
+            url: 'http://localhost:8881/test/pages/static.html',
+            file: 'static.html'
           },
           {
-            file: 'delayed',
             url: 'http://localhost:8881/test/pages/delayed.html',
-            wait: 200
+            wait: 200,
+            file: 'delayed'
           },
           {
             options: {
               screenshots: 'test/screenshots'
             },
-            file: 'dynamic',
             url: 'http://localhost:8881/test/pages/dynamic.html',
-            wait: '.dynamic'
+            wait: '.dynamic',
+            file: 'dynamic'
           },
           {
             options: {
@@ -99,31 +99,31 @@ module.exports = function (grunt) {
                 height: 900
               }
             },
-            file: 'dynamic-reverse',
             url: 'http://localhost:8881/test/pages/dynamic-reverse.html',
-            wait: '!.dynamic'
+            wait: '!.dynamic',
+            file: 'dynamic-reverse'
           },
           {
-            file: 'dynamic-delayed',
             url: 'http://localhost:8881/test/pages/dynamic-delayed.html',
             wait: [
               '.dynamic',
               200
-            ]
+            ],
+            file: 'dynamic-delayed'
           },
           {
-            file: 'dynamic-custom',
             url: 'http://localhost:8881/test/pages/dynamic-custom.html',
             wait: function (browser) {
               return browser.waitForExist('.dynamic', 1000);
-            }
+            },
+            file: 'dynamic-custom'
           },
           {
             options: {
               doctype: ''
             },
-            file: 'no-doctype',
-            url: 'http://localhost:8881/test/pages/no-doctype.html'
+            url: 'http://localhost:8881/test/pages/no-doctype.html',
+            file: 'no-doctype'
           },
           {
             url: 'http://localhost:8881/test/pages/dynamic-multiple.html'
@@ -140,6 +140,91 @@ module.exports = function (grunt) {
           },
           {
             file: 'dynamic-third'
+          },
+          {
+            go: 'back',
+            wait: function (browser) {
+              return browser.getUrl()
+                .then(function (url) {
+                  if (url !== 'http://localhost:8881/test/pages/no-doctype.html') {
+                    throw new Error ('go:back failed');
+                  }
+                });
+            }
+          },
+          {
+            go: 'forward',
+            wait: function (browser) {
+              return browser.getUrl()
+                .then(function (url) {
+                  if (url !== 'http://localhost:8881/test/pages/dynamic-multiple.html') {
+                    throw new Error ('go:forward failed');
+                  }
+                });
+            }
+          },
+          {
+            go: 'refresh',
+            wait: function (browser) {
+              return browser.getUrl()
+                .then(function (url) {
+                  if (url !== 'http://localhost:8881/test/pages/dynamic-multiple.html') {
+                    throw new Error ('go:forward failed');
+                  }
+                });
+            }
+          },
+          {
+            url: 'http://localhost:8881/test/pages/input.html',
+            moveCursor: 'input',
+            click: 'input',
+            wait: function (browser) {
+              return browser.hasFocus('input')
+                .then(function (value) {
+                  if (value !== true) {
+                    throw new Error ('click failed');
+                  }
+                });
+            }
+          },
+          {
+            setValue: {
+              selector: 'input',
+              value: 'Hi'
+            },
+            wait: function (browser) {
+              return browser.getValue('input')
+                .then(function (value) {
+                  if (value !== 'Hi') {
+                    throw new Error ('setValue failed');
+                  }
+                });
+            }
+          },
+          {
+            addValue: {
+              selector: 'input',
+              value: ' there!'
+            },
+            wait: function (browser) {
+              return browser.getValue('input')
+                .then(function (value) {
+                  if (value !== 'Hi there!') {
+                    throw new Error ('addValue failed');
+                  }
+                });
+            }
+          },
+          {
+            clearValue: 'input',
+            wait: function (browser) {
+              return browser.getValue('input')
+                .then(function (value) {
+                  if (value !== '') {
+                    throw new Error ('clearValue failed');
+                  }
+                });
+            }
           }
         ]
       },
@@ -184,6 +269,17 @@ module.exports = function (grunt) {
             file: 'dummy'
           }
         ]
+      },
+      'invalid-go': {
+        options: {
+          force: true
+        },
+        pages: [
+          {
+            url: 'http://localhost:8881',
+            go: 'dummy'
+          }
+        ]
       }
     },
 
@@ -212,14 +308,11 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-selenium-standalone');
   grunt.loadTasks(coverage ? 'coverage/tasks' : 'tasks');
 
-  const start = ['clean', 'eslint'],
-        instrument = coverage ? ['instrument'] : [],
-        test = ['selenium_standalone:server:install',
+  const test = ['clean', 'eslint',
+                'selenium_standalone:server:install',
                 'selenium_standalone:server:start',
                 'connect', 'html-dom-snapshot',
                 'selenium_standalone:server:stop', 'nodeunit'],
         report = coverage ? ['storeCoverage', 'makeReport'] : [];
-  grunt.registerTask('default', start.concat(instrument)
-                                     .concat(test)
-                                     .concat(report));
+  grunt.registerTask('default', test.concat(report));
 };

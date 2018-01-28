@@ -63,6 +63,7 @@ Default options support the most usual usage scenario:
     selectorTimeout: 10000,
     doctype: '<!DOCTYPE html>',
     snapshots: 'snapshots',
+    screenshots: null,
     force: false
   },
   'google': {
@@ -116,7 +117,6 @@ Chooses the web browser to take snapshots with. Passed as `desiredCapabilities` 
   }
 }
 ```
-
 
 #### viewport
 Type: `Object`
@@ -176,12 +176,12 @@ If the sub-task contains a property `commands`, this property is supposed to poi
   all: {
     commands: [
       {
-        file: 'google',
-        url: 'https://google.com'
+        url: 'https://google.com',
+        file: 'google'
       },
       {
-        file: 'github',
-        url: 'https://github.com'
+        url: 'https://github.com',
+        file: 'github'
       }
     ]
   }
@@ -190,55 +190,125 @@ If the sub-task contains a property `commands`, this property is supposed to poi
 
 You can use sub-tasks and commands to create test scenarios and execute them separately, or all of them.
 
-### Parameters
+### Instructions
 
-One of the `file`, `url` ans `wait` properties has to be present in every command.
-
-#### file
-Type: `String`
-
-Name of the file to write the snapshot to. If it does not end with ".html" or ".htm", the extension ".html" will be appended to it.
-
-If writing screenshots is enabled, the same name will be used for the file with the screenshot; just without the extension ".html" or ".htm", if the file name ends to it, and with the extension ".png" appended to the file name instead.
-
-```js
-{
-  file: 'google',
-  url: 'https://google.com'
-}
-```
-
-If it is omitted, the object will save no snapshot (and no screenshot). It can still change location or wait for some change.
+One of the instructions has to be present in every command. These properties are evaluated (and their effect is executed) in the order, which they are listed below.
 
 #### url
 Type: `String`
 
-URL to connect the web browser to for taking the snapshot.
+Navigates (changes the current window location) to the specified URL.
 
 ```js
 {
-  file: 'google',
-  url: 'https://google.com'
+  url: 'https://google.com',
+  file: 'google'
 }
 ```
 
-If it is omitted, the object will reuse the previous location. It can wait for a further change and/or save another snapshot.
+If it is omitted, the command will reuse the location from the previous command. A command without URL can cause some page changes, wait for an element state and/or save a snapshot.
 
-#### options
-Type: `Object` (optional)
+#### go
+Type: `String`: 'back', 'forward' or 'refresh'
 
-Options specific for taking snapshot of a one particular page. They will be merged with the task options to specialize taking of the particular snapshot:
+Navigates backwards or forwards using the browser history, or refreshes the current page.
 
 ```js
 {
-  file: 'google',
+  go: 'back',
+  file: 'previous'
+}
+```
+
+#### clearValue
+Type: `String`
+
+Clears value of an input element at the specified selector.
+
+```js
+{
   url: 'https://google.com',
-  options: {
-    viewport: {
-      width: 1600,
-      height: 900
-    }
+  clearValue: '#lst-ib',
+  file: 'google'
+}
+```
+
+#### setValue
+Type: `Object`
+
+Set value of an input element either by providing the new value or using [keyboard key identifiers]. The previous value will be cleared. The object should contain the following properties:
+
+* `selector` - `String` - selector of an input element.
+* `value` - `String|Number|Array` - string or numeric value, or an array of keys (strings) to send to the element for setting its value.
+
+```js
+{
+  url: 'https://google.com',
+  setValue: {
+    selector: '#lst-ib',
+    value: 'Hi'
   }
+}
+{
+  setValue: {
+    selector: '#lst-ib',
+    value: ['Enter']
+  }
+  file: 'google',
+}
+```
+
+#### addValue
+Type: `Object`
+
+Appends to the current value of an input element. The object should contain the following properties:
+
+* `selector` - `String` - selector of an input element.
+* `value` - `String|Number` - string or numeric value.
+
+```js
+{
+  url: 'https://google.com',
+  setValue: {
+    selector: '#lst-ib',
+    value: ' there!'
+  },
+  file: 'google'
+}
+```
+
+#### moveCursor
+Type: `String` | `Object`
+
+Moves the mouse cursor to an element with the specified selector. If an object is used for the specification, it should contain the following properties:
+
+* `selector` - `String` - see above.
+* `offset` - `Object` - relative offset to the top left corner of the specified element expected as `left` and `top` numeric properties.
+
+```js
+{
+  url: 'https://google.com',
+  moveCursor: {
+    selector: '#lst-ib',
+    offset: {
+      left: 10
+      top: 5,
+    }
+  },
+  file: 'google'
+}
+```
+
+#### click
+Type: `String`
+
+Triggers a click event on an element with the specified selector.
+
+```js
+{
+  url: 'https://google.com',
+  click: 'input[name=btnK]',
+  file: 'google'
 }
 ```
 
@@ -251,9 +321,9 @@ Delays taking of the snapshot until a condition s met depending on the value typ
 
 ```js
 {
-  file: 'google',
   url: 'https://google.com',
-  wait: 1000
+  wait: 1000,
+  file: 'google'
 }
 ```
 
@@ -261,9 +331,9 @@ Delays taking of the snapshot until a condition s met depending on the value typ
 
 ```js
 {
-  file: 'google',
   url: 'https://google.com',
-  wait: '#footer'
+  wait: '#footer',
+  file: 'google'
 }
 ```
 
@@ -271,9 +341,9 @@ If the selector is prefixed by "!", the waiting waiting will stop, if the node d
 
 ```js
 {
-  file: 'google',
   url: 'https://google.com',
-  wait: '!.gsfi'
+  wait: '!.gsfi',
+  file: 'google'
 }
 ```
 
@@ -281,11 +351,11 @@ If the selector is prefixed by "!", the waiting waiting will stop, if the node d
 
 ```js
 {
-  file: 'google',
   url: 'https://google.com',
   wait: function (browser) {
     return browser.waitForExist('#footer', 1000);
-  }
+  },
+  file: 'google'
 }
 ```
 
@@ -293,18 +363,52 @@ If the selector is prefixed by "!", the waiting waiting will stop, if the node d
 
 ```js
 {
-  file: 'google',
   url: 'https://google.com',
   wait: [
     wait: '!.gsfi',
     200
-  ]
+  ],
+  file: 'google'
 }
 ```
 
 If `wait` is omitted, the task will advance to another item without delay. It can still save a snapshot immediately.
 
-### Parameter Combinations
+#### file
+Type: `String`
+
+Name of the file to write the snapshot to. If it does not end with ".html" or ".htm", the extension ".html" will be appended to it.
+
+If writing screenshots is enabled, the same name will be used for the file with the screenshot; just without the extension ".html" or ".htm", if the file name ends to it, and with the extension ".png" appended to the file name instead.
+
+```js
+{
+  url: 'https://google.com',
+  file: 'google'
+}
+```
+
+If it is omitted, the object will save no snapshot (and no screenshot). It can still change location or wait for some change.
+
+#### options
+Type: `Object` (optional)
+
+Options specific for taking snapshot of a one particular page. They will be merged with the task options to specialize taking of the particular snapshot:
+
+```js
+{
+  options: {
+    viewport: {
+      width: 1600,
+      height: 900
+    }
+  },
+  url: 'https://google.com',
+  file: 'google'
+}
+```
+
+### Instruction Combinations
 
 The following array of commands within the `commands` property will change location, make a snapshot immediately to save the server-side pre-rendered content, then another one to see the progress after the first 500 milliseconds and yet another one, once the search form is ready. Then it submits the form by clicking on the "Search" button, waits until the search results are displayed and makes one final snapshot.
 
@@ -326,6 +430,19 @@ The following array of commands within the `commands` property will change locat
     return browser.click('#search')
         .waitForExist('#results', 1000);
   },
+  file: 'results-shown'
+}
+```
+
+The last command can be written in a declarative way too:
+
+```js
+{
+  options: {
+    selectorTimeout: 1000
+  },
+  click: '#search',
+  wait: '#results',
   file: 'results-shown'
 }
 ```
@@ -501,3 +618,4 @@ Licensed under the MIT license.
 [grunt-html-html-report-converter]: https://github.com/prantlf/grunt-html-html-report-converter
 [grunt-reg-viz]: https://github.com/prantlf/grunt-reg-viz
 [grunt-selenium-standalone]: https://github.com/zs-zs/grunt-selenium-standalone
+[keyboard key identifiers]: https://w3c.github.io/webdriver/webdriver-spec.html#keyboard-actions

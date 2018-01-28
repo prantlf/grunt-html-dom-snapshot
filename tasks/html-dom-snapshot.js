@@ -61,8 +61,10 @@ module.exports = function (grunt) {
         snapshotCount = 0,
         screenshotCount = 0;
 
+    grunt.verbose.writeln('Open web browser window for the target "' +
+                          target + '".');
     client.init()
-          .setViewportSize(lastViewport)
+          .then(setViewportSize)
           .then(function () {
             return commands.reduce(function (promise, command) {
               return promise.then(function () {
@@ -90,6 +92,12 @@ module.exports = function (grunt) {
           })
           .then(done);
 
+    function setViewportSize() {
+      grunt.verbose.writeln('Resize viewport to ' + lastViewport.width +
+                            'x' + lastViewport.height + '.');
+      return client.setViewportSize(lastViewport);
+    }
+
     function ensureDirectory(name) {
       return new Promise(function (resolve, reject) {
         mkdirp(name, function (error) {
@@ -104,11 +112,17 @@ module.exports = function (grunt) {
 
     function performCommand(command) {
       const commandOptions = Object.assign({}, options, command.options || {}),
-            url = command.url,
             file = command.file,
+            url = command.url,
+            go = command.go,
+            clearValue = command.clearValue,
+            setValue = command.setValue,
+            addValue = command.addValue,
+            click = command.click,
             viewport = commandOptions.viewport,
             screenshots = commandOptions.screenshots;
-      var wait = command.wait,
+      var moveCursor = command.moveCursor,
+          wait = command.wait,
           snapshots = commandOptions.dest,
           viewportSet;
       if (snapshots) {
@@ -117,26 +131,76 @@ module.exports = function (grunt) {
       } else {
         snapshots = commandOptions.snapshots;
       }
-      if (url) {
-        grunt.verbose.writeln('Taking a snapshot of ' + url + '...');
-        ++urlCount;
-      } else {
-        if (!(file || wait)) {
-          throw new Error('Missing parameters "url", "file" or "wait" ' +
-                          'in the target "' + target + '".');
-        }
-        grunt.verbose.writeln('Preparing the next snapshot...');
+      if (!(url || file || go || clearValue || setValue || addValue ||
+            moveCursor || click || wait)) {
+        throw new Error('Missing instruction in the command ' +
+                        'in the target "' + target + '".');
       }
       if (viewport.width !== lastViewport.width ||
           viewport.height !== lastViewport.height) {
         lastViewport = viewport;
-        viewportSet = client.setViewportSize(viewport);
+        viewportSet = setViewportSize();
       } else {
         viewportSet = Promise.resolve();
       }
       return viewportSet
         .then(function () {
-          return url && client.url(url);
+          if (url) {
+            grunt.log.ok('Navigate to "' + url + '".');
+            ++urlCount;
+            return client.url(url);
+          }
+        })
+        .then(function () {
+          if (go) {
+            if (!(go === 'back' || go === 'forward' || go === 'refresh')) {
+              throw new Error('Invalid target to go to: "' + go + '".');
+            }
+            grunt.verbose.writeln('Perform navigation: "' + go + '".');
+            return client[go](url);
+          }
+        })
+        .then(function () {
+          if (clearValue) {
+            grunt.verbose.writeln('Clear value of "' + clearValue + '".');
+            return client.clearElement(clearValue);
+          }
+        })
+        .then(function () {
+          if (setValue) {
+            const selector = setValue.selector,
+                  value = setValue.value;
+            grunt.verbose.writeln('Set value of "' + selector +
+                                  '" to "' + value + '".');
+            return client.setValue(selector, value);
+          }
+        })
+        .then(function () {
+          if (addValue) {
+            const selector = addValue.selector,
+                  value = addValue.value;
+            grunt.verbose.writeln('Add "' + value + '" to value of "' +
+                                  selector + '".');
+            return client.addValue(selector, value);
+          }
+        })
+        .then(function () {
+          if (moveCursor) {
+            if (typeof moveCursor === 'string') {
+              moveCursor = {selector: moveCursor};
+            }
+            const offset = moveCursor.offset || {};
+            grunt.verbose.writeln('Move cursor to "' + moveCursor +
+                                  '", offset ' + offset + '.');
+            return client.moveToObject(moveCursor.selector,
+                                       offset.left, offset.top);
+          }
+        })
+        .then(function () {
+          if (click) {
+            grunt.verbose.writeln('Click on "' + click + '".');
+            return client.click(click);
+          }
         })
         .then(waitForContent)
         .then(function () {
@@ -158,14 +222,22 @@ module.exports = function (grunt) {
         return wait.reduce(function (promise, wait) {
           return promise.then(function () {
             if (typeof wait === 'function') {
+              grunt.verbose.writeln('Wait for custom function.');
               return wait(client);
             } else if (typeof wait === 'string') {
+              const timeout = commandOptions.selectorTimeout;
               if (wait.charAt(0) === '!') {
-                return client.waitForExist(wait.substr(1).trim(),
-                    commandOptions.selectorTimeout, true);
+                wait = wait.substr(1);
+                grunt.verbose.writeln('Wait for "' + wait +
+                                      '" disappearing ' + timeout + 'ms.');
+                return client.waitForExist(wait,
+                  commandOptions.selectorTimeout, true);
               }
-              return client.waitForExist(wait, commandOptions.selectorTimeout);
+              grunt.verbose.writeln('Wait for "' + wait +
+                                    '" appearing.' + timeout + 'ms.');
+              return client.waitForExist(wait, timeout);
             } else if (typeof wait === 'number') {
+              grunt.verbose.writeln('Wait for ' + wait + 'ms.');
               return new Promise(function (resolve) {
                 setTimeout(resolve, wait);
               });
@@ -180,7 +252,7 @@ module.exports = function (grunt) {
       }
 
       function makeScreenshot() {
-        return client.saveScreenshot()
+        return client.screenshot()
                      .then(saveImage);
       }
 
@@ -190,7 +262,7 @@ module.exports = function (grunt) {
                 htmlFile = testFile.endsWith('.html') ||
                            testFile.endsWith('.htm') ? file : file + '.html',
                 target = path.join(snapshots, htmlFile);
-          grunt.verbose.writeln('Writing the snapshot to ' + target + '...');
+          grunt.log.ok('Write snapshot to "' + target + '".');
           return ensureDirectory(snapshots)
             .then(function () {
               return new Promise(function (resolve, reject) {
@@ -215,7 +287,7 @@ module.exports = function (grunt) {
                            testFile.endsWith('.htm') ?
                            file.substr(0, file.length - 4) : file,
                 target = path.join(screenshots, baseFile + '.png');
-          grunt.verbose.writeln('Writing the screenshot to ' + target + '...');
+          grunt.log.ok('Write screenshot to "' + target + '".');
           return ensureDirectory(screenshots)
             .then(function () {
               return new Promise(function (resolve, reject) {

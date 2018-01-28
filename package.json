@@ -26,7 +26,6 @@
     "node": ">= 4"
   },
   "scripts": {
-    "lint": "grunt eslint",
     "test": "grunt",
     "coverage": "grunt instrument && GRUNT_HTML_DOM_SNAPSHOT_COVERAGE=1 grunt",
     "coveralls": "test `node --version | cut -c 2` -eq 8 && npm run coverage && grunt coveralls",
