@@ -25,9 +25,9 @@ exports['html-dom-snapshot'] = {
 
   'static': function (test) {
     const snapshot = fs.existsSync('test/snapshots/static.html'),
-          screenshot = fs.readFileSync('test/screenshots/static.png');
+          screenshot = fs.statSync('test/screenshots/static.png');
     test.ok(!snapshot, 'static.html');
-    test.ok(screenshot, 'static.png');
+    test.ok(screenshot.size > 1024, 'static.png');
     test.done();
   },
 
@@ -41,9 +41,9 @@ exports['html-dom-snapshot'] = {
   'dynamic': function (test) {
     const pages = readPages('dynamic.html'),
           expected = pages.expected.replace('<body>', '<body class="dynamic">'),
-          screenshot = fs.readFileSync('test/screenshots/dynamic.png');
+          screenshot = fs.statSync('test/screenshots/dynamic.png');
     test.equal(expected, pages.actual, 'dynamic.html');
-    test.ok(screenshot, 'dynamic.png');
+    test.ok(screenshot.size > 1024, 'dynamic.png');
     test.done();
   },
 

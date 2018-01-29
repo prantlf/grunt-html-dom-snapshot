@@ -291,7 +291,7 @@ module.exports = function (grunt) {
           return ensureDirectory(screenshots)
             .then(function () {
               return new Promise(function (resolve, reject) {
-                fs.writeFile(target, png, function (error) {
+                fs.writeFile(target, new Buffer(png.value, 'base64'), function (error) {
                   if (error) {
                     reject(error);
                   } else {
