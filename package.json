@@ -26,6 +26,7 @@
     "node": ">= 4"
   },
   "scripts": {
+    "postinstall": "nsp check",
     "test": "grunt",
     "coverage": "grunt instrument && GRUNT_HTML_DOM_SNAPSHOT_COVERAGE=1 grunt",
     "coveralls": "test `node --version | cut -c 2` -eq 8 && npm run coverage && grunt coveralls",
@@ -44,6 +45,7 @@
     "grunt-eslint": "^20.1.0",
     "grunt-istanbul": "^0.8.0",
     "grunt-selenium-standalone": "^1.0.1",
+    "nsp": "^3.1.0",
     "phantomjs-prebuilt": "^2.1.16",
     "semantic-release": "^12.2.5"
   },
