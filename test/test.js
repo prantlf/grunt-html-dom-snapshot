@@ -85,5 +85,11 @@ exports['html-dom-snapshot'] = {
     expected = original.replace('<body class="first">', '<body class="first second third">');
     test.equal(expected, third, 'dynamic-third.html');
     test.done();
+  },
+
+  'scenario1': function (test) {
+    const pages = readPages('scenario1.html');
+    test.equal(pages.expected, pages.actual, 'scenario1.html');
+    test.done();
   }
 };

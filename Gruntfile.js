@@ -226,7 +226,8 @@ module.exports = function (grunt) {
                 });
             }
           }
-        ]
+        ],
+        scenarios: 'test/scenarios/*.js'
       },
       'no-input': {
         options: {

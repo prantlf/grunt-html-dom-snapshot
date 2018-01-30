@@ -203,7 +203,17 @@ If the sub-task contains a property `commands`, this property is supposed to poi
 }
 ```
 
-You can use sub-tasks and commands to create test scenarios and execute them separately, or all of them.
+If the sub-task contains a property `scenarios`, this property is supposed to point to a JavaScript module path or to an array of JavaScript module paths, which would export the array of commands. Relative paths will be resolved to the current (process) directory. It allows to keep the Gruntfile legible and supply the test instructions from other files:
+
+```js
+'html-dom-snapshot': {
+  all: {
+    scenarios: 'scenarios/*.js'
+  }
+}
+```
+
+You can use sub-tasks, `commands` and `scenarios` to structure your code and execute the tests separately, or all of them in one browser window.
 
 ### Instructions
 
@@ -481,7 +491,7 @@ The module for the address book implementation would look like this:
 
 ```js
 module.exports = {
-  options: {...},
+  options: {...}, // optional task-specific options
   commands: [
     {
       url: 'https://localhost/addressbook'
@@ -490,6 +500,29 @@ module.exports = {
     ...
   ]
 }
+```
+
+The same tests will be run in a single browser window, if the Gruntfile contains just a single sub-task and the tests are specified by scenario files:
+
+```js
+'html-dom-snapshot': {
+  all: {
+    scenarios: 'test/scenarios/*.js'
+  }
+}
+```
+
+The directory "test/scenarios" would contain files  "addressbook.js", "calendar.js", "inbox.js" and "tasks.js", which would specify only the array of commands; not the entire sub-task objects. For example, the address book implementation:
+
+```js
+module.exports = {
+  {
+    options: {...}, // optional command-specific options
+    url: 'https://localhost/addressbook'
+    wait: '#addressbook.complete'
+  },
+  ...
+]
 ```
 
 ### Loading
@@ -531,8 +564,8 @@ grunt.initConfig({
   },
 
   'html-dom-snapshot': { // Takes new snapshots.
-    'index': {
-      url: 'https://localhost:8881'
+    all: {
+      ...
     }
   },
 
@@ -606,6 +639,7 @@ your code using Grunt.
 
 ## Release History
 
+ * 2018-01-30  [v0.3.0]  Allow specifying test commands in separate modules
  * 2018-01-27  [v0.2.0]  Allow saving screenshots in addition to snapshots
  * 2017-11-18  [v0.1.0]  Allow separate navigation, page interaction and saving snapshots
  * 2017-11-12  [v0.0.1]  Initial release
@@ -637,6 +671,7 @@ Licensed under the MIT license.
 [grunt-reg-viz]: https://github.com/prantlf/grunt-reg-viz
 [grunt-selenium-standalone]: https://github.com/zs-zs/grunt-selenium-standalone
 [keyboard key identifiers]: https://w3c.github.io/webdriver/webdriver-spec.html#keyboard-actions
+[v0.3.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v0.3.0
 [v0.2.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v0.2.0
 [v0.1.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v0.1.0
 [v0.0.1]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v0.0.1

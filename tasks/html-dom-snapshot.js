@@ -37,8 +37,15 @@ module.exports = function (grunt) {
           }),
           target = this.target,
           pages = data.pages,
-          snapshots = options.dest;
-    var lastViewport = options.viewport;
+          snapshots = options.dest,
+          client = webdriverio.remote({
+            desiredCapabilities: options.browserCapabilities
+          });
+    var lastViewport = options.viewport,
+        urlCount = 0,
+        snapshotCount = 0,
+        screenshotCount = 0,
+        commands;
     if (pages) {
       grunt.log.warn('The property "pages" is deprecated. ' +
                      'Use "commands" with the same content.');
@@ -49,29 +56,13 @@ module.exports = function (grunt) {
       options.snapshots = snapshots;
       delete options.dest;
     }
-    const commands = data.commands || pages || [
-            Object.assign({
-              file: target
-            }, data)
-          ],
-          client = webdriverio.remote({
-            desiredCapabilities: options.browserCapabilities
-          });
-    var urlCount = 0,
-        snapshotCount = 0,
-        screenshotCount = 0;
 
     grunt.verbose.writeln('Open web browser window for the target "' +
                           target + '".');
     client.init()
           .then(setViewportSize)
-          .then(function () {
-            return commands.reduce(function (promise, command) {
-              return promise.then(function () {
-                return performCommand(command);
-              });
-            }, Promise.resolve());
-          })
+          .then(gatherCommands)
+          .then(performCommands)
           .then(function () {
             grunt.log.ok(commands.length + ' ' +
                 grunt.util.pluralize(commands.length, 'command/commands') +
@@ -91,6 +82,43 @@ module.exports = function (grunt) {
             warn('Taking snapshots failed.');
           })
           .then(done);
+
+    function gatherCommands() {
+      let scenarios = data.scenarios;
+      commands = data.commands || pages;
+      if (scenarios) {
+        if (!Array.isArray(scenarios)) {
+          scenarios = [scenarios];
+        }
+        const currentDirectory = process.cwd();
+        commands = scenarios
+          .reduce(function (scenarios, scenario) {
+            return scenarios.concat(grunt.file.expand(scenario));
+          }, [])
+          .reduce(function (scenarios, scenario) {
+            grunt.verbose.writeln('Load scenario  "' + scenario + '".');
+            if (!path.isAbsolute(scenario)) {
+              scenario = path.join(currentDirectory, scenario);
+            }
+            return scenarios.concat(require(scenario));
+          }, commands || []);
+      }
+      if (!commands) {
+        commands = [
+          Object.assign({
+            file: target
+          }, data)
+        ];
+      }
+    }
+
+    function performCommands() {
+      return commands.reduce(function (promise, command) {
+        return promise.then(function () {
+          return performCommand(command);
+        });
+      }, Promise.resolve());
+    }
 
     function setViewportSize() {
       grunt.verbose.writeln('Resize viewport to ' + lastViewport.width +
