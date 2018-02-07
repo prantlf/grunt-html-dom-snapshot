@@ -26,8 +26,8 @@
     "node": ">= 4"
   },
   "scripts": {
-    "postinstall": "test `node --version | cut -c 2` -ne 4 && nsp check || echo 'No vulnerabilities check possible on Node.js 4'",
-    "test": "grunt",
+    "security": "test `node --version | cut -c 2` -ne 4 && nsp check || echo 'No vulnerabilities check possible on Node.js 4'",
+    "test": "npm run security && grunt",
     "coverage": "grunt instrument && GRUNT_HTML_DOM_SNAPSHOT_COVERAGE=1 grunt",
     "coveralls": "test `node --version | cut -c 2` -eq 8 && npm run coverage && grunt coveralls",
     "semantic-release": "semantic-release"
