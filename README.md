@@ -217,7 +217,18 @@ You can use sub-tasks, `commands` and `scenarios` to structure your code and exe
 
 ### Instructions
 
-One of the instructions has to be present in every command. These properties are evaluated (and their effect is executed) in the order, which they are listed below.
+One of the instructions has to be present in every command. These properties are evaluated (and their effect is executed) in the order, in which they are listed below:
+
+* url
+* go
+* clearValue
+* setValue
+* addValue
+* moveCursor
+* click
+* keys
+* wait
+* file
 
 #### url
 Type: `String`
@@ -333,6 +344,20 @@ Triggers a click event on an element with the specified selector.
 {
   url: 'https://google.com',
   click: 'input[name=btnK]',
+  file: 'google'
+}
+```
+
+#### keys
+Type: `String|Array`
+
+Sends either a text (string) typed by keys, or single keystrokes (array) to the browser.
+
+```js
+{
+  url: 'https://google.com',
+  click: 'input[name=btnK]',
+  keys: 'test',
   file: 'google'
 }
 ```
@@ -639,6 +664,7 @@ your code using Grunt.
 
 ## Release History
 
+ * 2018-02-22  [v0.4.0]  Allow sending key strokes to the browser
  * 2018-01-30  [v0.3.0]  Allow specifying test commands in separate modules
  * 2018-01-27  [v0.2.0]  Allow saving screenshots in addition to snapshots
  * 2017-11-18  [v0.1.0]  Allow separate navigation, page interaction and saving snapshots

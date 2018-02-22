@@ -146,6 +146,7 @@ module.exports = function (grunt) {
             clearValue = command.clearValue,
             setValue = command.setValue,
             addValue = command.addValue,
+            keys = command.keys,
             click = command.click,
             viewport = commandOptions.viewport,
             screenshots = commandOptions.screenshots;
@@ -228,6 +229,15 @@ module.exports = function (grunt) {
           if (click) {
             grunt.verbose.writeln('Click on "' + click + '".');
             return client.click(click);
+          }
+        })
+        .then(function () {
+          if (keys) {
+            const message = Array.isArray(keys) ?
+              'Send keys "' + keys.join('", "') + '".' :
+              'Send test "' + keys + '".';
+            grunt.verbose.writeln(message);
+            return client.keys(keys);
           }
         })
         .then(waitForContent)

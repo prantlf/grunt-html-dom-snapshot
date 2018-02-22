@@ -225,6 +225,28 @@ module.exports = function (grunt) {
                   }
                 });
             }
+          },
+          {
+            keys: 'test',
+            wait: function (browser) {
+              return browser.getValue('input')
+                .then(function (value) {
+                  if (value !== 'test') {
+                    throw new Error ('sending text failed');
+                  }
+                });
+            }
+          },
+          {
+            keys: ['Home', 'Delete'],
+            wait: function (browser) {
+              return browser.getValue('input')
+                .then(function (value) {
+                  if (value !== 'est') {
+                    throw new Error ('sending key strokes failed', value);
+                  }
+                });
+            }
           }
         ],
         scenarios: 'test/scenarios/*.js'
