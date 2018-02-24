@@ -11,7 +11,13 @@
 
 const fs = require('fs'),
       path = require('path'),
-      mkdirp = require('mkdirp');
+      mkdirp = require('mkdirp'),
+      instructions = [
+        'url', 'go', 'clearValue', 'setValue', 'addValue', 'moveCursor',
+        'click', 'keys', 'wait'
+      ].map(function (instruction) {
+        return require('./instructions/' + instruction);
+      });
 
 module.exports = function (grunt) {
   grunt.registerMultiTask('html-dom-snapshot',
@@ -141,18 +147,15 @@ module.exports = function (grunt) {
     function performCommand(command) {
       const commandOptions = Object.assign({}, options, command.options || {}),
             file = command.file,
-            url = command.url,
-            go = command.go,
-            clearValue = command.clearValue,
-            setValue = command.setValue,
-            addValue = command.addValue,
-            keys = command.keys,
-            click = command.click,
             viewport = commandOptions.viewport,
-            screenshots = commandOptions.screenshots;
-      var moveCursor = command.moveCursor,
-          wait = command.wait,
-          snapshots = commandOptions.dest,
+            screenshots = commandOptions.screenshots,
+            commandInstructions = instructions.map(function (instruction) {
+              return {
+                perform: instruction.perform,
+                detected: instruction.detect(command)
+              };
+            });
+      var snapshots = commandOptions.dest,
           viewportSet;
       if (snapshots) {
         grunt.log.warn('The property "dest" is deprecated. ' +
@@ -160,10 +163,12 @@ module.exports = function (grunt) {
       } else {
         snapshots = commandOptions.snapshots;
       }
-      if (!(url || file || go || clearValue || setValue || addValue ||
-            moveCursor || click || wait)) {
+      if (!(commandInstructions.some(function (instruction) {
+              return instruction.detected;
+            }) || file)) {
         throw new Error('Missing instruction in the command ' +
-                        'in the target "' + target + '".');
+                        'in the target "' + target + '".\n' +
+                        JSON.stringify(command));
       }
       if (viewport.width !== lastViewport.width ||
           viewport.height !== lastViewport.height) {
@@ -172,75 +177,16 @@ module.exports = function (grunt) {
       } else {
         viewportSet = Promise.resolve();
       }
-      return viewportSet
-        .then(function () {
-          if (url) {
-            grunt.log.ok('Navigate to "' + url + '".');
-            ++urlCount;
-            return client.url(url);
-          }
-        })
-        .then(function () {
-          if (go) {
-            if (!(go === 'back' || go === 'forward' || go === 'refresh')) {
-              throw new Error('Invalid target to go to: "' + go + '".');
+      if (command.url) {
+        ++urlCount;
+      }
+      return commandInstructions.reduce(function (previous, instruction) {
+          return previous.then(function () {
+            if (instruction.detected) {
+              return instruction.perform(grunt, target, client, command, commandOptions);
             }
-            grunt.verbose.writeln('Perform navigation: "' + go + '".');
-            return client[go](url);
-          }
-        })
-        .then(function () {
-          if (clearValue) {
-            grunt.verbose.writeln('Clear value of "' + clearValue + '".');
-            return client.clearElement(clearValue);
-          }
-        })
-        .then(function () {
-          if (setValue) {
-            const selector = setValue.selector,
-                  value = setValue.value;
-            grunt.verbose.writeln('Set value of "' + selector +
-                                  '" to "' + value + '".');
-            return client.setValue(selector, value);
-          }
-        })
-        .then(function () {
-          if (addValue) {
-            const selector = addValue.selector,
-                  value = addValue.value;
-            grunt.verbose.writeln('Add "' + value + '" to value of "' +
-                                  selector + '".');
-            return client.addValue(selector, value);
-          }
-        })
-        .then(function () {
-          if (moveCursor) {
-            if (typeof moveCursor === 'string') {
-              moveCursor = {selector: moveCursor};
-            }
-            const offset = moveCursor.offset || {};
-            grunt.verbose.writeln('Move cursor to "' + moveCursor +
-                                  '", offset ' + offset + '.');
-            return client.moveToObject(moveCursor.selector,
-                                       offset.left, offset.top);
-          }
-        })
-        .then(function () {
-          if (click) {
-            grunt.verbose.writeln('Click on "' + click + '".');
-            return client.click(click);
-          }
-        })
-        .then(function () {
-          if (keys) {
-            const message = Array.isArray(keys) ?
-              'Send keys "' + keys.join('", "') + '".' :
-              'Send test "' + keys + '".';
-            grunt.verbose.writeln(message);
-            return client.keys(keys);
-          }
-        })
-        .then(waitForContent)
+          });
+        }, viewportSet)
         .then(function () {
           if (snapshots && screenshots) {
             return Promise.all([makeSnapshot(), makeScreenshot()]);
@@ -252,37 +198,6 @@ module.exports = function (grunt) {
             return makeScreenshot();
           }
         });
-
-      function waitForContent() {
-        if (!Array.isArray(wait)) {
-          wait = wait ? [wait] : [];
-        }
-        return wait.reduce(function (promise, wait) {
-          return promise.then(function () {
-            if (typeof wait === 'function') {
-              grunt.verbose.writeln('Wait for custom function.');
-              return wait(client);
-            } else if (typeof wait === 'string') {
-              const timeout = commandOptions.selectorTimeout;
-              if (wait.charAt(0) === '!') {
-                wait = wait.substr(1);
-                grunt.verbose.writeln('Wait for "' + wait +
-                                      '" disappearing ' + timeout + 'ms.');
-                return client.waitForExist(wait,
-                  commandOptions.selectorTimeout, true);
-              }
-              grunt.verbose.writeln('Wait for "' + wait +
-                                    '" appearing.' + timeout + 'ms.');
-              return client.waitForExist(wait, timeout);
-            } else if (typeof wait === 'number') {
-              grunt.verbose.writeln('Wait for ' + wait + 'ms.');
-              return new Promise(function (resolve) {
-                setTimeout(resolve, wait);
-              });
-            }
-          });
-        }, Promise.resolve());
-      }
 
       function makeSnapshot() {
         return client.getHTML('html')

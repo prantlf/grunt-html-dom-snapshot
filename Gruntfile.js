@@ -7,13 +7,13 @@ module.exports = function (grunt) {
     eslint: {
       target: [
         'Gruntfile.js',
-        'tasks/*.js',
+        'tasks/**/*.js',
         '<%= nodeunit.tests %>'
       ]
     },
 
     instrument: {
-      files: 'tasks/*.js',
+      files: 'tasks/**/*.js',
       options: {
         lazy: true,
         basePath: 'coverage/'
@@ -302,6 +302,14 @@ module.exports = function (grunt) {
             url: 'http://localhost:8881',
             go: 'dummy'
           }
+        ]
+      },
+      'invalid-wait': {
+        options: {
+          force: true
+        },
+        commands: [
+          { wait: true}
         ]
       }
     },
