@@ -247,6 +247,90 @@ module.exports = function (grunt) {
                   }
                 });
             }
+          },
+          {
+            url: 'http://localhost:8881/test/pages/values.html',
+            isEnabled: 'select',
+            isExisting: 'select',
+            isFocused: 'select',
+            isVisible: 'select',
+            isVisibleWithinViewport: 'select',
+            isNotEnabled: 'input',
+            isNotExisting: 'textarea',
+            isNotFocused: 'input',
+            isNotVisible: 'input',
+            isNotVisibleWithinViewport: 'input',
+            hasAtribute: {
+              selector: 'input',
+              name: 'disabled',
+              value: 'disabled'
+            },
+            hasValue: {
+              selector: 'input',
+              value: 'test'
+            },
+            hasText: {
+              selector: 'div',
+              value: 'Text'
+            },
+            hasInnerHtml: {
+              selector: 'div',
+              value: 'Text'
+            },
+            hasOuterHtml: {
+              selector: 'div',
+              value: '<div class="class" tabindex="0">Text</div>'
+            }
+          },
+          {
+            hasClass: {
+              selector: 'div',
+              value: 'class'
+            }
+          },
+          {
+            hasClass: {
+              selector: 'div',
+              value: '!none'
+            }
+          },
+          {
+            hasClass: {
+              selector: 'div',
+              value: 'class none'
+            }
+          },
+          {
+            selectOptionByIndex: {
+              selector: 'select',
+              index: 1
+            },
+            hasValue: {
+              selector: 'select',
+              value: '2'
+            }
+          },
+          {
+            selectOptionByValue: {
+              selector: 'select',
+              value: '1'
+            },
+            hasValue: {
+              selector: 'select',
+              value: '1'
+            }
+          },
+          {
+            setViewport: {
+              width: 768,
+              height: 480
+            }
+          },
+          {
+            setViewport: {}
+          },
+          {
+            setViewport: {}
           }
         ],
         scenarios: 'test/scenarios/*.js'

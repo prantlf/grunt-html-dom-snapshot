@@ -219,15 +219,36 @@ You can use sub-tasks, `commands` and `scenarios` to structure your code and exe
 
 One of the instructions has to be present in every command. These properties are evaluated (and their effect is executed) in the order, in which they are listed below:
 
+* setViewport
 * url
 * go
 * clearValue
 * setValue
 * addValue
+* selectOptionByIndex
+* selectOptionByValue
 * moveCursor
 * click
 * keys
 * wait
+* hasAttribute
+* hasClass
+* hasValue
+* hasText
+* hasInnerHtml
+* hasOuterHtml
+* isEnabled
+* isExisting
+* isFocused
+* isSelected
+* isVisible
+* isVisibleWithinViewport
+* isNotEnabled
+* isNotExisting
+* isNotFocused
+* isNotSelected
+* isNotVisible
+* isNotVisibleWithinViewport
 * file
 
 #### url
@@ -310,6 +331,44 @@ Appends to the current value of an input element. The object should contain the 
     value: ' there!'
   },
   file: 'google'
+}
+```
+
+#### selectOptionByIndex
+Type: `Object`
+
+Select an `option` element of a `select` element by the specified (zero-based)
+index. The object should contain the following properties:
+
+* `selector` - `String` - selector of a select element.
+* `index` - `Number` - numeric (0-based integer) index of an option to select.
+
+```js
+{
+  url: 'https://example.com',
+  setValue: {
+    selector: 'select',
+    index: 1 // select second option
+  }
+}
+```
+
+#### selectOptionByValue
+Type: `Object`
+
+Select an `option` element of a `select` element by the specified value of
+the `value` attribute. The object should contain the following properties:
+
+* `selector` - `String` - selector of a select element.
+* `value` - `String` - value of the `value` attribute of an option to select.
+
+```js
+{
+  url: 'https://example.com',
+  setValue: {
+    selector: 'select',
+    value: 'second'
+  }
 }
 ```
 
@@ -664,6 +723,7 @@ your code using Grunt.
 
 ## Release History
 
+ * 2018-02-26  [v0.5.0]  Allow checking and setting various properties
  * 2018-02-22  [v0.4.0]  Allow sending key strokes to the browser
  * 2018-01-30  [v0.3.0]  Allow specifying test commands in separate modules
  * 2018-01-27  [v0.2.0]  Allow saving screenshots in addition to snapshots

@@ -13,8 +13,14 @@ const fs = require('fs'),
       path = require('path'),
       mkdirp = require('mkdirp'),
       instructions = [
-        'url', 'go', 'clearValue', 'setValue', 'addValue', 'moveCursor',
-        'click', 'keys', 'wait'
+        'setViewport', 'url', 'go', 'clearValue', 'setValue', 'addValue',
+        'selectOptionByIndex', 'selectOptionByValue', 'moveCursor',
+        'click', 'keys', 'wait', 'hasAttribute', 'hasClass', 'hasValue',
+        'hasText', 'hasInnerHtml', 'hasOuterHtml',
+        'isEnabled', 'isExisting', 'isFocused', 'isSelected', 'isVisible',
+        'isVisibleWithinViewport', 'isNotEnabled', 'isNotExisting',
+        'isNotFocused', 'isNotSelected', 'isNotVisible',
+        'isNotVisibleWithinViewport'
       ].map(function (instruction) {
         return require('./instructions/' + instruction);
       });
@@ -44,11 +50,15 @@ module.exports = function (grunt) {
           target = this.target,
           pages = data.pages,
           snapshots = options.dest,
+          viewport = options.viewport,
+          lastViewport = {
+            width: viewport.width,
+            height: viewport.height
+          },
           client = webdriverio.remote({
             desiredCapabilities: options.browserCapabilities
           });
-    var lastViewport = options.viewport,
-        urlCount = 0,
+    var urlCount = 0,
         snapshotCount = 0,
         screenshotCount = 0,
         commands;
@@ -145,7 +155,9 @@ module.exports = function (grunt) {
     }
 
     function performCommand(command) {
-      const commandOptions = Object.assign({}, options, command.options || {}),
+      const commandOptions = Object.assign({
+              lastViewport: lastViewport
+            }, options, command.options || {}),
             file = command.file,
             viewport = commandOptions.viewport,
             screenshots = commandOptions.screenshots,
@@ -170,9 +182,10 @@ module.exports = function (grunt) {
                         'in the target "' + target + '".\n' +
                         JSON.stringify(command));
       }
-      if (viewport.width !== lastViewport.width ||
-          viewport.height !== lastViewport.height) {
-        lastViewport = viewport;
+      if ((viewport.width !== lastViewport.width ||
+          viewport.height !== lastViewport.height) && !lastViewport.explicit) {
+        lastViewport.width = viewport.width;
+        lastViewport.height = viewport.height;
         viewportSet = setViewportSize();
       } else {
         viewportSet = Promise.resolve();
@@ -182,8 +195,10 @@ module.exports = function (grunt) {
       }
       return commandInstructions.reduce(function (previous, instruction) {
           return previous.then(function () {
-            if (instruction.detected) {
-              return instruction.perform(grunt, target, client, command, commandOptions);
+            const detected = instruction.detected;
+            if (detected) {
+              return instruction.perform(grunt, target, client, command,
+                                         commandOptions, detected);
             }
           });
         }, viewportSet)
