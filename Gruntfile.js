@@ -301,6 +301,13 @@ module.exports = function (grunt) {
             }
           },
           {
+            hasClass: {
+              selector: 'div',
+              value: 'class !none',
+              allRequired: true
+            }
+          },
+          {
             selectOptionByIndex: {
               selector: 'select',
               index: 1
