@@ -6,7 +6,7 @@ This module provides a grunt multi-task for taking "snapshots" of the HTML marku
 
 ![Sample page](https://raw.githubusercontent.com/prantlf/grunt-html-dom-snapshot/master/assets/sample-page.png) ![Right arrow](https://raw.githubusercontent.com/prantlf/grunt-html-dom-snapshot/master/assets/arrow-right.png) ![Sample snapshot](https://raw.githubusercontent.com/prantlf/grunt-html-dom-snapshot/master/assets/sample-snapshot.png)
 
-In addition, recent versions can save "screenshots" of browser viewport at the same time to support visual testing by comparing the look of the page with the baseline picture.
+In addition, recent versions can save "screenshots" of browser viewport at the same time to support visual testing by comparing the look of the page with the baseline picture. Actually, this task is quickly evolving to offer end-to-end test capabilities too.
 
 Additional Grunt tasks, which are usually used to support test automation:
 
@@ -217,292 +217,44 @@ You can use sub-tasks, `commands` and `scenarios` to structure your code and exe
 
 ### Instructions
 
-One of the instructions has to be present in every command. These properties are evaluated (and their effect is executed) in the order, in which they are listed below:
+One of the [instructions] has to be present in every command. These properties are evaluated (and their effect is executed) in the order, in which they are listed below:
 
-* setViewport
-* url
-* go
-* clearValue
-* setValue
-* addValue
-* selectOptionByIndex
-* selectOptionByValue
-* moveCursor
-* click
-* keys
-* wait
-* hasAttribute
-* hasClass
-* hasValue
-* hasText
-* hasInnerHtml
-* hasOuterHtml
-* isEnabled
-* isExisting
-* isFocused
-* isSelected
-* isVisible
-* isVisibleWithinViewport
-* isNotEnabled
-* isNotExisting
-* isNotFocused
-* isNotSelected
-* isNotVisible
-* isNotVisibleWithinViewport
-* file
-
-#### url
-Type: `String`
-
-Navigates (changes the current window location) to the specified URL.
-
-```js
-{
-  url: 'https://google.com',
-  file: 'google'
-}
-```
-
-If it is omitted, the command will reuse the location from the previous command. A command without URL can cause some page changes, wait for an element state and/or save a snapshot.
-
-#### go
-Type: `String`: 'back', 'forward' or 'refresh'
-
-Navigates backwards or forwards using the browser history, or refreshes the current page.
-
-```js
-{
-  go: 'back',
-  file: 'previous'
-}
-```
-
-#### clearValue
-Type: `String`
-
-Clears value of an input element at the specified selector.
-
-```js
-{
-  url: 'https://google.com',
-  clearValue: '#lst-ib',
-  file: 'google'
-}
-```
-
-#### setValue
-Type: `Object`
-
-Set value of an input element either by providing the new value or using [keyboard key identifiers]. The previous value will be cleared. The object should contain the following properties:
-
-* `selector` - `String` - selector of an input element.
-* `value` - `String|Number|Array` - string or numeric value, or an array of keys (strings) to send to the element for setting its value.
-
-```js
-{
-  url: 'https://google.com',
-  setValue: {
-    selector: '#lst-ib',
-    value: 'Hi'
-  }
-}
-{
-  setValue: {
-    selector: '#lst-ib',
-    value: ['Enter']
-  }
-  file: 'google',
-}
-```
-
-#### addValue
-Type: `Object`
-
-Appends to the current value of an input element. The object should contain the following properties:
-
-* `selector` - `String` - selector of an input element.
-* `value` - `String|Number` - string or numeric value.
-
-```js
-{
-  url: 'https://google.com',
-  setValue: {
-    selector: '#lst-ib',
-    value: ' there!'
-  },
-  file: 'google'
-}
-```
-
-#### selectOptionByIndex
-Type: `Object`
-
-Select an `option` element of a `select` element by the specified (zero-based)
-index. The object should contain the following properties:
-
-* `selector` - `String` - selector of a select element.
-* `index` - `Number` - numeric (0-based integer) index of an option to select.
-
-```js
-{
-  url: 'https://example.com',
-  setValue: {
-    selector: 'select',
-    index: 1 // select second option
-  }
-}
-```
-
-#### selectOptionByValue
-Type: `Object`
-
-Select an `option` element of a `select` element by the specified value of
-the `value` attribute. The object should contain the following properties:
-
-* `selector` - `String` - selector of a select element.
-* `value` - `String` - value of the `value` attribute of an option to select.
-
-```js
-{
-  url: 'https://example.com',
-  setValue: {
-    selector: 'select',
-    value: 'second'
-  }
-}
-```
-
-#### moveCursor
-Type: `String` | `Object`
-
-Moves the mouse cursor to an element with the specified selector. If an object is used for the specification, it should contain the following properties:
-
-* `selector` - `String` - see above.
-* `offset` - `Object` - relative offset to the top left corner of the specified element expected as `left` and `top` numeric properties.
-
-```js
-{
-  url: 'https://google.com',
-  moveCursor: {
-    selector: '#lst-ib',
-    offset: {
-      left: 10
-      top: 5,
-    }
-  },
-  file: 'google'
-}
-```
-
-#### click
-Type: `String`
-
-Triggers a click event on an element with the specified selector.
-
-```js
-{
-  url: 'https://google.com',
-  click: 'input[name=btnK]',
-  file: 'google'
-}
-```
-
-#### keys
-Type: `String|Array`
-
-Sends either a text (string) typed by keys, or single keystrokes (array) to the browser.
-
-```js
-{
-  url: 'https://google.com',
-  click: 'input[name=btnK]',
-  keys: 'test',
-  file: 'google'
-}
-```
-
-#### wait
-Type: `Number` | `String` | `Function` | `Array` (optional)
-
-Delays taking of the snapshot until a condition s met depending on the value type:
-
-`Number` - number of milliseconds to wait:
-
-```js
-{
-  url: 'https://google.com',
-  wait: 1000,
-  file: 'google'
-}
-```
-
-`String` - selector of a node to look for. As soon as this node is found in DOM, the waiting will stop:
-
-```js
-{
-  url: 'https://google.com',
-  wait: '#footer',
-  file: 'google'
-}
-```
-
-If the selector is prefixed by "!", the waiting waiting will stop, if the node disappears from DOM:
-
-```js
-{
-  url: 'https://google.com',
-  wait: '!.gsfi',
-  file: 'google'
-}
-```
-
-`Function` - callback, which is supposed to return a `Promise`. Once this promise is resolved, the waiting will stop. The callback obtains the [webdriverio] client instance and can use [WebdriverIO API] to interact with the browser:
-
-```js
-{
-  url: 'https://google.com',
-  wait: function (browser) {
-    return browser.waitForExist('#footer', 1000);
-  },
-  file: 'google'
-}
-```
-
-`Array` - an array of items of types described above. They will be processed one by one. Once the last one is finished, the waiting will stop:
-
-```js
-{
-  url: 'https://google.com',
-  wait: [
-    wait: '!.gsfi',
-    200
-  ],
-  file: 'google'
-}
-```
-
-If `wait` is omitted, the task will advance to another item without delay. It can still save a snapshot immediately.
-
-#### file
-Type: `String`
-
-Name of the file to write the snapshot to. If it does not end with ".html" or ".htm", the extension ".html" will be appended to it.
-
-If writing screenshots is enabled, the same name will be used for the file with the screenshot; just without the extension ".html" or ".htm", if the file name ends to it, and with the extension ".png" appended to the file name instead.
-
-```js
-{
-  url: 'https://google.com',
-  file: 'google'
-}
-```
-
-If it is omitted, the object will save no snapshot (and no screenshot). It can still change location or wait for some change.
+* [setViewport](INSTRUCTIONS.md#setviewport)
+* [url](INSTRUCTIONS.md#url)
+* [go](INSTRUCTIONS.md#go)
+* [clearValue](INSTRUCTIONS.md#clearvalue)
+* [setValue](INSTRUCTIONS.md#setvalue)
+* [addValue](INSTRUCTIONS.md#addvalue)
+* [selectOptionByIndex](INSTRUCTIONS.md#selectoptionbyindex)
+* [selectOptionByValue](INSTRUCTIONS.md#selectoptionbyvalue)
+* [moveCursor](INSTRUCTIONS.md#movecursor)
+* [click](INSTRUCTIONS.md#click)
+* [keys](INSTRUCTIONS.md#keys)
+* [wait](INSTRUCTIONS.md#wait)
+* [hasAttribute](INSTRUCTIONS.md#hasattribute)
+* [hasClass](INSTRUCTIONS.md#hasclass)
+* [hasValue](INSTRUCTIONS.md#hasvalue)
+* [hasText](INSTRUCTIONS.md#hastext)
+* [hasInnerHtml](INSTRUCTIONS.md#hasinnerhtml)
+* [hasOuterHtml](INSTRUCTIONS.md#hasouterhtml)
+* [isEnabled](INSTRUCTIONS.md#isenabled)
+* [isExisting](INSTRUCTIONS.md#isexisting)
+* [isFocused](INSTRUCTIONS.md#isfocused)
+* [isSelected](INSTRUCTIONS.md#isselected)
+* [isVisible](INSTRUCTIONS.md#isvisible)
+* [isVisibleWithinViewport](INSTRUCTIONS.md#isvisiblewithinviewport)
+* [isNotEnabled](INSTRUCTIONS.md#isnotenabled)
+* [isNotExisting](INSTRUCTIONS.md#isnotexisting)
+* [isNotFocused](INSTRUCTIONS.md#isnotfocused)
+* [isNotSelected](INSTRUCTIONS.md#isnotselected)
+* [isNotVisible](INSTRUCTIONS.md#isnotvisible)
+* [isNotVisibleWithinViewport](INSTRUCTIONS.md#isnotvisiblewithinviewport)
+* [file](INSTRUCTIONS.md#file)
 
 #### options
 Type: `Object` (optional)
 
-Options specific for taking snapshot of a one particular page. They will be merged with the task options to specialize taking of the particular snapshot:
+Options specific for the one particular command. They will be merged with the task options to specialize taking of the particular snapshot:
 
 ```js
 {
@@ -761,3 +513,4 @@ Licensed under the MIT license.
 [v0.2.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v0.2.0
 [v0.1.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v0.1.0
 [v0.0.1]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v0.0.1
+[instructions]: INSTRUCTIONS.md
