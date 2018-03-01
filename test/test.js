@@ -25,7 +25,7 @@ exports['html-dom-snapshot'] = {
 
   'static': function (test) {
     const snapshot = fs.existsSync('test/snapshots/static.html'),
-          screenshot = fs.statSync('test/screenshots/static.png');
+          screenshot = fs.statSync('test/screenshots/002.static.png');
     test.ok(!snapshot, 'static.html');
     test.ok(screenshot.size > 1024, 'static.png');
     test.done();

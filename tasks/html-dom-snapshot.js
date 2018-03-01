@@ -10,6 +10,7 @@
 'use strict';
 
 const fs = require('fs'),
+      pad = require('pad-left'),
       path = require('path'),
       mkdirp = require('mkdirp'),
       instructions = [
@@ -24,6 +25,7 @@ const fs = require('fs'),
       ].map(function (instruction) {
         return require('./instructions/' + instruction);
       });
+var fileCount = 0;
 
 module.exports = function (grunt) {
   grunt.registerMultiTask('html-dom-snapshot',
@@ -45,6 +47,9 @@ module.exports = function (grunt) {
             selectorTimeout: 10000,
             doctype: '<!DOCTYPE html>',
             snapshots: 'snapshots',
+            fileNumbering: false,
+            fileNumberDigits: 3,
+            fileNumberSeparator: '.',
             force: false
           }),
           target = this.target,
@@ -159,6 +164,9 @@ module.exports = function (grunt) {
               lastViewport: lastViewport
             }, options, command.options || {}),
             file = command.file,
+            fileNumbering = commandOptions.fileNumbering,
+            fileNumberDigits = commandOptions.fileNumberDigits,
+            fileNumberSeparator = commandOptions.fileNumberSeparator,
             viewport = commandOptions.viewport,
             screenshots = commandOptions.screenshots,
             commandInstructions = instructions.map(function (instruction) {
@@ -204,12 +212,15 @@ module.exports = function (grunt) {
         }, viewportSet)
         .then(function () {
           if (snapshots && screenshots) {
+            ++fileCount;
             return Promise.all([makeSnapshot(), makeScreenshot()]);
           }
           if (snapshots) {
+            ++fileCount;
             return makeSnapshot();
           }
           if (screenshots) {
+            ++fileCount;
             return makeScreenshot();
           }
         });
@@ -226,22 +237,26 @@ module.exports = function (grunt) {
 
       function saveContent(html) {
         if (file) {
-          const testFile = file.toLowerCase(),
-                htmlFile = testFile.endsWith('.html') ||
-                           testFile.endsWith('.htm') ? file : file + '.html',
-                target = path.join(snapshots, htmlFile);
-          grunt.log.ok('Write snapshot to "' + target + '".');
+          var fileName = file.toLowerCase();
+          fileName = fileName.endsWith('.html') ||
+                     fileName.endsWith('.htm') ? file : file + '.html';
+          if (fileNumbering) {
+            fileName = numberFileName(fileName);
+          }
+          fileName = path.join(snapshots, fileName);
+          grunt.log.ok('Write snapshot to "' + fileName + '".');
           return ensureDirectory(snapshots)
             .then(function () {
               return new Promise(function (resolve, reject) {
-                fs.writeFile(target, commandOptions.doctype + html, function (error) {
-                  if (error) {
-                    reject(error);
-                  } else {
-                    ++snapshotCount;
-                    resolve();
-                  }
-                });
+                fs.writeFile(fileName, commandOptions.doctype + html,
+                  function (error) {
+                    if (error) {
+                      reject(error);
+                    } else {
+                      ++snapshotCount;
+                      resolve();
+                    }
+                  });
               });
             });
         }
@@ -249,27 +264,36 @@ module.exports = function (grunt) {
 
       function saveImage(png) {
         if (file) {
-          const testFile = file.toLowerCase(),
-                baseFile = testFile.endsWith('.html') ?
-                           file.substr(0, file.length - 5) :
-                           testFile.endsWith('.htm') ?
-                           file.substr(0, file.length - 4) : file,
-                target = path.join(screenshots, baseFile + '.png');
-          grunt.log.ok('Write screenshot to "' + target + '".');
+          var fileName = file.toLowerCase();
+          fileName = fileName.endsWith('.html') ?
+                     file.substr(0, file.length - 5) :
+                     fileName.endsWith('.htm') ?
+                     file.substr(0, file.length - 4) : file;
+          if (fileNumbering) {
+            fileName = numberFileName(fileName);
+          }
+          fileName = path.join(screenshots, fileName + '.png');
+          grunt.log.ok('Write screenshot to "' + fileName + '".');
           return ensureDirectory(screenshots)
             .then(function () {
               return new Promise(function (resolve, reject) {
-                fs.writeFile(target, new Buffer(png.value, 'base64'), function (error) {
-                  if (error) {
-                    reject(error);
-                  } else {
-                    ++screenshotCount;
-                    resolve();
-                  }
-                });
+                fs.writeFile(fileName, new Buffer(png.value, 'base64'),
+                  function (error) {
+                    if (error) {
+                      reject(error);
+                    } else {
+                      ++screenshotCount;
+                      resolve();
+                    }
+                  });
               });
             });
         }
+      }
+
+      function numberFileName(fileName) {
+        return pad(fileCount.toString(), fileNumberDigits, '0') +
+               fileNumberSeparator + fileName;
       }
     }
   });

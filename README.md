@@ -79,6 +79,9 @@ Default options support the most usual usage scenario:
     doctype: '<!DOCTYPE html>',
     snapshots: 'snapshots',
     screenshots: null,
+    fileNumbering: false,
+    fileNumberDigits: 3,
+    fileNumberSeparator: '.',
     force: false
   },
   'google': {
@@ -162,6 +165,24 @@ Type: `String`
 Default value: null
 
 Destination directory to write the viewport screenshots to. It will be created if it does not exist. Default value is `null`, which means, that no screenshots will be written out.
+
+#### fileNumbering
+Type: `Booolean`
+Default value: `false`
+
+Enables prefixing names of snapshot and screenshot files with their index number, for example: "002.google-input.html".
+
+#### fileNumberDigits
+Type: `Number`
+Default value: `3`
+
+Ensures, that file numbers will have always at least the specified count of digits. If the number is smaller, than its power of 10, the number will be padded by zeros (0) from the left.
+
+#### fileNumberSeparator
+Type: `String`
+Default value: '.'
+
+The character to put between the file number and the file name.
 
 #### force
 Type: `Boolean`
@@ -475,6 +496,8 @@ your code using Grunt.
 
 ## Release History
 
+ * 2018-03-01  [v0.7.0]  Add optional automatic file numbering
+ * 2018-02-28  [v0.6.0]  Add the allRequired option to the hasClass instruction
  * 2018-02-26  [v0.5.0]  Allow checking and setting various properties
  * 2018-02-22  [v0.4.0]  Allow sending key strokes to the browser
  * 2018-01-30  [v0.3.0]  Allow specifying test commands in separate modules
