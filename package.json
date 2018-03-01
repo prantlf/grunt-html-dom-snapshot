@@ -30,11 +30,12 @@
     "test": "npm run security && grunt",
     "coverage": "grunt instrument && GRUNT_HTML_DOM_SNAPSHOT_COVERAGE=1 grunt",
     "coveralls": "test `node --version | cut -c 2` -eq 8 && npm run coverage && grunt coveralls",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "travis-deploy-once": "travis-deploy-once"
   },
   "dependencies": {
     "mkdirp": "^0.5.1",
-    "webdriverio": "^4.10.1"
+    "webdriverio": "^4.11.0"
   },
   "devDependencies": {
     "grunt": "^1.0.1",
@@ -47,7 +48,8 @@
     "grunt-selenium-standalone": "^1.0.1",
     "nsp": "^3.1.0",
     "phantomjs-prebuilt": "^2.1.16",
-    "semantic-release": "^12.2.5"
+    "semantic-release": "^12.4.1",
+    "travis-deploy-once": "^4.3.4"
   },
   "peerDependencies": {
     "grunt": ">=0.4.5"

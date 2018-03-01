@@ -9,14 +9,11 @@ node_js:
   - '8'
   - '6'
   - '4'
-before_install:
-  - npm install -g npm
 before_script :
   - npm install -g grunt-cli
-  - npm prune
 after_success:
   - npm run coveralls
-  - npm run semantic-release
+  - npm run travis-deploy-once "npm run semantic-release"
 branches:
   except:
     - /^v\d+\.\d+\.\d+$/

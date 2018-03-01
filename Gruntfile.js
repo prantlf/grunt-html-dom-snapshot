@@ -74,7 +74,8 @@ module.exports = function (grunt) {
           {
             options: {
               snapshots: null,
-              screenshots: 'test/screenshots'
+              screenshots: 'test/screenshots',
+              fileNumbering: true
             },
             url: 'http://localhost:8881/test/pages/static.html',
             file: 'static.html'
