@@ -401,7 +401,16 @@ module.exports = function (grunt) {
           force: true
         },
         commands: [
-          { wait: true}
+          {wait: true}
+        ]
+      },
+      'abort': {
+        options: {
+          force: true
+        },
+        commands: [
+          {abort: 'Stop.'},
+          {file: 'aborted'}
         ]
       }
     },

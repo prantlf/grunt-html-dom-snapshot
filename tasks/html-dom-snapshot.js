@@ -21,7 +21,7 @@ const fs = require('fs'),
         'isEnabled', 'isExisting', 'isFocused', 'isSelected', 'isVisible',
         'isVisibleWithinViewport', 'isNotEnabled', 'isNotExisting',
         'isNotFocused', 'isNotSelected', 'isNotVisible',
-        'isNotVisibleWithinViewport'
+        'isNotVisibleWithinViewport', 'abort'
       ].map(function (instruction) {
         return require('./instructions/' + instruction);
       });

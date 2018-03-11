@@ -91,5 +91,11 @@ exports['html-dom-snapshot'] = {
     const pages = readPages('scenario1.html');
     test.equal(pages.expected, pages.actual, 'scenario1.html');
     test.done();
+  },
+
+  'abort': function (test) {
+    const snapshot = fs.existsSync('test/snapshots/abort.html');
+    test.ok(!snapshot, 'abort.html');
+    test.done();
   }
 };

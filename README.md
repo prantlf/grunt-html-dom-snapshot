@@ -270,6 +270,7 @@ One of the [instructions] has to be present in every command. These properties a
 * [isNotSelected](INSTRUCTIONS.md#isnotselected)
 * [isNotVisible](INSTRUCTIONS.md#isnotvisible)
 * [isNotVisibleWithinViewport](INSTRUCTIONS.md#isnotvisiblewithinviewport)
+* [abort](INSTRUCTIONS.md#abort)
 * [file](INSTRUCTIONS.md#file)
 
 #### options
@@ -496,6 +497,7 @@ your code using Grunt.
 
 ## Release History
 
+ * 2018-03-11  [v0.8.0]  Add a new instruction - "abort"
  * 2018-03-01  [v0.7.0]  Add optional automatic file numbering
  * 2018-02-28  [v0.6.0]  Add the allRequired option to the hasClass instruction
  * 2018-02-26  [v0.5.0]  Allow checking and setting various properties

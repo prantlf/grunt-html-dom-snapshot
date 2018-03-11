@@ -26,8 +26,8 @@
     "node": ">= 4"
   },
   "scripts": {
-    "security": "test `node --version | cut -c 2` -ne 4 && nsp check || echo 'No vulnerabilities check possible on Node.js 4'",
-    "test": "npm run security && grunt",
+    "prepare": "test `node --version | cut -c 2` -ne 4 && nsp check || echo 'No vulnerabilities check possible on Node.js 4'",
+    "test": "grunt",
     "coverage": "grunt instrument && GRUNT_HTML_DOM_SNAPSHOT_COVERAGE=1 grunt",
     "coveralls": "test `node --version | cut -c 2` -eq 8 && npm run coverage && grunt coveralls",
     "semantic-release": "semantic-release",
@@ -36,10 +36,10 @@
   "dependencies": {
     "mkdirp": "^0.5.1",
     "pad-left": "^2.1.0",
-    "webdriverio": "^4.11.0"
+    "webdriverio": "^4.12.0"
   },
   "devDependencies": {
-    "grunt": "^1.0.1",
+    "grunt": "^1.0.2",
     "grunt-contrib-clean": "^1.1.0",
     "grunt-contrib-connect": "^1.0.2",
     "grunt-contrib-nodeunit": "^1.0.0",
@@ -47,10 +47,10 @@
     "grunt-eslint": "^20.1.0",
     "grunt-istanbul": "^0.8.0",
     "grunt-selenium-standalone": "^1.0.1",
-    "nsp": "^3.1.0",
+    "nsp": "^3.2.1",
     "phantomjs-prebuilt": "^2.1.16",
-    "semantic-release": "^12.4.1",
-    "travis-deploy-once": "^4.3.4"
+    "semantic-release": "^15.0.2",
+    "travis-deploy-once": "^4.4.0"
   },
   "peerDependencies": {
     "grunt": ">=0.4.5"
