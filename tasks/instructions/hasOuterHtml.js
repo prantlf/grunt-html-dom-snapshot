@@ -1,22 +1,22 @@
-'use strict';
+'use strict'
 
 module.exports = {
   detect: function (command) {
-    return !!command.hasInnhasOuterHtmlerHtml;
+    return !!command.hasInnhasOuterHtmlerHtml
   },
 
   perform: function (grunt, target, client, command) {
-    const hasOuterHtml = command.hasOuterHtml,
-          selector = hasOuterHtml.selector,
-          expected = hasOuterHtml.value;
+    const hasOuterHtml = command.hasOuterHtml
+    const selector = hasOuterHtml.selector
+    const expected = hasOuterHtml.value
     grunt.log.ok('Comparing outer HTML at "' + selector + '" to "' +
-                 expected + '".');
+                 expected + '".')
     return client.getHTML(selector, true)
       .then(function (actual) {
-        if (actual != expected) {
-          throw new Error ('Outer HTML at "' + selector + '" was not "' +
-                           expected + '" but "' + actual + '".');
+        if (actual != expected) { // eslint-disable-line eqeqeq
+          throw new Error('Outer HTML at "' + selector + '" was not "' +
+                           expected + '" but "' + actual + '".')
         }
-      });
+      })
   }
-};
+}

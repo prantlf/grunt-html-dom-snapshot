@@ -1,42 +1,42 @@
-'use strict';
+'use strict'
 
 module.exports = {
   detect: function (command) {
-    return !!command.wait;
+    return !!command.wait
   },
 
   perform: function (grunt, target, client, command, options) {
-    var wait = command.wait;
+    var wait = command.wait
     if (!Array.isArray(wait)) {
-      wait = wait ? [wait] : [];
+      wait = wait ? [wait] : []
     }
     return wait.reduce(function (previous, wait) {
       return previous.then(function () {
         if (typeof wait === 'function') {
-          grunt.verbose.writeln('Wait for custom function.');
-          return wait(client);
+          grunt.verbose.writeln('Wait for custom function.')
+          return wait(client)
         } else if (typeof wait === 'string') {
-          const timeout = options.selectorTimeout;
+          const timeout = options.selectorTimeout
           if (wait.charAt(0) === '!') {
-            wait = wait.substr(1);
+            wait = wait.substr(1)
             grunt.verbose.writeln('Wait for "' + wait +
-                                  '" disappearing ' + timeout + 'ms.');
+                                  '" disappearing ' + timeout + 'ms.')
             return client.waitForExist(wait,
-              options.selectorTimeout, true);
+              options.selectorTimeout, true)
           }
           grunt.verbose.writeln('Wait for "' + wait +
-                                '" appearing.' + timeout + 'ms.');
-          return client.waitForExist(wait, timeout);
+                                '" appearing.' + timeout + 'ms.')
+          return client.waitForExist(wait, timeout)
         } else if (typeof wait === 'number') {
-          grunt.verbose.writeln('Wait for ' + wait + 'ms.');
+          grunt.verbose.writeln('Wait for ' + wait + 'ms.')
           return new Promise(function (resolve) {
-            setTimeout(resolve, wait);
-          });
+            setTimeout(resolve, wait)
+          })
         }
         throw new Error('Invalid waiting instruction: "' + wait +
                         '" in the target "' + target + '".\n' +
-                        JSON.stringify(command));
-      });
-    }, Promise.resolve());
+                        JSON.stringify(command))
+      })
+    }, Promise.resolve())
   }
-};
+}

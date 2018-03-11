@@ -1,29 +1,29 @@
-'use strict';
+'use strict'
 
 module.exports = {
   detect: function (command) {
-    return !!command.hasClass;
+    return !!command.hasClass
   },
 
   perform: function (grunt, target, client, command) {
-    const hasClass = command.hasClass,
-          selector = hasClass.selector,
-          expected = hasClass.value || '',
-          expectedList = expected.split(/ +/);
+    const hasClass = command.hasClass
+    const selector = hasClass.selector
+    const expected = hasClass.value || ''
+    const expectedList = expected.split(/ +/)
     grunt.log.ok('Looking for classes "' + expected + '" at "' +
-                 selector + '".');
+                 selector + '".')
     return client.getAttribute(selector, 'class')
       .then(function (actual) {
-        const actualList = (actual || '').split(/ +/),
-              method = hasClass.allRequired ? 'every' : 'some';
+        const actualList = (actual || '').split(/ +/)
+        const method = hasClass.allRequired ? 'every' : 'some'
         if (!expectedList[method](function (expected) {
-              return expected.startsWith('!') ?
-                actualList.indexOf(expected.substr(1)) < 0 :
-                actualList.indexOf(expected) >= 0;
-            })) {
-          throw new Error ('Classes "' + expected +
-            '" did not match classes "' + actual + '" at "' + selector + '".');
+          return expected.startsWith('!')
+            ? actualList.indexOf(expected.substr(1)) < 0
+            : actualList.indexOf(expected) >= 0
+        })) {
+          throw new Error('Classes "' + expected +
+            '" did not match classes "' + actual + '" at "' + selector + '".')
         }
-      });
+      })
   }
-};
+}

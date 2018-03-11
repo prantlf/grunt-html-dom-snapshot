@@ -1,22 +1,22 @@
-'use strict';
+'use strict'
 
 module.exports = {
   detect: function (command) {
-    return !!command.hasValue;
+    return !!command.hasValue
   },
 
   perform: function (grunt, target, client, command) {
-    const hasValue = command.hasValue,
-          selector = hasValue.selector,
-          expected = hasValue.value;
+    const hasValue = command.hasValue
+    const selector = hasValue.selector
+    const expected = hasValue.value
     grunt.log.ok('Comparing value of "' + selector + '" to "' +
-                 expected + '".');
+                 expected + '".')
     return client.getValue(selector)
       .then(function (actual) {
-        if (actual != expected) {
-          throw new Error ('Value of "' + selector + '" was not "' +
-                           expected + '" but "' + actual + '".');
+        if (actual != expected) { // eslint-disable-line eqeqeq
+          throw new Error('Value of "' + selector + '" was not "' +
+                           expected + '" but "' + actual + '".')
         }
-      });
+      })
   }
-};
+}

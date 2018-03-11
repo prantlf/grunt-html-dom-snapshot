@@ -1,18 +1,18 @@
-'use strict';
+'use strict'
 
 module.exports = {
   detect: function (command) {
-    return !!command.isExisting;
+    return !!command.isExisting
   },
 
   perform: function (grunt, target, client, command) {
-    const isExisting = command.isExisting;
-    grunt.log.ok('Checking if "' + isExisting + '" exists.');
+    const isExisting = command.isExisting
+    grunt.log.ok('Checking if "' + isExisting + '" exists.')
     return client.isExisting(isExisting)
       .then(function (value) {
         if (value !== true) {
-          throw new Error ('"' + isExisting + '" does not exist.');
+          throw new Error('"' + isExisting + '" does not exist.')
         }
-      });
+      })
   }
-};
+}

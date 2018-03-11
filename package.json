@@ -23,10 +23,11 @@
     }
   ],
   "engines": {
-    "node": ">= 4"
+    "node": ">= 6"
   },
   "scripts": {
     "prepare": "test `node --version | cut -c 2` -ne 4 && nsp check || echo 'No vulnerabilities check possible on Node.js 4'",
+    "lint": "grunt standard",
     "test": "grunt",
     "coverage": "grunt instrument && GRUNT_HTML_DOM_SNAPSHOT_COVERAGE=1 grunt",
     "coveralls": "test `node --version | cut -c 2` -eq 8 && npm run coverage && grunt coveralls",
@@ -44,9 +45,9 @@
     "grunt-contrib-connect": "^1.0.2",
     "grunt-contrib-nodeunit": "^1.0.0",
     "grunt-coveralls": "^1.0.1",
-    "grunt-eslint": "^20.1.0",
     "grunt-istanbul": "^0.8.0",
     "grunt-selenium-standalone": "^1.0.1",
+    "grunt-standard": "^3.1.0",
     "nsp": "^3.2.1",
     "phantomjs-prebuilt": "^2.1.16",
     "semantic-release": "^15.0.2",

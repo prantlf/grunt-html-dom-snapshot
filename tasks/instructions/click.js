@@ -1,13 +1,13 @@
-'use strict';
+'use strict'
 
 module.exports = {
   detect: function (command) {
-    return !!command.click;
+    return !!command.click
   },
 
   perform: function (grunt, target, client, command) {
-    const click = command.click;
-    grunt.verbose.writeln('Click on "' + click + '".');
-    return client.click(click);
+    const click = command.click
+    grunt.verbose.writeln('Click on "' + click + '".')
+    return client.click(click)
   }
-};
+}

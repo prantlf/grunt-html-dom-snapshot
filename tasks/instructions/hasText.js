@@ -1,22 +1,22 @@
-'use strict';
+'use strict'
 
 module.exports = {
   detect: function (command) {
-    return !!command.hasText;
+    return !!command.hasText
   },
 
   perform: function (grunt, target, client, command) {
-    const hasText = command.hasText,
-          selector = hasText.selector,
-          expected = hasText.value;
+    const hasText = command.hasText
+    const selector = hasText.selector
+    const expected = hasText.value
     grunt.log.ok('Comparing text at "' + selector + '" to "' +
-                 expected + '".');
+                 expected + '".')
     return client.getText(selector)
       .then(function (actual) {
-        if (actual != expected) {
-          throw new Error ('Text at "' + selector + '" was not "' +
-                           expected + '" but "' + actual + '".');
+        if (actual != expected) { // eslint-disable-line eqeqeq
+          throw new Error('Text at "' + selector + '" was not "' +
+                           expected + '" but "' + actual + '".')
         }
-      });
+      })
   }
-};
+}

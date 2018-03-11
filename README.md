@@ -497,6 +497,7 @@ your code using Grunt.
 
 ## Release History
 
+ * 2018-03-11  [v1.0.0]  Require Node.js >= 6
  * 2018-03-11  [v0.8.0]  Add a new instruction - "abort"
  * 2018-03-01  [v0.7.0]  Add optional automatic file numbering
  * 2018-02-28  [v0.6.0]  Add the allRequired option to the hasClass instruction

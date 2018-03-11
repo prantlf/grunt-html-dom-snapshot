@@ -1,15 +1,17 @@
-'use strict';
+'use strict'
 
 module.exports = function (grunt) {
-  const coverage = process.env.GRUNT_HTML_DOM_SNAPSHOT_COVERAGE;
+  const coverage = process.env.GRUNT_HTML_DOM_SNAPSHOT_COVERAGE
 
   grunt.initConfig({
-    eslint: {
-      target: [
-        'Gruntfile.js',
-        'tasks/**/*.js',
-        '<%= nodeunit.tests %>'
-      ]
+    standard: {
+      all: {
+        src: [
+          'Gruntfile.js',
+          'tasks/**/*.js',
+          '<%= nodeunit.tests %>'
+        ]
+      }
     },
 
     instrument: {
@@ -115,7 +117,7 @@ module.exports = function (grunt) {
           {
             url: 'http://localhost:8881/test/pages/dynamic-custom.html',
             wait: function (browser) {
-              return browser.waitForExist('.dynamic', 1000);
+              return browser.waitForExist('.dynamic', 1000)
             },
             file: 'dynamic-custom'
           },
@@ -148,9 +150,9 @@ module.exports = function (grunt) {
               return browser.getUrl()
                 .then(function (url) {
                   if (url !== 'http://localhost:8881/test/pages/no-doctype.html') {
-                    throw new Error ('go:back failed');
+                    throw new Error('go:back failed')
                   }
-                });
+                })
             }
           },
           {
@@ -159,9 +161,9 @@ module.exports = function (grunt) {
               return browser.getUrl()
                 .then(function (url) {
                   if (url !== 'http://localhost:8881/test/pages/dynamic-multiple.html') {
-                    throw new Error ('go:forward failed');
+                    throw new Error('go:forward failed')
                   }
-                });
+                })
             }
           },
           {
@@ -170,9 +172,9 @@ module.exports = function (grunt) {
               return browser.getUrl()
                 .then(function (url) {
                   if (url !== 'http://localhost:8881/test/pages/dynamic-multiple.html') {
-                    throw new Error ('go:forward failed');
+                    throw new Error('go:forward failed')
                   }
-                });
+                })
             }
           },
           {
@@ -183,9 +185,9 @@ module.exports = function (grunt) {
               return browser.hasFocus('input')
                 .then(function (value) {
                   if (value !== true) {
-                    throw new Error ('click failed');
+                    throw new Error('click failed')
                   }
-                });
+                })
             }
           },
           {
@@ -197,9 +199,9 @@ module.exports = function (grunt) {
               return browser.getValue('input')
                 .then(function (value) {
                   if (value !== 'Hi') {
-                    throw new Error ('setValue failed');
+                    throw new Error('setValue failed')
                   }
-                });
+                })
             }
           },
           {
@@ -211,9 +213,9 @@ module.exports = function (grunt) {
               return browser.getValue('input')
                 .then(function (value) {
                   if (value !== 'Hi there!') {
-                    throw new Error ('addValue failed');
+                    throw new Error('addValue failed')
                   }
-                });
+                })
             }
           },
           {
@@ -222,9 +224,9 @@ module.exports = function (grunt) {
               return browser.getValue('input')
                 .then(function (value) {
                   if (value !== '') {
-                    throw new Error ('clearValue failed');
+                    throw new Error('clearValue failed')
                   }
-                });
+                })
             }
           },
           {
@@ -233,9 +235,9 @@ module.exports = function (grunt) {
               return browser.getValue('input')
                 .then(function (value) {
                   if (value !== 'test') {
-                    throw new Error ('sending text failed');
+                    throw new Error('sending text failed')
                   }
-                });
+                })
             }
           },
           {
@@ -244,9 +246,9 @@ module.exports = function (grunt) {
               return browser.getValue('input')
                 .then(function (value) {
                   if (value !== 'est') {
-                    throw new Error ('sending key strokes failed', value);
+                    throw new Error('sending key strokes failed', value)
                   }
-                });
+                })
             }
           },
           {
@@ -429,22 +431,22 @@ module.exports = function (grunt) {
         }
       }
     }
-  });
+  })
 
-  grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-contrib-connect');
-  grunt.loadNpmTasks('grunt-contrib-nodeunit');
-  grunt.loadNpmTasks('grunt-coveralls');
-  grunt.loadNpmTasks('grunt-eslint');
-  grunt.loadNpmTasks('grunt-istanbul');
-  grunt.loadNpmTasks('grunt-selenium-standalone');
-  grunt.loadTasks(coverage ? 'coverage/tasks' : 'tasks');
+  grunt.loadNpmTasks('grunt-contrib-clean')
+  grunt.loadNpmTasks('grunt-contrib-connect')
+  grunt.loadNpmTasks('grunt-contrib-nodeunit')
+  grunt.loadNpmTasks('grunt-coveralls')
+  grunt.loadNpmTasks('grunt-istanbul')
+  grunt.loadNpmTasks('grunt-selenium-standalone')
+  grunt.loadNpmTasks('grunt-standard')
+  grunt.loadTasks(coverage ? 'coverage/tasks' : 'tasks')
 
-  const test = ['clean', 'eslint',
-                'selenium_standalone:server:install',
-                'selenium_standalone:server:start',
-                'connect', 'html-dom-snapshot',
-                'selenium_standalone:server:stop', 'nodeunit'],
-        report = coverage ? ['storeCoverage', 'makeReport'] : [];
-  grunt.registerTask('default', test.concat(report));
-};
+  const test = ['clean', 'standard',
+    'selenium_standalone:server:install',
+    'selenium_standalone:server:start',
+    'connect', 'html-dom-snapshot',
+    'selenium_standalone:server:stop', 'nodeunit']
+  const report = coverage ? ['storeCoverage', 'makeReport'] : []
+  grunt.registerTask('default', test.concat(report))
+}
