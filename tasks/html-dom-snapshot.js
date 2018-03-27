@@ -96,6 +96,9 @@ module.exports = function (grunt) {
                   grunt.util.pluralize(screenshotCount, 'screenshot/screenshots') +
                   ' written.')
               return client.end()
+                // Workaround for hanging chromedriver; for more information
+                // see https://github.com/vvo/selenium-standalone/issues/351
+                .pause(100)
             })
             .catch(function (error) {
               grunt.verbose.error(error.stack)

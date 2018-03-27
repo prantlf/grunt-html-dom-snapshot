@@ -497,6 +497,7 @@ your code using Grunt.
 
 ## Release History
 
+ * 2018-03-28  [v1.0.1]  Workaround for hanging chromedriver after finishing the task
  * 2018-03-11  [v1.0.0]  Require Node.js >= 6
  * 2018-03-11  [v0.8.0]  Add a new instruction - "abort"
  * 2018-03-01  [v0.7.0]  Add optional automatic file numbering
