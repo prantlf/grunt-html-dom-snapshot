@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "mkdirp": "^0.5.1",
+    "node-cleanup": "^2.1.2",
     "pad-left": "^2.1.0",
     "webdriverio": "^4.12.0"
   },

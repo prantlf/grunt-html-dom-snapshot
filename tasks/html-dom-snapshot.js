@@ -13,6 +13,7 @@ const fs = require('fs')
 const pad = require('pad-left')
 const path = require('path')
 const mkdirp = require('mkdirp')
+const nodeCleanup = require('node-cleanup')
 const instructions = [
   'setViewport', 'url', 'go', 'clearValue', 'setValue', 'addValue',
   'selectOptionByIndex', 'selectOptionByValue', 'moveCursor',
@@ -25,7 +26,7 @@ const instructions = [
 ].map(function (instruction) {
   return require('./instructions/' + instruction)
 })
-var fileCount = 0
+let fileCount = 0
 
 module.exports = function (grunt) {
   grunt.registerMultiTask('html-dom-snapshot',
@@ -61,13 +62,13 @@ module.exports = function (grunt) {
         width: viewport.width,
         height: viewport.height
       }
-      const client = webdriverio.remote({
+      let client = webdriverio.remote({
         desiredCapabilities: options.browserCapabilities
       })
-      var urlCount = 0
-      var snapshotCount = 0
-      var screenshotCount = 0
-      var commands
+      let urlCount = 0
+      let snapshotCount = 0
+      let screenshotCount = 0
+      let commands
       if (pages) {
         grunt.log.warn('The property "pages" is deprecated. ' +
                       'Use "commands" with the same content.')
@@ -82,6 +83,9 @@ module.exports = function (grunt) {
       grunt.verbose.writeln('Open web browser window for the target "' +
                             target + '".')
       client.init()
+            .then(function () {
+              nodeCleanup(stop)
+            })
             .then(setViewportSize)
             .then(gatherCommands)
             .then(performCommands)
@@ -95,18 +99,27 @@ module.exports = function (grunt) {
                   ' and ' + screenshotCount + ' ' +
                   grunt.util.pluralize(screenshotCount, 'screenshot/screenshots') +
                   ' written.')
-              return client.end()
-                // Workaround for hanging chromedriver; for more information
-                // see https://github.com/vvo/selenium-standalone/issues/351
-                .pause(100)
+              return stop()
             })
             .catch(function (error) {
               grunt.verbose.error(error.stack)
               grunt.log.error(error)
               const warn = options.force ? grunt.log.warn : grunt.fail.warn
               warn('Taking snapshots failed.')
+              return stop()
             })
             .then(done)
+
+      function stop () {
+        if (client) {
+          const backup = client
+          client = null
+          return backup.end()
+            // Workaround for hanging chromedriver; for more information
+            // see https://github.com/vvo/selenium-standalone/issues/351
+            .pause(100)
+        }
+      }
 
       function gatherCommands () {
         let scenarios = data.scenarios
@@ -179,8 +192,8 @@ module.exports = function (grunt) {
             detected: instruction.detect(command)
           }
         })
-        var snapshots = commandOptions.dest
-        var viewportSet
+        let snapshots = commandOptions.dest
+        let viewportSet
         if (snapshots) {
           grunt.log.warn('The property "dest" is deprecated. ' +
                         'Use "snapshots" with the same content.')
@@ -241,7 +254,7 @@ module.exports = function (grunt) {
 
         function saveContent (html) {
           if (file) {
-            var fileName = file.toLowerCase()
+            let fileName = file.toLowerCase()
             fileName = fileName.endsWith('.html') ||
                       fileName.endsWith('.htm') ? file : file + '.html'
             if (fileNumbering) {
@@ -268,7 +281,7 @@ module.exports = function (grunt) {
 
         function saveImage (png) {
           if (file) {
-            var fileName = file.toLowerCase()
+            let fileName = file.toLowerCase()
             fileName = fileName.endsWith('.html')
                        ? file.substr(0, file.length - 5)
                        : fileName.endsWith('.htm')
