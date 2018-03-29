@@ -65,10 +65,12 @@ Default options support the most usual usage scenario:
 ```js
 'html-dom-snapshot': {
   options: {
-    browserCapabilities: {
-      browserName: 'chrome',
-      chromeOptions: {
-        args: ['--headless']
+    webdriver: {
+      desiredCapabilities: {
+        browserName: 'chrome',
+        chromeOptions: {
+          args: ['--headless']
+        }
       }
     },
     viewport: {
@@ -92,11 +94,11 @@ Default options support the most usual usage scenario:
 
 ### Options
 
-#### browserCapabilities
+#### webdriver
 Type: `Object`
 Default value: see above
 
-Chooses the web browser to take snapshots with. Passed as `desiredCapabilities` to `webdriverio.remote`. This object has to contain the property `browserName` and optionally other properties depending on the web browser driver. The following browser names are the most usually used: `chrome`, `edge`, `firefox`, `ie`, `phantomjs`, `safari`. Depending on what browser you specify, you will need to load the corresponding Selenium driver. These are current versions of the drivers:
+Chooses the web browser to take snapshots with, Selenium host and other parameters supported by WebdriverIO as input for the  `webdriverio.remote` method. This object has to contain the property `desiredCapabilities` with `browserName` and optionally other properties depending on the web browser driver. The following browser names are the most usually used: `chrome`, `edge`, `firefox`, `ie`, `phantomjs`, `safari`. Depending on what browser you specify, you will need to load the corresponding Selenium driver. These are current versions of the drivers:
 
 ```js
 'selenium_standalone': {
@@ -497,6 +499,7 @@ your code using Grunt.
 
 ## Release History
 
+ * 2018-03-29  [v1.1.0]  Allow specifying all initialization parameters supported by WebdriverIO
  * 2018-03-28  [v1.0.2]  Stop Selenium and Chromedriver processes on unexpected Grunt process abortion
  * 2018-03-28  [v1.0.1]  Workaround for hanging chromedriver after finishing the task
  * 2018-03-11  [v1.0.0]  Require Node.js >= 6

@@ -36,10 +36,12 @@ module.exports = function (grunt) {
       const done = this.async()
       const data = this.data
       const options = this.options({
-        browserCapabilities: {
-          browserName: 'chrome',
-          chromeOptions: {
-            args: ['--headless']
+        webdriver: {
+          desiredCapabilities: {
+            browserName: 'chrome',
+            chromeOptions: {
+              args: ['--headless']
+            }
           }
         },
         viewport: {
@@ -58,17 +60,22 @@ module.exports = function (grunt) {
       const pages = data.pages
       const snapshots = options.dest
       const viewport = options.viewport
+      const webdriver = options.webdriver
+      const browserCapabilities = options.browserCapabilities
       const lastViewport = {
         width: viewport.width,
         height: viewport.height
       }
-      let client = webdriverio.remote({
-        desiredCapabilities: options.browserCapabilities
-      })
       let urlCount = 0
       let snapshotCount = 0
       let screenshotCount = 0
       let commands
+      if (browserCapabilities) {
+        grunt.log.warn('The property "browserCapabilities" is deprecated. ' +
+                      'Use "webdriver.desiredCapabilities" with the same content.')
+        webdriver.desiredCapabilities = browserCapabilities
+        delete options.browserCapabilities
+      }
       if (pages) {
         grunt.log.warn('The property "pages" is deprecated. ' +
                       'Use "commands" with the same content.')
@@ -82,6 +89,7 @@ module.exports = function (grunt) {
 
       grunt.verbose.writeln('Open web browser window for the target "' +
                             target + '".')
+      let client = webdriverio.remote(webdriver)
       client.init()
             .then(function () {
               nodeCleanup(stop)

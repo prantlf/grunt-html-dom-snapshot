@@ -63,8 +63,10 @@ module.exports = function (grunt) {
 
     'html-dom-snapshot': {
       options: {
-        browserCapabilities: {
-          browserName: 'phantomjs'
+        webdriver: {
+          desiredCapabilities: {
+            browserName: 'phantomjs'
+          }
         },
         snapshots: 'test/snapshots'
       },
@@ -355,6 +357,9 @@ module.exports = function (grunt) {
       },
       'invalid-file': {
         options: {
+          browserCapabilities: {
+            browserName: 'phantomjs'
+          },
           screenshots: 'test/screenshots',
           force: true
         },
