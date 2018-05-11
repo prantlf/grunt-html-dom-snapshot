@@ -23,12 +23,10 @@ const instructions = [
   'isVisibleWithinViewport', 'isNotEnabled', 'isNotExisting',
   'isNotFocused', 'isNotSelected', 'isNotVisible',
   'isNotVisibleWithinViewport', 'abort'
-].map(function (instruction) {
-  return require('./instructions/' + instruction)
-})
+].map(instruction => require('./instructions/' + instruction))
 let fileCount = 0
 
-module.exports = function (grunt) {
+module.exports = grunt => {
   grunt.registerMultiTask('html-dom-snapshot',
     'Takes snapshots of the HTML markup on web pages - their immediate DOM content - and screenshots of their viewport - how they look like.',
     function () {
@@ -91,13 +89,11 @@ module.exports = function (grunt) {
                             target + '".')
       let client = webdriverio.remote(webdriver)
       client.init()
-            .then(function () {
-              nodeCleanup(stop)
-            })
+            .then(() => nodeCleanup(stop))
             .then(setViewportSize)
             .then(gatherCommands)
             .then(performCommands)
-            .then(function () {
+            .then(() => {
               grunt.log.ok(commands.length + ' ' +
                   grunt.util.pluralize(commands.length, 'command/commands') +
                   ' performed, ' + urlCount + ' ' +
@@ -109,7 +105,7 @@ module.exports = function (grunt) {
                   ' written.')
               return stop()
             })
-            .catch(function (error) {
+            .catch(error => {
               grunt.verbose.error(error.stack)
               grunt.log.error(error)
               const warn = options.force ? grunt.log.warn : grunt.fail.warn
@@ -138,10 +134,9 @@ module.exports = function (grunt) {
           }
           const currentDirectory = process.cwd()
           commands = scenarios
-            .reduce(function (scenarios, scenario) {
-              return scenarios.concat(grunt.file.expand(scenario))
-            }, [])
-            .reduce(function (scenarios, scenario) {
+            .reduce((scenarios, scenario) =>
+              scenarios.concat(grunt.file.expand(scenario)), [])
+            .reduce((scenarios, scenario) => {
               grunt.verbose.writeln('Load scenario  "' + scenario + '".')
               if (!path.isAbsolute(scenario)) {
                 scenario = path.join(currentDirectory, scenario)
@@ -159,11 +154,8 @@ module.exports = function (grunt) {
       }
 
       function performCommands () {
-        return commands.reduce(function (promise, command) {
-          return promise.then(function () {
-            return performCommand(command)
-          })
-        }, Promise.resolve())
+        return commands.reduce((promise, command) =>
+          promise.then(() => performCommand(command)), Promise.resolve())
       }
 
       function setViewportSize () {
@@ -173,15 +165,14 @@ module.exports = function (grunt) {
       }
 
       function ensureDirectory (name) {
-        return new Promise(function (resolve, reject) {
-          mkdirp(name, function (error) {
+        return new Promise((resolve, reject) =>
+          mkdirp(name, error => {
             if (error) {
               reject(error)
             } else {
               resolve()
             }
-          })
-        })
+          }))
       }
 
       function performCommand (command) {
@@ -194,7 +185,7 @@ module.exports = function (grunt) {
         const fileNumberSeparator = commandOptions.fileNumberSeparator
         const viewport = commandOptions.viewport
         const screenshots = commandOptions.screenshots
-        const commandInstructions = instructions.map(function (instruction) {
+        const commandInstructions = instructions.map(instruction => {
           return {
             perform: instruction.perform,
             detected: instruction.detect(command)
@@ -208,9 +199,7 @@ module.exports = function (grunt) {
         } else {
           snapshots = commandOptions.snapshots
         }
-        if (!(commandInstructions.some(function (instruction) {
-          return instruction.detected
-        }) || file)) {
+        if (!(commandInstructions.some(instruction => instruction.detected) || file)) {
           throw new Error('Missing instruction in the command ' +
                           'in the target "' + target + '".\n' +
                           JSON.stringify(command))
@@ -226,16 +215,15 @@ module.exports = function (grunt) {
         if (command.url) {
           ++urlCount
         }
-        return commandInstructions.reduce(function (previous, instruction) {
-          return previous.then(function () {
+        return commandInstructions.reduce((previous, instruction) =>
+          previous.then(() => {
             const detected = instruction.detected
             if (detected) {
               return instruction.perform(grunt, target, client, command,
                                         commandOptions, detected)
             }
-          })
-        }, viewportSet)
-        .then(function () {
+          }), viewportSet)
+        .then(() => {
           if (snapshots && screenshots) {
             ++fileCount
             return Promise.all([makeSnapshot(), makeScreenshot()])
@@ -271,19 +259,17 @@ module.exports = function (grunt) {
             fileName = path.join(snapshots, fileName)
             grunt.log.ok('Write snapshot to "' + fileName + '".')
             return ensureDirectory(snapshots)
-              .then(function () {
-                return new Promise(function (resolve, reject) {
-                  fs.writeFile(fileName, commandOptions.doctype + html,
-                    function (error) {
-                      if (error) {
-                        reject(error)
-                      } else {
-                        ++snapshotCount
-                        resolve()
-                      }
-                    })
-                })
-              })
+              .then(() => new Promise((resolve, reject) =>
+                fs.writeFile(fileName, commandOptions.doctype + html,
+                  error => {
+                    if (error) {
+                      reject(error)
+                    } else {
+                      ++snapshotCount
+                      resolve()
+                    }
+                  })
+              ))
           }
         }
 
@@ -300,19 +286,17 @@ module.exports = function (grunt) {
             fileName = path.join(screenshots, fileName + '.png')
             grunt.log.ok('Write screenshot to "' + fileName + '".')
             return ensureDirectory(screenshots)
-              .then(function () {
-                return new Promise(function (resolve, reject) {
-                  fs.writeFile(fileName, Buffer.from(png.value, 'base64'),
-                    function (error) {
-                      if (error) {
-                        reject(error)
-                      } else {
-                        ++screenshotCount
-                        resolve()
-                      }
-                    })
-                })
-              })
+              .then(() => new Promise((resolve, reject) =>
+                fs.writeFile(fileName, Buffer.from(png.value, 'base64'),
+                  error => {
+                    if (error) {
+                      reject(error)
+                    } else {
+                      ++screenshotCount
+                      resolve()
+                    }
+                  })
+              ))
           }
         }
 
