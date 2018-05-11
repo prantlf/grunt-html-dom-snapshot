@@ -78,6 +78,7 @@ Default options support the most usual usage scenario:
       height: 768
     },
     selectorTimeout: 10000,
+    instructionDelay: 0,
     doctype: '<!DOCTYPE html>',
     snapshots: 'snapshots',
     screenshots: null,
@@ -148,7 +149,13 @@ Resizes the web browser viewport to the specified `width` and `height` values (i
 Type: `Number`
 Default value: 10000
 
-Maximum waiting time, until a DOM node with the selector specified by the `wait` property appears or disappears. Taking the snapshot fails, if this time is exceeded.
+Maximum waiting time (in milliseconds), until a DOM node with the selector specified by the `wait` property appears or disappears. Taking the snapshot fails, if this time is exceeded.
+
+#### instructionDelay
+Type: `Number`
+Default value: 0
+
+Waiting time after executing an instruction. If the test is not run in the headless browser, but debugged in the browser window, it is sometimes helpful to watch outcome of every operation. If introducing waiting instructions all over is too cumbersome, this configuration will add the delay (in milliseconds) after every instruction automatically.
 
 #### doctype
 Type: `String`
@@ -499,6 +506,7 @@ your code using Grunt.
 
 ## Release History
 
+ * 2018-05-11  [v1.2.0]  Introduce delay after every instruction to be able to visually follow the actions when debugging
  * 2018-03-29  [v1.1.0]  Allow specifying all initialization parameters supported by WebdriverIO
  * 2018-03-28  [v1.0.2]  Stop Selenium and Chromedriver processes on unexpected Grunt process abortion
  * 2018-03-28  [v1.0.1]  Workaround for hanging chromedriver after finishing the task
@@ -540,6 +548,16 @@ Licensed under the MIT license.
 [grunt-reg-viz]: https://github.com/prantlf/grunt-reg-viz
 [grunt-selenium-standalone]: https://github.com/zs-zs/grunt-selenium-standalone
 [keyboard key identifiers]: https://w3c.github.io/webdriver/webdriver-spec.html#keyboard-actions
+[v1.2.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v1.2.0
+[v1.1.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v1.1.0
+[v1.0.2]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v1.0.2
+[v1.0.1]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v1.0.1
+[v1.0.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v1.0.0
+[v0.8.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v0.8.0
+[v0.7.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v0.7.0
+[v0.6.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v0.6.0
+[v0.5.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v0.5.0
+[v0.4.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v0.4.0
 [v0.3.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v0.3.0
 [v0.2.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v0.2.0
 [v0.1.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v0.1.0

@@ -131,6 +131,12 @@ module.exports = function (grunt) {
             file: 'no-doctype'
           },
           {
+            options: {
+              instructionDelay: 1
+            },
+            wait: 1
+          },
+          {
             url: 'http://localhost:8881/test/pages/dynamic-multiple.html'
           },
           {

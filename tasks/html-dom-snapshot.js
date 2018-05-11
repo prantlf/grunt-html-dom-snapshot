@@ -47,6 +47,7 @@ module.exports = grunt => {
           height: 768
         },
         selectorTimeout: 10000,
+        instructionDelay: 0,
         doctype: '<!DOCTYPE html>',
         snapshots: 'snapshots',
         fileNumbering: false,
@@ -191,6 +192,7 @@ module.exports = grunt => {
             detected: instruction.detect(command)
           }
         })
+        const instructionDelay = commandOptions.instructionDelay
         let snapshots = commandOptions.dest
         let viewportSet
         if (snapshots) {
@@ -208,7 +210,7 @@ module.exports = grunt => {
             viewport.height !== lastViewport.height) && !lastViewport.explicit) {
           lastViewport.width = viewport.width
           lastViewport.height = viewport.height
-          viewportSet = setViewportSize()
+          viewportSet = performInstruction(setViewportSize())
         } else {
           viewportSet = Promise.resolve()
         }
@@ -219,24 +221,33 @@ module.exports = grunt => {
           previous.then(() => {
             const detected = instruction.detected
             if (detected) {
-              return instruction.perform(grunt, target, client, command,
-                                        commandOptions, detected)
+              return performInstruction(instruction.perform(grunt, target,
+                 client, command, commandOptions, detected))
             }
           }), viewportSet)
         .then(() => {
           if (snapshots && screenshots) {
             ++fileCount
-            return Promise.all([makeSnapshot(), makeScreenshot()])
+            return performInstruction(
+              Promise.all([makeSnapshot(), makeScreenshot()]))
           }
           if (snapshots) {
             ++fileCount
-            return makeSnapshot()
+            return performInstruction(makeSnapshot())
           }
           if (screenshots) {
             ++fileCount
-            return makeScreenshot()
+            return performInstruction(makeScreenshot())
           }
         })
+
+        function performInstruction (promise) {
+          if (instructionDelay) {
+            return promise.then(() => new Promise(
+              resolve => setTimeout(resolve, instructionDelay)))
+          }
+          return promise
+        }
 
         function makeSnapshot () {
           return client.getHTML('html')
