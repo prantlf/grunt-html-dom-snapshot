@@ -128,7 +128,7 @@ module.exports = function (grunt) {
               doctype: ''
             },
             url: 'http://localhost:8881/test/pages/no-doctype.html',
-            file: 'no-doctype'
+            file: 'directory/no-doctype'
           },
           {
             options: {

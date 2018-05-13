@@ -51,7 +51,7 @@
     "grunt-standard": "^3.1.0",
     "nsp": "^3.2.1",
     "phantomjs-prebuilt": "^2.1.16",
-    "semantic-release": "^15.4.0",
+    "semantic-release": "^15.4.1",
     "travis-deploy-once": "^5.0.0"
   },
   "peerDependencies": {

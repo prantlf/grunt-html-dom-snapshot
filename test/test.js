@@ -2,10 +2,10 @@
 
 const fs = require('fs')
 
-function readPages (name) {
+function readPages (name, name2) {
   return {
     expected: readPage('pages/' + name),
-    actual: readPage('snapshots/' + name)
+    actual: readPage('snapshots/' + (name2 || name))
   }
 }
 
@@ -68,7 +68,7 @@ exports['html-dom-snapshot'] = {
   },
 
   'no-doctype': function (test) {
-    const pages = readPages('no-doctype.html')
+    const pages = readPages('no-doctype.html', 'directory/no-doctype.html')
     test.equal(pages.expected, pages.actual, 'no-doctype.html')
     test.done()
   },

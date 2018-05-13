@@ -9,9 +9,9 @@
 
 'use strict'
 
-const fs = require('fs')
+const {writeFile} = require('fs')
 const pad = require('pad-left')
-const path = require('path')
+const {dirname, isAbsolute, join} = require('path')
 const mkdirp = require('mkdirp')
 const nodeCleanup = require('node-cleanup')
 const instructions = [
@@ -138,9 +138,9 @@ module.exports = grunt => {
             .reduce((scenarios, scenario) =>
               scenarios.concat(grunt.file.expand(scenario)), [])
             .reduce((scenarios, scenario) => {
-              grunt.verbose.writeln('Load scenario  "' + scenario + '".')
-              if (!path.isAbsolute(scenario)) {
-                scenario = path.join(currentDirectory, scenario)
+              grunt.log.ok('Load scenario  "' + scenario + '".')
+              if (!isAbsolute(scenario)) {
+                scenario = join(currentDirectory, scenario)
               }
               return scenarios.concat(require(scenario))
             }, commands || [])
@@ -263,15 +263,16 @@ module.exports = grunt => {
           if (file) {
             let fileName = file.toLowerCase()
             fileName = fileName.endsWith('.html') ||
-                      fileName.endsWith('.htm') ? file : file + '.html'
+                       fileName.endsWith('.htm') ? file : file + '.html'
             if (fileNumbering) {
               fileName = numberFileName(fileName)
             }
-            fileName = path.join(snapshots, fileName)
+            fileName = join(snapshots, fileName)
             grunt.log.ok('Write snapshot to "' + fileName + '".')
-            return ensureDirectory(snapshots)
+            const directory = dirname(fileName)
+            return ensureDirectory(directory)
               .then(() => new Promise((resolve, reject) =>
-                fs.writeFile(fileName, commandOptions.doctype + html,
+                writeFile(fileName, commandOptions.doctype + html,
                   error => {
                     if (error) {
                       reject(error)
@@ -294,11 +295,12 @@ module.exports = grunt => {
             if (fileNumbering) {
               fileName = numberFileName(fileName)
             }
-            fileName = path.join(screenshots, fileName + '.png')
+            fileName = join(screenshots, fileName + '.png')
             grunt.log.ok('Write screenshot to "' + fileName + '".')
-            return ensureDirectory(screenshots)
+            const directory = dirname(fileName)
+            return ensureDirectory(directory)
               .then(() => new Promise((resolve, reject) =>
-                fs.writeFile(fileName, Buffer.from(png.value, 'base64'),
+                writeFile(fileName, Buffer.from(png.value, 'base64'),
                   error => {
                     if (error) {
                       reject(error)
