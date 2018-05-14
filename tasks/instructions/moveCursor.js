@@ -6,14 +6,14 @@ module.exports = {
   },
 
   perform: function (grunt, target, client, command) {
-    var moveCursor = command.moveCursor
+    let moveCursor = command.moveCursor
     if (typeof moveCursor === 'string') {
       moveCursor = {selector: moveCursor}
     }
+    const selector = moveCursor.selector
     const offset = moveCursor.offset || {}
-    grunt.verbose.writeln('Move cursor to "' + moveCursor +
-                          '", offset ' + offset + '.')
-    return client.moveToObject(moveCursor.selector,
-                               offset.left, offset.top)
+    grunt.verbose.writeln('Move cursor to "' + selector +
+                          '", offset ' + JSON.stringify(offset) + '.')
+    return client.moveToObject(selector, offset.left, offset.top)
   }
 }
