@@ -6,9 +6,9 @@ module.exports = {
   },
 
   perform: function (grunt, target, client, command, options) {
-    var setViewport = command.setViewport
-    var lastViewport = options.lastViewport
-    var prefix
+    const lastViewport = options.lastViewport
+    let setViewport = command.setViewport
+    let prefix
     if (!(setViewport.width && setViewport.height)) {
       prefix = 'original '
       setViewport = options.viewport

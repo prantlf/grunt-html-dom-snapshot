@@ -6,7 +6,7 @@ module.exports = {
   },
 
   perform: function (grunt, target, client, command, options) {
-    var wait = command.wait
+    let wait = command.wait
     if (!Array.isArray(wait)) {
       wait = wait ? [wait] : []
     }
