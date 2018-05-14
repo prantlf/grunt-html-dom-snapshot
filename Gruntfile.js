@@ -188,6 +188,7 @@ module.exports = function (grunt) {
           },
           {
             url: 'http://localhost:8881/test/pages/input.html',
+            scroll: 'input',
             moveCursor: 'input',
             click: 'input',
             wait: function (browser) {

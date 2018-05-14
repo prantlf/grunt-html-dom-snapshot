@@ -1,0 +1,22 @@
+'use strict'
+
+module.exports = {
+  detect: function (command) {
+    return !!command.scroll
+  },
+
+  perform: function (grunt, target, client, command) {
+    let scroll = command.scroll
+    if (typeof scroll === 'string') {
+      scroll = {selector: scroll}
+    }
+    const selector = scroll.selector
+    if (selector) {
+      grunt.verbose.writeln('Move cursor to "' + selector + '".')
+      return client.scroll(selector)
+    }
+    const offset = scroll.offset || {}
+    grunt.verbose.writeln('Move cursor to ' + JSON.stringify(offset) + '.')
+    return client.scroll(offset.left, offset.top)
+  }
+}

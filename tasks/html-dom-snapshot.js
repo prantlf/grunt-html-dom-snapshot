@@ -15,7 +15,7 @@ const {basename, dirname, isAbsolute, join} = require('path')
 const mkdirp = require('mkdirp')
 const nodeCleanup = require('node-cleanup')
 const instructions = [
-  'setViewport', 'url', 'go', 'clearValue', 'setValue', 'addValue',
+  'setViewport', 'url', 'go', 'scroll', 'clearValue', 'setValue', 'addValue',
   'selectOptionByIndex', 'selectOptionByValue', 'moveCursor',
   'click', 'keys', 'wait', 'hasAttribute', 'hasClass', 'hasValue',
   'hasText', 'hasInnerHtml', 'hasOuterHtml',

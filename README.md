@@ -254,6 +254,7 @@ One of the [instructions] has to be present in every command. These properties a
 * [setViewport](INSTRUCTIONS.md#setviewport)
 * [url](INSTRUCTIONS.md#url)
 * [go](INSTRUCTIONS.md#go)
+* [scroll](INSTRUCTIONS.md#scroll)
 * [clearValue](INSTRUCTIONS.md#clearvalue)
 * [setValue](INSTRUCTIONS.md#setvalue)
 * [addValue](INSTRUCTIONS.md#addvalue)
@@ -508,7 +509,7 @@ your code using Grunt.
 
 ## Release History
 
- * 2018-05-14  [v1.3.0]  Allow saving snapshots to sub-directories, file numbering per-directory
+ * 2018-05-14  [v1.3.0]  Allow saving snapshots to sub-directories, file numbering per-directory, add `scroll` instruction
  * 2018-05-11  [v1.2.0]  Introduce delay after every instruction to be able to visually follow the actions when debugging
  * 2018-03-29  [v1.1.0]  Allow specifying all initialization parameters supported by WebdriverIO
  * 2018-03-28  [v1.0.2]  Stop Selenium and Chromedriver processes on unexpected Grunt process abortion

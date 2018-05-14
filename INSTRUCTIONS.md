@@ -5,6 +5,7 @@ One of the instructions has to be present in every command. These properties are
 - [setViewport](#setviewport)
 - [url](#url)
 - [go](#go)
+- [scroll](#scroll)
 - [clearValue](#clearvalue)
 - [setValue](#setvalue)
 - [addValue](#addvalue)
@@ -75,6 +76,26 @@ Navigates backwards or forwards using the browser history, or refreshes the curr
   file: 'previous'
 }
 ```
+
+## scroll
+Type: `String` | `Object`
+
+Scrolls the page, so that the element with the specified selector or mouse coordinates become visible. If an object is used for the specification, it should contain the following properties:
+
+* `selector` - `String` - selector of the element to move the mose to.
+* `offset` - `Object` - relative offset to the top left corner of the specified element expected as `left` and `top` numeric properties.
+
+```js
+{
+  url: 'https://google.com',
+  scroll: {
+    selector: '#lst-ib'
+  },
+  file: 'google'
+}
+```
+
+The `offset` value can be specified instead of the `selector` and shares the format with the [`moveCursor`](#moveCursor) instruction.
 
 ## clearValue
 Type: `String`
