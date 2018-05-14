@@ -11,7 +11,7 @@
 
 const {writeFile} = require('fs')
 const pad = require('pad-left')
-const {dirname, isAbsolute, join} = require('path')
+const {basename, dirname, isAbsolute, join} = require('path')
 const mkdirp = require('mkdirp')
 const nodeCleanup = require('node-cleanup')
 const instructions = [
@@ -24,6 +24,7 @@ const instructions = [
   'isNotFocused', 'isNotSelected', 'isNotVisible',
   'isNotVisibleWithinViewport', 'abort'
 ].map(instruction => require('./instructions/' + instruction))
+const directoryCounts = {}
 let fileCount = 0
 
 module.exports = grunt => {
@@ -138,7 +139,7 @@ module.exports = grunt => {
             .reduce((scenarios, scenario) =>
               scenarios.concat(grunt.file.expand(scenario)), [])
             .reduce((scenarios, scenario) => {
-              grunt.log.ok('Load scenario  "' + scenario + '".')
+              grunt.verbose.writeln('Load scenario  "' + scenario + '".')
               if (!isAbsolute(scenario)) {
                 scenario = join(currentDirectory, scenario)
               }
@@ -226,18 +227,20 @@ module.exports = grunt => {
             }
           }), viewportSet)
         .then(() => {
-          if (snapshots && screenshots) {
-            ++fileCount
-            return performInstruction(
-              Promise.all([makeSnapshot(), makeScreenshot()]))
-          }
-          if (snapshots) {
-            ++fileCount
-            return performInstruction(makeSnapshot())
-          }
-          if (screenshots) {
-            ++fileCount
-            return performInstruction(makeScreenshot())
+          if (file) {
+            if (snapshots && screenshots) {
+              increaseFileCount(file)
+              return performInstruction(
+                Promise.all([makeSnapshot(), makeScreenshot()]))
+            }
+            if (snapshots) {
+              increaseFileCount(file)
+              return performInstruction(makeSnapshot())
+            }
+            if (screenshots) {
+              increaseFileCount(file)
+              return performInstruction(makeScreenshot())
+            }
           }
         })
 
@@ -260,62 +263,89 @@ module.exports = grunt => {
         }
 
         function saveContent (html) {
-          if (file) {
-            let fileName = file.toLowerCase()
-            fileName = fileName.endsWith('.html') ||
-                       fileName.endsWith('.htm') ? file : file + '.html'
-            if (fileNumbering) {
-              fileName = numberFileName(fileName)
-            }
-            fileName = join(snapshots, fileName)
-            grunt.log.ok('Write snapshot to "' + fileName + '".')
-            const directory = dirname(fileName)
-            return ensureDirectory(directory)
-              .then(() => new Promise((resolve, reject) =>
-                writeFile(fileName, commandOptions.doctype + html,
-                  error => {
-                    if (error) {
-                      reject(error)
-                    } else {
-                      ++snapshotCount
-                      resolve()
-                    }
-                  })
-              ))
+          let fileName = file.toLowerCase()
+          fileName = fileName.endsWith('.html') ||
+                     fileName.endsWith('.htm') ? file : file + '.html'
+          if (fileNumbering) {
+            fileName = numberFileName(fileName, fileNumbering)
           }
+          fileName = join(snapshots, fileName)
+          grunt.log.ok('Write snapshot to "' + fileName + '".')
+          const directory = dirname(fileName)
+          return ensureDirectory(directory)
+            .then(() => new Promise((resolve, reject) =>
+              writeFile(fileName, commandOptions.doctype + html,
+                error => {
+                  if (error) {
+                    reject(error)
+                  } else {
+                    ++snapshotCount
+                    resolve()
+                  }
+                })
+            ))
         }
 
         function saveImage (png) {
-          if (file) {
-            let fileName = file.toLowerCase()
-            fileName = fileName.endsWith('.html')
-                       ? file.substr(0, file.length - 5)
-                       : fileName.endsWith('.htm')
-                       ? file.substr(0, file.length - 4) : file
-            if (fileNumbering) {
-              fileName = numberFileName(fileName)
+          let fileName = file.toLowerCase()
+          fileName = fileName.endsWith('.html')
+                     ? file.substr(0, file.length - 5)
+                     : fileName.endsWith('.htm')
+                     ? file.substr(0, file.length - 4) : file
+          if (fileNumbering) {
+            fileName = numberFileName(fileName, fileNumbering)
+          }
+          fileName = join(screenshots, fileName + '.png')
+          grunt.log.ok('Write screenshot to "' + fileName + '".')
+          const directory = dirname(fileName)
+          return ensureDirectory(directory)
+            .then(() => new Promise((resolve, reject) =>
+              writeFile(fileName, Buffer.from(png.value, 'base64'),
+                error => {
+                  if (error) {
+                    reject(error)
+                  } else {
+                    ++screenshotCount
+                    resolve()
+                  }
+                })
+            ))
+        }
+
+        function increaseFileCount (file) {
+          ++fileCount
+          if (file.indexOf('/') > 0) {
+            const directory = dirname(file)
+            let directoryCount = directoryCounts[directory]
+            if (directoryCount) {
+              directoryCounts[directory] = directoryCount + 1
+            } else {
+              directoryCounts[directory] = 1
             }
-            fileName = join(screenshots, fileName + '.png')
-            grunt.log.ok('Write screenshot to "' + fileName + '".')
-            const directory = dirname(fileName)
-            return ensureDirectory(directory)
-              .then(() => new Promise((resolve, reject) =>
-                writeFile(fileName, Buffer.from(png.value, 'base64'),
-                  error => {
-                    if (error) {
-                      reject(error)
-                    } else {
-                      ++screenshotCount
-                      resolve()
-                    }
-                  })
-              ))
           }
         }
 
-        function numberFileName (fileName) {
-          return pad(fileCount.toString(), fileNumberDigits, '0') +
-                fileNumberSeparator + fileName
+        function numberFileName (fileName, fileNumbering) {
+          let directory, number
+          if (fileName.indexOf('/') > 0) {
+            directory = dirname(fileName)
+            if (fileNumbering === true) {
+              number = fileCount
+            } else {
+              number = directoryCounts[directory]
+            }
+          } else {
+            number = fileCount
+          }
+          if (directory) {
+            fileName = basename(fileName)
+          }
+          fileName = pad(number.toString(), fileNumberDigits, '0') +
+                     fileNumberSeparator + fileName
+          if (directory) {
+            fileName = join(directory, fileName)
+          }
+          return fileName
         }
       }
     })

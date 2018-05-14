@@ -176,10 +176,12 @@ Default value: null
 Destination directory to write the viewport screenshots to. It will be created if it does not exist. Default value is `null`, which means, that no screenshots will be written out.
 
 #### fileNumbering
-Type: `Booolean`
+Type: `Booolean`|`String`
 Default value: `false`
 
-Enables prefixing names of snapshot and screenshot files with their index number, for example: "002.google-input.html".
+If set to `true`, enables prefixing names of snapshot and screenshot files with their index number, for example: "002.google-input.html". Every occurrence of the `file` instruction increases the file count.
+
+If set to "per-directory", the index number will be increased separately per sub-directory with snapshots. If the value of the `file` instruction contains a slash, it will put the snapshot to a sub-directory, which may be useful to organize many snapshots created by multiple tasks.
 
 #### fileNumberDigits
 Type: `Number`
@@ -506,6 +508,7 @@ your code using Grunt.
 
 ## Release History
 
+ * 2018-05-14  [v1.3.0]  Allow saving snapshots to sub-directories, file numbering per-directory
  * 2018-05-11  [v1.2.0]  Introduce delay after every instruction to be able to visually follow the actions when debugging
  * 2018-03-29  [v1.1.0]  Allow specifying all initialization parameters supported by WebdriverIO
  * 2018-03-28  [v1.0.2]  Stop Selenium and Chromedriver processes on unexpected Grunt process abortion
@@ -548,6 +551,7 @@ Licensed under the MIT license.
 [grunt-reg-viz]: https://github.com/prantlf/grunt-reg-viz
 [grunt-selenium-standalone]: https://github.com/zs-zs/grunt-selenium-standalone
 [keyboard key identifiers]: https://w3c.github.io/webdriver/webdriver-spec.html#keyboard-actions
+[v1.3.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v1.3.0
 [v1.2.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v1.2.0
 [v1.1.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v1.1.0
 [v1.0.2]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v1.0.2

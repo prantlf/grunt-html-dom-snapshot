@@ -125,7 +125,8 @@ module.exports = function (grunt) {
           },
           {
             options: {
-              doctype: ''
+              doctype: '',
+              fileNumbering: 'per-directory'
             },
             url: 'http://localhost:8881/test/pages/no-doctype.html',
             file: 'directory/no-doctype'

@@ -68,7 +68,7 @@ exports['html-dom-snapshot'] = {
   },
 
   'no-doctype': function (test) {
-    const pages = readPages('no-doctype.html', 'directory/no-doctype.html')
+    const pages = readPages('no-doctype.html', 'directory/001.no-doctype.html')
     test.equal(pages.expected, pages.actual, 'no-doctype.html')
     test.done()
   },
