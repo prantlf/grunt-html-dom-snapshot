@@ -2,7 +2,7 @@
   "name": "grunt-html-dom-snapshot",
   "description": "Takes snapshots of the HTML markup on web pages - their immediate DOM content - and screenshots of their viewport - how they look like.",
   "version": "0.0.0-development",
-  "homepage": "https://github.com/prantlf/grunt-html-dom-snapshot",
+  "homepage": "https://github.com/prantlf/grunt-html-dom-snapshot#readme",
   "author": {
     "name": "Ferdinand Prantl",
     "email": "prantlf@gmail.com",
