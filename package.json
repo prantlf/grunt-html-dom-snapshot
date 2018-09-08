@@ -26,7 +26,6 @@
     "node": ">= 6"
   },
   "scripts": {
-    "prepare": "test `node --version | cut -c 2` -ne 4 && nsp check || echo 'No vulnerabilities check possible on Node.js 4'",
     "lint": "grunt standard",
     "test": "grunt",
     "coverage": "grunt instrument && GRUNT_HTML_DOM_SNAPSHOT_COVERAGE=1 grunt",
@@ -38,7 +37,7 @@
     "mkdirp": "^0.5.1",
     "node-cleanup": "^2.1.2",
     "pad-left": "^2.1.0",
-    "webdriverio": "^4.12.0"
+    "webdriverio": "^4.13.2"
   },
   "devDependencies": {
     "grunt": "^1.0.3",
@@ -49,10 +48,9 @@
     "grunt-istanbul": "^0.8.0",
     "grunt-selenium-standalone": "^1.0.1",
     "grunt-standard": "^3.1.0",
-    "nsp": "^3.2.1",
     "phantomjs-prebuilt": "^2.1.16",
-    "semantic-release": "^15.5.4",
-    "travis-deploy-once": "^5.0.0"
+    "semantic-release": "^15.9.14",
+    "travis-deploy-once": "^5.0.7"
   },
   "peerDependencies": {
     "grunt": ">=0.4.5"
