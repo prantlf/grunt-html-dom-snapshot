@@ -17,7 +17,7 @@ const nodeCleanup = require('node-cleanup')
 const instructions = [
   'setViewport', 'url', 'go', 'scroll', 'clearValue', 'setValue', 'addValue',
   'selectOptionByIndex', 'selectOptionByValue', 'moveCursor',
-  'click', 'keys', 'wait', 'hasAttribute', 'hasClass', 'hasValue',
+  'click', 'clickIfVisible', 'keys', 'wait', 'hasAttribute', 'hasClass', 'hasValue',
   'hasText', 'hasInnerHtml', 'hasOuterHtml',
   'isEnabled', 'isExisting', 'isFocused', 'isSelected', 'isVisible',
   'isVisibleWithinViewport', 'isNotEnabled', 'isNotExisting',

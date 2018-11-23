@@ -2,7 +2,7 @@
 
 module.exports = {
   detect: function (command) {
-    return !!command.hasInnhasOuterHtmlerHtml
+    return !!command.hasOuterHtml
   },
 
   perform: function (grunt, target, client, command) {
