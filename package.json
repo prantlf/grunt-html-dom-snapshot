@@ -37,20 +37,19 @@
     "mkdirp": "^0.5.1",
     "node-cleanup": "^2.1.2",
     "pad-left": "^2.1.0",
-    "webdriverio": "^4.13.2"
+    "webdriverio": "^4.14.0"
   },
   "devDependencies": {
     "grunt": "^1.0.3",
-    "grunt-contrib-clean": "^1.1.0",
-    "grunt-contrib-connect": "^1.0.2",
+    "grunt-contrib-clean": "^2.0.0",
+    "grunt-contrib-connect": "^2.0.0",
     "grunt-contrib-nodeunit": "^2.0.0",
     "grunt-coveralls": "^2.0.0",
     "grunt-istanbul": "^0.8.0",
     "grunt-selenium-standalone": "^1.0.1",
     "grunt-standard": "^3.1.0",
-    "phantomjs-prebuilt": "^2.1.16",
-    "semantic-release": "^15.9.14",
-    "travis-deploy-once": "^5.0.7"
+    "semantic-release": "^15.12.1",
+    "travis-deploy-once": "^5.0.9"
   },
   "peerDependencies": {
     "grunt": ">=0.4.5"

@@ -65,7 +65,10 @@ module.exports = function (grunt) {
       options: {
         webdriver: {
           desiredCapabilities: {
-            browserName: 'phantomjs'
+            browserName: 'chrome',
+            chromeOptions: {
+              args: ['--headless']
+            }
           }
         },
         snapshots: 'test/snapshots'
@@ -240,6 +243,7 @@ module.exports = function (grunt) {
             }
           },
           {
+            click: 'input',
             keys: 'test',
             wait: function (browser) {
               return browser.getValue('input')
@@ -366,7 +370,10 @@ module.exports = function (grunt) {
       'invalid-file': {
         options: {
           browserCapabilities: {
-            browserName: 'phantomjs'
+            browserName: 'chrome',
+            chromeOptions: {
+              args: ['--headless']
+            }
           },
           screenshots: 'test/screenshots',
           force: true
@@ -435,11 +442,13 @@ module.exports = function (grunt) {
         stopOnExit: true
       },
       server: {
-        seleniumVersion: '3.7.1',
+        seleniumVersion: '3.141.5',
         seleniumDownloadURL: 'http://selenium-release.storage.googleapis.com',
         drivers: {
-          phantomjs: { // https://bitbucket.org/ariya/phantomjs/downloads/
-            version: '2.1.1'
+          chrome: {
+            version: '71.0.3578.33',
+            arch: process.arch,
+            baseURL: 'https://chromedriver.storage.googleapis.com'
           }
         }
       }

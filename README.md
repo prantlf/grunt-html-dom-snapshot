@@ -110,26 +110,25 @@ Chooses the web browser to take snapshots with, Selenium host and other paramete
 ```js
 'selenium_standalone': {
   serverConfig: {
-    seleniumVersion: '3.8.1', // 3.7.1 or older is needed for phantomjs
+    seleniumVersion: '3.141.5', // 3.7.1 or older is needed for phantomjs
     seleniumDownloadURL: 'http://selenium-release.storage.googleapis.com',
     drivers: {
-      // http://chromedriver.storage.googleapis.com/
       chrome: {
-        version: '2.35',
+        version: '71.0.3578.33',
         arch: process.arch,
         baseURL: 'https://chromedriver.storage.googleapis.com'
       },
       // https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
       edge: {
-        version: '5.16299'
+        version: '6.17134'
       },
       // https://github.com/mozilla/geckodriver/releases
       firefox: {
-        version: '0.19.1'
+        version: '0.23.0'
       },
       // https://selenium-release.storage.googleapis.com/
       ie: {
-        version: '3.8.0',
+        version: '3.9.0',
         arch: 'ia32'
       },
       // https://selenium-release.storage.googleapis.com/
@@ -507,6 +506,38 @@ $ npm install phantomjs-prebuilt --save-dev
 
 The `phantomjs` binary will be accessible in `./node_modules/.bin`. If you do not start the Selenium server using `npm test` or other `npm run` command, you will had to add this directory to your `PATH`, otherwise the PhantomJS driver will not find the executable. Additionally, PhantomJS 2.1.1 works only with the Selenium driver version 3.7.1 or older.
 
+If you want to test with a headless browser, you may want to prefer Chrome to PhantomJS. Chrome can run in the headless mode too and PhantomJS is not developed any more. The default configuration of this task will choose Chrome in the headless mode:
+
+```js
+'html-dom-snapshot': {
+  options: {
+    webdriver: {
+      desiredCapabilities: {
+        browserName: 'chrome',
+        chromeOptions: {
+          args: ['--headless']
+        }
+      }
+    }
+  }
+}
+```
+
+If you want to run Chrome in the windowed mode, override the `chromeOptions` object with yours, even an empty one, which is missing the `--headless` argument, for example:
+
+```js
+'html-dom-snapshot': {
+  options: {
+    webdriver: {
+      desiredCapabilities: {
+        browserName: 'chrome',
+        chromeOptions: {}
+      }
+    }
+  }
+}
+```
+
 ## Contributing
 
 In lieu of a formal styleguide, take care to maintain the existing coding
@@ -515,6 +546,7 @@ your code using Grunt.
 
 ## Release History
 
+ * 2018-11-26  [v2.0.0]  Use headless Chrome instead of PhantomJS by default
  * 2018-05-14  [v1.3.0]  Allow saving snapshots to sub-directories, file numbering per-directory, add `scroll` instruction
  * 2018-05-11  [v1.2.0]  Introduce delay after every instruction to be able to visually follow the actions when debugging
  * 2018-03-29  [v1.1.0]  Allow specifying all initialization parameters supported by WebdriverIO

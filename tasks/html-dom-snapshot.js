@@ -86,6 +86,8 @@ module.exports = grunt => {
         options.snapshots = snapshots
         delete options.dest
       }
+      // TODO: Remove this, as soon as the moveTo command is re-implemented.
+      webdriver.deprecationWarnings = false
 
       grunt.verbose.writeln('Open web browser window for the target "' +
                             target + '".')
