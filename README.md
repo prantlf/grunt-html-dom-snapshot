@@ -546,7 +546,7 @@ your code using Grunt.
 
 ## Release History
 
- * 2018-11-26  [v2.0.0]  Use headless Chrome instead of PhantomJS by default
+ * 2018-11-26  [v2.0.0]  Use headless Chrome instead of PhantomJS by default, introduce conditional if-then-else instructions
  * 2018-05-14  [v1.3.0]  Allow saving snapshots to sub-directories, file numbering per-directory, add `scroll` instruction
  * 2018-05-11  [v1.2.0]  Introduce delay after every instruction to be able to visually follow the actions when debugging
  * 2018-03-29  [v1.1.0]  Allow specifying all initialization parameters supported by WebdriverIO

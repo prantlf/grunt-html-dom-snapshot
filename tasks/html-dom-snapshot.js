@@ -96,7 +96,7 @@ module.exports = grunt => {
             .then(() => nodeCleanup(stop))
             .then(setViewportSize)
             .then(gatherCommands)
-            .then(performCommands)
+            .then(performConditionalCommands)
             .then(() => {
               grunt.log.ok(commands.length + ' ' +
                   grunt.util.pluralize(commands.length, 'command/commands') +
@@ -130,12 +130,9 @@ module.exports = grunt => {
       }
 
       function gatherCommands () {
-        let scenarios = data.scenarios
+        let scenarios = ensureArray(data.scenarios)
         commands = data.commands || pages
         if (scenarios) {
-          if (!Array.isArray(scenarios)) {
-            scenarios = [scenarios]
-          }
           const currentDirectory = process.cwd()
           commands = scenarios
             .reduce((scenarios, scenario) =>
@@ -157,11 +154,6 @@ module.exports = grunt => {
         }
       }
 
-      function performCommands () {
-        return commands.reduce((promise, command) =>
-          promise.then(() => performCommand(command)), Promise.resolve())
-      }
-
       function setViewportSize () {
         grunt.verbose.writeln('Resize viewport to ' + lastViewport.width +
                               'x' + lastViewport.height + '.')
@@ -177,6 +169,43 @@ module.exports = grunt => {
               resolve()
             }
           }))
+      }
+
+      function performConditionalCommands (subCommands) {
+        return (subCommands || commands).reduce((promise, command) =>
+          promise.then(() => performConditionalCommand(command)), Promise.resolve())
+      }
+
+      function performConditionalCommand (command) {
+        const ifCommands = ensureArray(command.if)
+        if (!ifCommands) {
+          return performCommand(command)
+        }
+        grunt.verbose.writeln('Testing a condition.')
+        const promise = performCommands(ifCommands)
+          .then(() => performConditionalBranch(command.then, true))
+          .catch(() => performConditionalBranch(command.else, false))
+        promise.then(logEnd, logEnd)
+        return promise
+
+        function logEnd () {
+          grunt.verbose.writeln('The conditional command ended.')
+        }
+      }
+
+      function performConditionalBranch (branch, result) {
+        const commands = ensureArray(branch)
+        grunt.verbose.writeln('The condition evaluated to ' + result + '.')
+        if (commands) {
+          grunt.verbose.writeln('Continuing with the conditional branch.')
+          return performConditionalCommands(commands)
+        }
+        return Promise.resolve()
+      }
+
+      function performCommands (subCommands) {
+        return (subCommands || commands).reduce((promise, command) =>
+          promise.then(() => performCommand(command)), Promise.resolve())
       }
 
       function performCommand (command) {
@@ -349,6 +378,13 @@ module.exports = grunt => {
           }
           return fileName
         }
+      }
+
+      function ensureArray (item) {
+        if (item && !Array.isArray(item)) {
+          item = [item]
+        }
+        return item
       }
     })
 }

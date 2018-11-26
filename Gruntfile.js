@@ -345,6 +345,35 @@ module.exports = function (grunt) {
             }
           },
           {
+            if: {
+              hasClass: {
+                selector: 'div',
+                value: 'class none'
+              }
+            },
+            else: {
+              wait: function () {
+                throw new Error('executed else branch')
+              }
+            }
+          },
+          {
+            if: [{
+              hasClass: {
+                selector: 'div',
+                value: 'dummy'
+              }
+            }],
+            then: [{
+              wait: function () {
+                throw new Error('executed then branch')
+              }
+            }],
+            else: [{
+              wait: 1
+            }]
+          },
+          {
             setViewport: {
               width: 768,
               height: 480

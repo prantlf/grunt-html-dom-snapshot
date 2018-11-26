@@ -2,6 +2,7 @@
 
 One of the instructions has to be present in every command. These properties are evaluated (and their effect is executed) in the order, in which they are listed below:
 
+- [if-then-else](#if-then-else)
 - [setViewport](#setviewport)
 - [url](#url)
 - [go](#go)
@@ -35,6 +36,42 @@ One of the instructions has to be present in every command. These properties are
 - [isNotVisibleWithinViewport](#isnotvisiblewithinviewport)
 - [abort](#abort)
 - [file](#file)
+
+## if-then-else
+
+Conditional command consisting of two or three three instructions, which each points to a sub-command or to an array of sub-commands to perform:
+
+### if
+Type: `Object` | `Array` (mandatory)
+
+### then
+Type: `Object` | `Array` (optional)
+
+### else
+Type: `Object` | `Array` (optional)
+
+At first the sub-commands from the `if` instruction are performed. If they succeed, the execution continues with sub-sommands from the `then` instruction. If they fail, the execution continues with sub-sommands from the `else` instruction. The success or failure of the whole conditional command will depend on either of `then` and `else` instructions, which are executed. The success or failure of the `if` instruction decides only the following condition branch.
+
+```js
+{
+  url: 'https://google.com',
+  wait: '#lst-ib',
+  if: {
+    hasAttribute: {
+      selector: '#lst-ib',
+      name: 'autocomplete',
+      value: 'off'
+    }
+  },
+  then: {
+    setValue: {
+      selector: '#lst-ib',
+      value: 'autocomplete is off'
+    }
+  },
+  file: 'google'
+}
+```
 
 #### setViewport
 Type: `Object`
