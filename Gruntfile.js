@@ -67,7 +67,7 @@ module.exports = function (grunt) {
           desiredCapabilities: {
             browserName: 'chrome',
             chromeOptions: {
-              args: ['--headless']
+              args: ['--headless', '--no-sandbox']
             }
           }
         },
@@ -401,7 +401,7 @@ module.exports = function (grunt) {
           browserCapabilities: {
             browserName: 'chrome',
             chromeOptions: {
-              args: ['--headless']
+              args: ['--headless', '--no-sandbox']
             }
           },
           screenshots: 'test/screenshots',
