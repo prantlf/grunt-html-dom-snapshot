@@ -10,7 +10,9 @@ node_js:
   - '8'
   - '6'
 addons:
-  chrome: stable
+  apt:
+    packages:
+    - chromium-browser
 before_script :
   - npm install -g grunt-cli
   - ls -l /usr/bin/google-chrome
