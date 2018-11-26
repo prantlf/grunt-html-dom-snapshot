@@ -9,6 +9,10 @@ node_js:
   - '10'
   - '8'
   - '6'
+addons:
+  apt:
+    packages:
+    - google-chrome
 before_script :
   - npm install -g grunt-cli
 after_success:
