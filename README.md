@@ -538,6 +538,23 @@ If you want to run Chrome in the windowed mode, override the `chromeOptions` obj
 }
 ```
 
+If you want to run Chrome in Travis CI, override the `chromeOptions` object with yours and disable the sandbox with `--no-sandbox`. Chrome sandbox appears not working in Docker containers used by Travis. For example:
+
+```js
+'html-dom-snapshot': {
+  options: {
+    webdriver: {
+      desiredCapabilities: {
+        browserName: 'chrome',
+        chromeOptions: {
+          args: ['--headless', '--no-sandbox']
+        }
+      }
+    }
+  }
+}
+```
+
 ## Contributing
 
 In lieu of a formal styleguide, take care to maintain the existing coding
