@@ -15,7 +15,7 @@ before_script :
   - npm install -g grunt-cli
 after_success:
   - npm run coveralls
-  - npm run travis-deploy-once "npm run semantic-release"
+  - npx semantic-release
 branches:
   except:
     - /^v\d+\.\d+\.\d+$/
