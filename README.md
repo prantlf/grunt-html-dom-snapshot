@@ -43,9 +43,9 @@ Additional Grunt tasks, which are usually used to support test automation:
 
 You need [node >= 4][node], [npm] and [grunt >= 0.4.5][Grunt] installed
 and your project build managed by a [Gruntfile] with the necessary modules
-listed in [package.json].  If you haven't used Grunt before, be sure to
+listed in [package.json].  If you have not used Grunt before, be sure to
 check out the [Getting Started] guide, as it explains how to create a
-Gruntfile as well as install and use Grunt plugins.  Once you're familiar
+Gruntfile as well as install and use Grunt plugins.  Once youin are familiar
 with that process, you may install this plugin with this command:
 
 ```shell
@@ -98,6 +98,8 @@ Default options support the most usual usage scenario:
   }
 }
 ```
+
+Make sure, that you have the stable version of Chrome installed, if you leave the defaults intact.
 
 ### Options
 
@@ -458,11 +460,11 @@ grunt.initConfig({
 
   'selenium_standalone': { // Provides a local Selenium server.
     serverConfig: {
-      seleniumVersion: '3.8.1',
+      seleniumVersion: '3.141.5',
       seleniumDownloadURL: 'https://selenium-release.storage.googleapis.com',
       drivers: {
         chrome: {
-          version: '2.35',
+          version: '71.0.3578.33',
           arch: process.arch,
           baseURL: 'https://chromedriver.storage.googleapis.com'
         }
@@ -496,17 +498,42 @@ npm install grunt-html-dom-snapshot grunt-selenium-standalone \
 
 ### Notes
 
-You will need to install [Java] 8 or newer to get the Selenium server running via the [selenium-standalone] Grunt task.
+You will need to **install [Java] 8 or newer** to get the Selenium server running via the [selenium-standalone] Grunt task.
 
-If you want to use the PhantomJS driver, you will need to install the `phantomjs-prebuilt` module:
+**If you want to use the PhantomJS driver, you will need to install the `phantomjs-prebuilt` module**. For example:
 
 ```shell
 $ npm install phantomjs-prebuilt --save-dev
 ```
 
-The `phantomjs` binary will be accessible in `./node_modules/.bin`. If you do not start the Selenium server using `npm test` or other `npm run` command, you will had to add this directory to your `PATH`, otherwise the PhantomJS driver will not find the executable. Additionally, PhantomJS 2.1.1 works only with the Selenium driver version 3.7.1 or older.
+The `phantomjs` binary will be accessible in `./node_modules/.bin`. If you do not start the Selenium server using `npm test` or other `npm run` command, you will havew to add this directory to your `PATH`, otherwise the PhantomJS driver will not find the executable. Additionally, **PhantomJS 2.1.1 works only with the Selenium driver version 3.7.1 or older**. For example:
 
-If you want to test with a headless browser, you may want to prefer Chrome to PhantomJS. Chrome can run in the headless mode too and PhantomJS is not developed any more. The default configuration of this task will choose Chrome in the headless mode:
+```js
+'selenium_standalone': {
+  serverConfig: {
+    seleniumVersion: '3.7.1',
+    seleniumDownloadURL: 'http://selenium-release.storage.googleapis.com',
+    drivers: {
+      phantomjs: {
+        version: '2.1.1'
+      }
+    }
+  }
+},
+'html-dom-snapshot': {
+  options: {
+    webdriver: {
+      desiredCapabilities: {
+        browserName: phantomjs'
+      }
+    }
+  }
+}
+```
+
+If you want to test with a headless browser, you may want to **prefer Chrome to PhantomJS**. Chrome can run in the headless mode too and PhantomJS is not developed any more. If you do - and it is the default, **make sure that a stable version of Chrome has been installed** on your machine.
+
+The default configuration of this task will choose Chrome in the headless mode starting from the version 2.0.0 and newer:
 
 ```js
 'html-dom-snapshot': {
@@ -538,7 +565,7 @@ If you want to run Chrome in the windowed mode, override the `chromeOptions` obj
 }
 ```
 
-If you want to run Chrome in Travis CI, override the `chromeOptions` object with yours and disable the sandbox with `--no-sandbox`. Chrome sandbox appears not working in Docker containers used by Travis. For example:
+If you want to run Chrome in Travis CI, override the `chromeOptions` object with yours and disable the sandbox with `--no-sandbox`. **Chrome sandbox appears not working in Docker containers used by Travis**, but Chrome enbales it by default there. For example:
 
 ```js
 'html-dom-snapshot': {
@@ -582,7 +609,7 @@ your code using Grunt.
 
 ## License
 
-Copyright (c) 2017-2018 Ferdinand Prantl
+Copyright (c) 2017-2019 Ferdinand Prantl
 
 Licensed under the MIT license.
 
@@ -607,6 +634,7 @@ Licensed under the MIT license.
 [grunt-reg-viz]: https://github.com/prantlf/grunt-reg-viz
 [grunt-selenium-standalone]: https://github.com/zs-zs/grunt-selenium-standalone
 [keyboard key identifiers]: https://w3c.github.io/webdriver/webdriver-spec.html#keyboard-actions
+[v2.0.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v2.0.0
 [v1.3.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v1.3.0
 [v1.2.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v1.2.0
 [v1.1.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v1.1.0
