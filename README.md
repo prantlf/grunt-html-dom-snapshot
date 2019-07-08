@@ -91,6 +91,7 @@ Default options support the most usual usage scenario:
     fileNumbering: false,
     fileNumberDigits: 3,
     fileNumberSeparator: '.',
+    hangOnError: false,
     force: false
   },
   'google': {
@@ -201,6 +202,12 @@ Type: `String`
 Default value: '.'
 
 The character to put between the file number and the file name.
+
+### hangOnError
+Type: `Boolean`
+Default value: false
+
+If set to `true`, it will not abort the process in case of a failure. It is useful, if you want to investigate the situation on the screen right after an error occurred. If you encounter an error flip this flag and re-run the failing scenario. Once you are finished terminate the process or interrupt it by Ctrl+C.
 
 #### force
 Type: `Boolean`
@@ -590,6 +597,7 @@ your code using Grunt.
 
 ## Release History
 
+ * 2019-07-08  [v2.2.0]  Optionally hang the browser in case of failure to be able to inspect the web page in developer tools
  * 2018-11-26  [v2.0.0]  Use headless Chrome instead of PhantomJS by default, introduce conditional if-then-else instructions
  * 2018-05-14  [v1.3.0]  Allow saving snapshots to sub-directories, file numbering per-directory, add `scroll` instruction
  * 2018-05-11  [v1.2.0]  Introduce delay after every instruction to be able to visually follow the actions when debugging
@@ -634,6 +642,7 @@ Licensed under the MIT license.
 [grunt-reg-viz]: https://github.com/prantlf/grunt-reg-viz
 [grunt-selenium-standalone]: https://github.com/zs-zs/grunt-selenium-standalone
 [keyboard key identifiers]: https://w3c.github.io/webdriver/webdriver-spec.html#keyboard-actions
+[v2.2.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v2.2.0
 [v2.0.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v2.0.0
 [v1.3.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v1.3.0
 [v1.2.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v1.2.0

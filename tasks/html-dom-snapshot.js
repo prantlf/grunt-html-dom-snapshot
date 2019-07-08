@@ -53,6 +53,7 @@ module.exports = grunt => {
         fileNumbering: false,
         fileNumberDigits: 3,
         fileNumberSeparator: '.',
+        hangOnError: false,
         force: false
       })
       const target = this.target
@@ -112,16 +113,21 @@ module.exports = grunt => {
               failed = true
               grunt.verbose.error(error.stack)
               grunt.log.error(error)
-              return stop(false)
-            })
-            .then(() => {
-              if (failed) {
-                const warn = options.force ? grunt.log.warn : grunt.fail.warn
-                warn('Taking snapshots failed.')
+              if (!options.hangOnError) {
+                return stop(false)
               }
             })
             .then(() => {
-              if (!failed) {
+              if (failed) {
+                const warn = options.force || options.hangOnError ? grunt.log.warn : grunt.fail.warn
+                warn('Taking snapshots failed.')
+                if (options.hangOnError) {
+                  warn('Letting the browser run for your investigation.\nTerminate this process or interrupt it by Ctrl+C, once you are finished.')
+                }
+              }
+            })
+            .then(() => {
+              if (!(failed && options.hangOnError)) {
                 done()
               }
             })
