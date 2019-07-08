@@ -13,7 +13,6 @@ const {writeFile} = require('fs')
 const pad = require('pad-left')
 const {basename, dirname, isAbsolute, join} = require('path')
 const mkdirp = require('mkdirp')
-const nodeCleanup = require('node-cleanup')
 const instructions = [
   'setViewport', 'url', 'go', 'scroll', 'clearValue', 'setValue', 'addValue',
   'selectOptionByIndex', 'selectOptionByValue', 'moveCursor',
@@ -69,6 +68,7 @@ module.exports = grunt => {
       let urlCount = 0
       let snapshotCount = 0
       let screenshotCount = 0
+      let failed
       let commands
       if (browserCapabilities) {
         grunt.log.warn('The property "browserCapabilities" is deprecated. ' +
@@ -93,7 +93,6 @@ module.exports = grunt => {
                             target + '".')
       let client = webdriverio.remote(webdriver)
       client.init()
-            .then(() => nodeCleanup(stop))
             .then(setViewportSize)
             .then(gatherCommands)
             .then(performConditionalCommands)
@@ -107,25 +106,51 @@ module.exports = grunt => {
                   ' and ' + screenshotCount + ' ' +
                   grunt.util.pluralize(screenshotCount, 'screenshot/screenshots') +
                   ' written.')
-              return stop()
+              return stop(false)
             })
             .catch(error => {
+              failed = true
               grunt.verbose.error(error.stack)
               grunt.log.error(error)
-              const warn = options.force ? grunt.log.warn : grunt.fail.warn
-              warn('Taking snapshots failed.')
-              return stop()
+              return stop(false)
             })
-            .then(done)
+            .then(() => {
+              if (failed) {
+                const warn = options.force ? grunt.log.warn : grunt.fail.warn
+                warn('Taking snapshots failed.')
+              }
+            })
+            .then(() => {
+              if (!failed) {
+                done()
+              }
+            })
 
-      function stop () {
+      process
+        .on('SIGINT', stop.bind(null, true))
+        .on('SIGTERM', stop.bind(null, true))
+
+      function stop (exit) {
+        function exitProcess () {
+          if (exit) {
+            grunt.log.writeln('Stopping the process...')
+            process.exit(1)
+          }
+        }
         if (client) {
-          const backup = client
+          const oldClient = client
           client = null
-          return backup.end()
+          grunt.log.writeln('Closing the browser in one second...')
+          const result = oldClient
+            .end()
             // Workaround for hanging chromedriver; for more information
             // see https://github.com/vvo/selenium-standalone/issues/351
-            .pause(100)
+            .pause(1000)
+          // The promise returned from pause() appears to never resolve.
+          setTimeout(exitProcess, 1500)
+          return result
+        } else {
+          exitProcess()
         }
       }
 

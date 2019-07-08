@@ -32,20 +32,19 @@
     "coveralls": "test `node --version | cut -c 2` -eq 8 && npm run coverage && grunt coveralls"
   },
   "dependencies": {
-    "mkdirp": "^0.5.1",
-    "node-cleanup": "^2.1.2",
-    "pad-left": "^2.1.0",
-    "webdriverio": "^4.14.1"
+    "mkdirp": "0.5.1",
+    "pad-left": "2.1.0",
+    "webdriverio": "4.14.1"
   },
   "devDependencies": {
     "grunt": "1.0.4",
-    "grunt-contrib-clean": "^2.0.0",
-    "grunt-contrib-connect": "^2.0.0",
-    "grunt-contrib-nodeunit": "^2.0.0",
-    "grunt-coveralls": "^2.0.0",
-    "grunt-istanbul": "^0.8.0",
-    "grunt-selenium-standalone": "^1.0.1",
-    "grunt-standard": "^3.1.0"
+    "grunt-contrib-clean": "2.0.0",
+    "grunt-contrib-connect": "2.0.0",
+    "grunt-contrib-nodeunit": "2.0.0",
+    "grunt-coveralls": "2.0.0",
+    "grunt-istanbul": "0.8.0",
+    "grunt-selenium-standalone": "1.0.1",
+    "grunt-standard": "3.1.0"
   },
   "peerDependencies": {
     "grunt": ">=1.0.4"
