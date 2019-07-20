@@ -117,7 +117,7 @@ Chooses the web browser to take snapshots with, Selenium host and other paramete
     seleniumDownloadURL: 'http://selenium-release.storage.googleapis.com',
     drivers: {
       chrome: {
-        version: '71.0.3578.33',
+        version: '74.0.3729.6',
         arch: process.arch,
         baseURL: 'https://chromedriver.storage.googleapis.com'
       },
@@ -127,16 +127,16 @@ Chooses the web browser to take snapshots with, Selenium host and other paramete
       },
       // https://github.com/mozilla/geckodriver/releases
       firefox: {
-        version: '0.23.0'
+        version: '0.24.0'
       },
       // https://selenium-release.storage.googleapis.com/
       ie: {
-        version: '3.9.0',
+        version: '3.14.0',
         arch: 'ia32'
       },
       // https://selenium-release.storage.googleapis.com/
       safari: {
-        version: '2.48'
+        version: '2.53'
       },
       // https://bitbucket.org/ariya/phantomjs/downloads/
       phantomjs: {

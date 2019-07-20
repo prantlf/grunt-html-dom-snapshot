@@ -475,10 +475,27 @@ module.exports = function (grunt) {
         seleniumDownloadURL: 'http://selenium-release.storage.googleapis.com',
         drivers: {
           chrome: {
-            version: '71.0.3578.33',
+            version: '74.0.3729.6',
             arch: process.arch,
             baseURL: 'https://chromedriver.storage.googleapis.com'
           }
+          // https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
+          // edge: {
+          //   version: '6.17134'
+          // },
+          // https://github.com/mozilla/geckodriver/releases
+          // firefox: {
+          //   version: '0.24.0'
+          // },
+          // https://selenium-release.storage.googleapis.com/
+          // ie: {
+          //   version: '3.14.0',
+          //   arch: 'ia32'
+          // },
+          // https://selenium-release.storage.googleapis.com/
+          // safari: {
+          //   version: '2.53'
+          // }
         }
       }
     }
