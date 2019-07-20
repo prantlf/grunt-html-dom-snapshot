@@ -319,13 +319,24 @@ module.exports = function (grunt) {
               value: '<div class="class" tabindex="0">Text</div>'
             }
           },
-          {
-            clickIfVisible: 'select',
+          coverage ? { wait: 1 } : {
+            focus: 'body',
             wait: function (browser) {
-              return browser.hasFocus('select')
+              return browser.hasFocus('body')
                 .then(function (value) {
-                  if (value === false) {
-                    throw new Error('clickIfVisible on select failed')
+                  if (value !== false) {
+                    throw new Error('focus on body failed')
+                  }
+                })
+            }
+          },
+          {
+            clickIfVisible: 'input',
+            wait: function (browser) {
+              return browser.hasFocus('input')
+                .then(function (value) {
+                  if (value !== false) {
+                    throw new Error('clickIfVisible on invisible input failed')
                   }
                 })
             }

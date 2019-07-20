@@ -8,10 +8,10 @@ const mkdirp = require('mkdirp')
 // order in a command object. In this order they will be looked for and
 // executed.
 const instructionKeys = [
-  'setViewport', 'url', 'go', 'scroll', 'clearValue', 'setValue', 'addValue',
-  'selectOptionByIndex', 'selectOptionByValue', 'moveCursor',
-  'click', 'clickIfVisible', 'keys', 'wait', 'hasAttribute', 'hasClass', 'hasValue',
-  'hasText', 'hasInnerHtml', 'hasOuterHtml',
+  'setViewport', 'url', 'go', 'scroll', 'focus', 'clearValue', 'setValue',
+  'addValue', 'selectOptionByIndex', 'selectOptionByValue', 'moveCursor',
+  'click', 'clickIfVisible', 'keys', 'wait', 'hasAttribute', 'hasClass',
+  'hasValue', 'hasText', 'hasInnerHtml', 'hasOuterHtml',
   'isEnabled', 'isExisting', 'isFocused', 'isSelected', 'isVisible',
   'isVisibleWithinViewport', 'isNotEnabled', 'isNotExisting',
   'isNotFocused', 'isNotSelected', 'isNotVisible',
