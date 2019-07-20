@@ -4,7 +4,10 @@ const {writeFile} = require('fs')
 const pad = require('pad-left')
 const {basename, dirname, isAbsolute, join} = require('path')
 const mkdirp = require('mkdirp')
-const instructions = [
+// Instructions are listed explicitly here to ensure their right execution
+// order in a command object. In this order they will be looked for and
+// executed.
+const instructionKeys = [
   'setViewport', 'url', 'go', 'scroll', 'clearValue', 'setValue', 'addValue',
   'selectOptionByIndex', 'selectOptionByValue', 'moveCursor',
   'click', 'clickIfVisible', 'keys', 'wait', 'hasAttribute', 'hasClass', 'hasValue',
@@ -13,7 +16,10 @@ const instructions = [
   'isVisibleWithinViewport', 'isNotEnabled', 'isNotExisting',
   'isNotFocused', 'isNotSelected', 'isNotVisible',
   'isNotVisibleWithinViewport', 'abort'
-].map(instruction => require('./instructions/' + instruction))
+]
+const instructions = instructionKeys.map(instruction =>
+  require('./instructions/' + instruction))
+const additionalKeys = ['file', 'options']
 const directoryCounts = {}
 let fileCount = 0
 
@@ -255,6 +261,13 @@ module.exports = grunt => {
         } else {
           snapshots = commandOptions.snapshots
         }
+        Object
+          .keys(command)
+          .forEach(key => {
+            if (!(instructionKeys.includes(key) || additionalKeys.includes(key))) {
+              throw new Error('Unrecognized instruction: "' + key + '".')
+            }
+          })
         if (!(commandInstructions.some(instruction => instruction.detected) || file)) {
           throw new Error('Missing instruction in the command ' +
                           'in the target "' + target + '".\n' +

@@ -277,10 +277,10 @@ module.exports = function (grunt) {
             isNotFocused: 'input',
             isNotVisible: 'input',
             isNotVisibleWithinViewport: 'input',
-            hasAtribute: {
+            hasAttribute: {
               selector: 'input',
               name: 'disabled',
-              value: 'disabled'
+              value: 'true'
             },
             hasValue: {
               selector: 'input',
@@ -394,6 +394,14 @@ module.exports = function (grunt) {
         },
         commands: [
           {}
+        ]
+      },
+      'invalid-instruction': {
+        options: {
+          force: true
+        },
+        commands: [
+          {invalid: {}}
         ]
       },
       'invalid-file': {

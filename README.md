@@ -263,7 +263,7 @@ You can use sub-tasks, `commands` and `scenarios` to structure your code and exe
 
 ### Instructions
 
-One of the [instructions] has to be present in every command. These properties are evaluated (and their effect is executed) in the order, in which they are listed below:
+One of the [instructions] has to be present in every command, otherwise its execution will fail. If you include a key in your command object, which is not recognised as an instruction or other known key (`file`, `options`), the execution will fail too. The following instructions are recognised (and their effect is executed) in the order, in which they are listed below:
 
 * [setViewport](INSTRUCTIONS.md#setviewport)
 * [url](INSTRUCTIONS.md#url)
@@ -597,6 +597,7 @@ your code using Grunt.
 
 ## Release History
 
+ * 2019-07-20  [v3.0.0]  Report unrecognised instructions as errors
  * 2019-07-08  [v2.2.0]  Optionally hang the browser in case of failure to be able to inspect the web page in developer tools
  * 2018-11-26  [v2.0.0]  Use headless Chrome instead of PhantomJS by default, introduce conditional if-then-else instructions
  * 2018-05-14  [v1.3.0]  Allow saving snapshots to sub-directories, file numbering per-directory, add `scroll` instruction
@@ -642,6 +643,7 @@ Licensed under the MIT license.
 [grunt-reg-viz]: https://github.com/prantlf/grunt-reg-viz
 [grunt-selenium-standalone]: https://github.com/zs-zs/grunt-selenium-standalone
 [keyboard key identifiers]: https://w3c.github.io/webdriver/webdriver-spec.html#keyboard-actions
+[v3.0.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v3.0.0
 [v2.2.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v2.2.0
 [v2.0.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v2.0.0
 [v1.3.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v1.3.0
