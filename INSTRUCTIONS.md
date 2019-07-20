@@ -3,10 +3,14 @@
 One of the instructions has to be present in every command. These properties are evaluated (and their effect is executed) in the order, in which they are listed below:
 
 - [if-then-else](#if-then-else)
+- [while-do](#while-do)
+- [do-until](#do-until)
+- [repeat-do](#repeat-do)
 - [setViewport](#setviewport)
 - [url](#url)
 - [go](#go)
 - [scroll](#scroll)
+- [focus](#focus)
 - [clearValue](#clearvalue)
 - [setValue](#setvalue)
 - [addValue](#addvalue)
@@ -50,12 +54,14 @@ Type: `Object` | `Array` (optional)
 ### else
 Type: `Object` | `Array` (optional)
 
-At first the sub-commands from the `if` instruction are performed. If they succeed, the execution continues with sub-sommands from the `then` instruction. If they fail, the execution continues with sub-sommands from the `else` instruction. The success or failure of the whole conditional command will depend on either of `then` and `else` instructions, which are executed. The success or failure of the `if` instruction decides only the following condition branch.
+At first the sub-commands from the `if` instruction are performed. If they succeed, the execution continues with sub-commands from the `then` instruction. If they fail, the execution continues with sub-commands from the `else` instruction. The success or failure of the whole conditional command will depend on either of `then` and `else` instructions, which are executed. The success or failure of the `if` instruction decides only the following condition branch.
 
 ```js
 {
   url: 'https://google.com',
-  wait: '#lst-ib',
+  wait: '#lst-ib'
+},
+{
   if: {
     hasAttribute: {
       selector: '#lst-ib',
@@ -66,9 +72,100 @@ At first the sub-commands from the `if` instruction are performed. If they succe
   then: {
     setValue: {
       selector: '#lst-ib',
-      value: 'autocomplete is off'
+      value: 'why is autocomplete off'
     }
+  }
+},
+{
+  file: 'google'
+}
+```
+
+## while-do
+
+Cyclic command with the condition evaluated before the loop body. If the condition evaluates to a truthy value, the loop body will be executed. Then the condition will be evaluated again and so on. The command consists of two instructions, which each points to a sub-command or to an array of sub-commands to evaluate and perform:
+
+### while
+Type: `Object` | `Array` (mandatory)
+
+### do
+Type: `Object` | `Array` (optional)
+
+At first the sub-commands from the `while` instruction are performed. If they succeed, the execution continues with sub-commands from the `do` instruction. If they fail, sub-commands from the `do` instruction will be skipped and the execution will continue with the next command. The success or failure of the whole cyclic command will depend on the loop body in the `do` instruction. The success or failure of the `while` instruction decides only if the loop is entered or not.
+
+```js
+{
+  url: 'https://google.com',
+  wait: '#lst-ib'
+},
+{
+  while: {
+    isNotFocused: '#lst-ib'
   },
+  do: {
+    keys: ['Tab']
+  }
+},
+{
+  file: 'google'
+}
+```
+
+## do-until
+
+Cyclic command with the condition evaluated after the loop body. The loop body will be executed and then the condition evaluated. If it evaluates to a falsy value, the loop body will be executed again and so on. The command consists of two instructions, which each points to a sub-command or to an array of sub-commands to evaluate and perform:
+
+### do
+Type: `Object` | `Array` (optional)
+
+### until
+Type: `Object` | `Array` (mandatory)
+
+At first the sub-commands from the `do` instruction are performed. Then the sub-commands from the `until` instruction are performed. If they succeed, the execution will continue with the next command. The success or failure of the `until` instruction decides only if the loop is re-entered or not. The success or failure of the whole cyclic command will depend on the loop body in the `do` instruction.
+
+```js
+{
+  url: 'https://google.com',
+  wait: '#lst-ib'
+},
+{
+  do: {
+    keys: ['Tab']
+  }
+  until: {
+    isFocused: '#lst-ib'
+  }
+},
+{
+  file: 'google'
+}
+```
+
+## repeat-do
+
+Cyclic command with the known count of repetitions of the loop body. The loop body will be executed the specified count of times. The command consists of two instructions, which one points to a repetition count and the other to a sub-command or to an array of sub-commands to perform:
+
+### repeat
+Type: `Number` (mandatory)
+
+### do
+Type: `Object` | `Array` (optional)
+
+At first the current repetition count is compared to the specified target one. If if is less, the execution continues with sub-commands from the `do` instruction. It it is greater or equal to it, sub-commands from the `do` instruction will be skipped and the execution will continue with the next command. Then the current repetition count is incremented by one and the condition evaluated again and so  on. The success or failure of the whole cyclic command will depend on the loop body in the `do` instruction.
+
+```js
+{
+  url: 'https://google.com',
+  wait: '#lst-ib'
+},
+{
+  repeat: 10,
+  do: {
+    click: '#lst-ib'
+  }
+},
+{
+  isFocused: '#lst-ib',
   file: 'google'
 }
 ```
@@ -133,6 +230,22 @@ Scrolls the page, so that the element with the specified selector or mouse coord
 ```
 
 The `offset` value can be specified instead of the `selector` and shares the format with the [`moveCursor`](#moveCursor) instruction.
+
+## focus
+Type: `String`
+
+Focuses the the specified element by JavaScript.
+
+The input string should contain selector of the element to set focus to.
+
+```js
+{
+  url: 'https://google.com',
+  wait: '#lst-ib',
+  focus: 'input[name=btnK]',
+  file: 'google'
+}
+```
 
 ## clearValue
 Type: `String`

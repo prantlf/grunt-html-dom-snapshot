@@ -44,6 +44,7 @@ module.exports = grunt => {
           height: 768
         },
         selectorTimeout: 10000,
+        loopTimeout: 10000,
         instructionDelay: 0,
         doctype: '<!DOCTYPE html>',
         snapshots: 'snapshots',
@@ -56,6 +57,7 @@ module.exports = grunt => {
       })
       const target = this.target
       const pages = data.pages
+      const loopTimeout = options.loopTimeout
       let snapshots = options.dest
       const screenshots = options.screenshots
       const viewport = options.viewport
@@ -99,7 +101,7 @@ module.exports = grunt => {
       client.init()
             .then(setViewportSize)
             .then(gatherCommands)
-            .then(performConditionalCommands)
+            .then(performComplexCommands)
             .then(() => {
               grunt.log.ok(commands.length + ' ' +
                   grunt.util.pluralize(commands.length, 'command/commands') +
@@ -213,26 +215,40 @@ module.exports = grunt => {
           }))
       }
 
-      function performConditionalCommands (subCommands) {
+      function performComplexCommands (subCommands) {
         return (subCommands || commands).reduce((promise, command) =>
-          promise.then(() => performConditionalCommand(command)), Promise.resolve())
+          promise.then(() => performComplexCommand(command)), Promise.resolve())
       }
 
-      function performConditionalCommand (command) {
+      function performComplexCommand (command) {
         const ifCommands = ensureArray(command.if)
-        if (!ifCommands) {
-          return performCommand(command)
+        if (ifCommands) {
+          return performConditionalCommand(ifCommands, command)
         }
-        grunt.verbose.writeln('Testing a condition.')
-        const promise = performCommands(ifCommands)
-          .then(() => performConditionalBranch(command.then, true))
-          .catch(() => performConditionalBranch(command.else, false))
-        promise.then(logEnd, logEnd)
-        return promise
+        const whileCommands = ensureArray(command.while)
+        if (whileCommands) {
+          return performWhileCommand(whileCommands, command)
+        }
+        const untilCommands = ensureArray(command.until)
+        if (untilCommands) {
+          return performUntilCommand(untilCommands, command)
+        }
+        const repeatCommands = command.repeat
+        if (repeatCommands != null) {
+          return performRepeatCommand(repeatCommands, command)
+        }
+        return performCommand(command)
+      }
 
-        function logEnd () {
-          grunt.verbose.writeln('The conditional command ended.')
-        }
+      function performConditionalCommand (ifCommands, command) {
+        grunt.verbose.writeln('Testing a condition.')
+        const promise = new Promise(resolve => {
+          performCommands(ifCommands)
+            .then(() => resolve(performConditionalBranch(command.then, true)))
+            .catch(() => resolve(performConditionalBranch(command.else, false)))
+        })
+        promise.finally(() => grunt.verbose.writeln('The conditional command ended.'))
+        return promise
       }
 
       function performConditionalBranch (branch, result) {
@@ -240,9 +256,102 @@ module.exports = grunt => {
         grunt.verbose.writeln('The condition evaluated to ' + result + '.')
         if (commands) {
           grunt.verbose.writeln('Continuing with the conditional branch.')
-          return performConditionalCommands(commands)
+          return performComplexCommands(commands)
         }
         return Promise.resolve()
+      }
+
+      function performWhileCommand (whileCommands, command) {
+        function runWhile () {
+          return new Promise((resolve, reject) => {
+            updatePromise(reject)
+            grunt.verbose.writeln('Testing a condition before loop.')
+            performCommands(whileCommands)
+              .then(() => {
+                performLoopBody(command.do, 'Continuing with')
+                  .then(() => resolve(runWhile()))
+                  .catch(error => reject(error))
+              })
+              .catch(() => resolve())
+          })
+        }
+
+        const updatePromise = promiseLoopFinish()
+        const promise = runWhile()
+        updatePromise(promise)
+        return promise
+      }
+
+      function performUntilCommand (untilCommands, command) {
+        function runUntil () {
+          return new Promise((resolve, reject) => {
+            updatePromise(reject)
+            performLoopBody(command.do, 'Starting with')
+              .then(() => {
+                grunt.verbose.writeln('Testing a condition after loop.')
+                performCommands(untilCommands)
+                  .then(() => resolve())
+                  .catch(() => resolve(runUntil()))
+              })
+              .catch(error => reject(error))
+          })
+        }
+
+        const updatePromise = promiseLoopFinish()
+        const promise = runUntil()
+        updatePromise(promise)
+        return promise
+      }
+
+      function performRepeatCommand (repeatCommands, command) {
+        function runRepeat (totalCount) {
+          return new Promise((resolve, reject) => {
+            updatePromise(reject)
+            if (counter++ < totalCount) {
+              performLoopBody(command.do, 'Repeating ' + counter + '/' + totalCount)
+                .then(() => resolve(runRepeat(totalCount)))
+                .catch(error => reject(error))
+            } else {
+              resolve()
+            }
+          })
+        }
+
+        const updatePromise = promiseLoopFinish()
+        const promiseCount = typeof repeatCommands === 'number'
+          ? Promise.resolve(repeatCommands)
+          : performCommands(ensureArray(repeatCommands))
+        let counter = 0
+        const promise = promiseCount.then(runRepeat)
+        updatePromise(promise)
+        return promise
+      }
+
+      function performLoopBody (body, prefix) {
+        const commands = ensureArray(body)
+        if (commands) {
+          grunt.verbose.writeln(prefix + ' the loop body.')
+          return performComplexCommands(commands)
+        }
+        return Promise.resolve()
+      }
+
+      function promiseLoopFinish (promise) {
+        let rejectAll
+        const timer = setTimeout(function () {
+          rejectAll(new Error('The loop timed out.'))
+        }, loopTimeout)
+
+        return function (promise) {
+          if (promise instanceof Promise) {
+            promise.finally(() => {
+              clearTimeout(timer)
+              grunt.verbose.writeln('The loop ended.')
+            })
+          } else {
+            rejectAll = promise
+          }
+        }
       }
 
       function performCommands (subCommands) {

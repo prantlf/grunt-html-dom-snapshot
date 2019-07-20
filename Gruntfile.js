@@ -415,6 +415,49 @@ module.exports = function (grunt) {
             }]
           },
           {
+            url: 'http://localhost:8881/test/pages/dynamic.html',
+            hasClass: {
+              selector: 'body',
+              value: '!dynamic'
+            }
+          },
+          {
+            while: {
+              hasClass: {
+                selector: 'body',
+                value: '!dynamic'
+              }
+            },
+            do: {
+              wait: 10
+            }
+          },
+          {
+            url: 'http://localhost:8881/test/pages/input.html',
+            isNotFocused: 'input'
+          },
+          {
+            do: {
+              keys: ['Tab']
+            },
+            until: {
+              isFocused: 'input'
+            }
+          },
+          {
+            go: 'refresh',
+            isNotFocused: 'input'
+          },
+          {
+            repeat: 2,
+            do: {
+              click: 'input'
+            }
+          },
+          {
+            isFocused: 'input'
+          },
+          {
             setViewport: {
               width: 768,
               height: 480

@@ -272,10 +272,15 @@ You can use sub-tasks, `commands` and `scenarios` to structure your code and exe
 
 One of the [instructions] has to be present in every command, otherwise its execution will fail. If you include a key in your command object, which is not recognised as an instruction or other known key (`file`, `options`), the execution will fail too. The following instructions are recognised (and their effect is executed) in the order, in which they are listed below:
 
+* [if-then-else](INSTRUCTIONS.md#if-then-else)
+* [while-do](INSTRUCTIONS.md#while-do)
+* [do-until](INSTRUCTIONS.md#do-until)
+* [repeat-do](INSTRUCTIONS.md#repeat-do)
 * [setViewport](INSTRUCTIONS.md#setviewport)
 * [url](INSTRUCTIONS.md#url)
 * [go](INSTRUCTIONS.md#go)
 * [scroll](INSTRUCTIONS.md#scroll)
+* [focus](INSTRUCTIONS.md#focus)
 * [clearValue](INSTRUCTIONS.md#clearvalue)
 * [setValue](INSTRUCTIONS.md#setvalue)
 * [addValue](INSTRUCTIONS.md#addvalue)
