@@ -677,7 +677,7 @@ Stops executing firther commands and fails current Grunt task with the specified
 ## file
 Type: `String`
 
-Name of the file to write the snapshot to. If it does not end with ".html" or ".htm", the extension ".html" will be appended to it.
+Name of the file to write the snapshot to. It will be put to lower-case before it is used. If it does not end with ".html" or ".htm", the extension ".html" will be appended to it.
 
 If writing screenshots is enabled, the same name will be used for the file with the screenshot; just without the extension ".html" or ".htm", if the file name ends to it, and with the extension ".png" appended to the file name instead.
 

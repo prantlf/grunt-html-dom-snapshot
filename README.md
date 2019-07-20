@@ -92,6 +92,7 @@ Default options support the most usual usage scenario:
     fileNumberDigits: 3,
     fileNumberSeparator: '.',
     hangOnError: false,
+    snapshotOnError: '_last-error',
     force: false
   },
   'google': {
@@ -208,6 +209,12 @@ Type: `Boolean`
 Default value: false
 
 If set to `true`, it will not abort the process in case of a failure. It is useful, if you want to investigate the situation on the screen right after an error occurred. If you encounter an error flip this flag and re-run the failing scenario. Once you are finished terminate the process or interrupt it by Ctrl+C.
+
+### snapshotOnError
+Type: `String`
+Default value: '_last-error'
+
+If set to a non-empty string, if will be used as a file name for an automatically taken snapshot and screenshot (if those are enabled), if the task execution fails.
 
 #### force
 Type: `Boolean`

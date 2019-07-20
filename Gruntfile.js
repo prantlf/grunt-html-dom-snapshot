@@ -204,6 +204,24 @@ module.exports = function (grunt) {
             }
           },
           {
+            scroll: {
+              selector: 'input',
+              offset: {
+                top: 0,
+                left: 0
+              }
+            },
+            clickIfVisible: 'input',
+            wait: function (browser) {
+              return browser.hasFocus('input')
+                .then(function (value) {
+                  if (value === false) {
+                    throw new Error('clickIfVisible on body failed')
+                  }
+                })
+            }
+          },
+          {
             setValue: {
               selector: 'input',
               value: 'Hi'
@@ -272,11 +290,13 @@ module.exports = function (grunt) {
             isFocused: 'select',
             isVisible: 'select',
             isVisibleWithinViewport: 'select',
+            isSelected: 'select > option:last-child',
             isNotEnabled: 'input',
             isNotExisting: 'textarea',
             isNotFocused: 'input',
             isNotVisible: 'input',
             isNotVisibleWithinViewport: 'input',
+            isNotSelected: 'select > option:first-child',
             hasAttribute: {
               selector: 'input',
               name: 'disabled',
@@ -297,6 +317,17 @@ module.exports = function (grunt) {
             hasOuterHtml: {
               selector: 'div',
               value: '<div class="class" tabindex="0">Text</div>'
+            }
+          },
+          {
+            clickIfVisible: 'select',
+            wait: function (browser) {
+              return browser.hasFocus('select')
+                .then(function (value) {
+                  if (value === false) {
+                    throw new Error('clickIfVisible on select failed')
+                  }
+                })
             }
           },
           {
@@ -446,7 +477,8 @@ module.exports = function (grunt) {
       },
       'invalid-go': {
         options: {
-          force: true
+          force: true,
+          screenshots: 'test/screenshots'
         },
         pages: [
           {
@@ -519,7 +551,6 @@ module.exports = function (grunt) {
   grunt.loadTasks(coverage ? 'coverage/tasks' : 'tasks')
 
   const test = ['clean', 'standard',
-    'selenium_standalone:server:install',
     'selenium_standalone:server:start',
     'connect', 'html-dom-snapshot',
     'selenium_standalone:server:stop', 'nodeunit']

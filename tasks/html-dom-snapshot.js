@@ -51,14 +51,18 @@ module.exports = grunt => {
         fileNumberDigits: 3,
         fileNumberSeparator: '.',
         hangOnError: false,
+        snapshotOnError: '_last-error',
         force: false
       })
       const target = this.target
       const pages = data.pages
-      const snapshots = options.dest
+      let snapshots = options.dest
+      const screenshots = options.screenshots
       const viewport = options.viewport
       const webdriver = options.webdriver
       const browserCapabilities = options.browserCapabilities
+      const hangOnError = options.hangOnError
+      const snapshotOnError = options.snapshotOnError
       const lastViewport = {
         width: viewport.width,
         height: viewport.height
@@ -83,6 +87,8 @@ module.exports = grunt => {
                       'Use "snapshots" with the same content.')
         options.snapshots = snapshots
         delete options.dest
+      } else {
+        snapshots = options.snapshots
       }
       // TODO: Remove this, as soon as the moveTo command is re-implemented.
       webdriver.deprecationWarnings = false
@@ -110,21 +116,29 @@ module.exports = grunt => {
               failed = true
               grunt.verbose.error(error.stack)
               grunt.log.error(error)
-              if (!options.hangOnError) {
+            })
+            .then(() => {
+              if (failed && snapshotOnError) {
+                return makeFailureSnapshotAndScreenshot()
+                  .then(() => true, () => false)
+              }
+            })
+            .then(() => {
+              if (failed && !hangOnError) {
                 return stop(false)
               }
             })
             .then(() => {
               if (failed) {
-                const warn = options.force || options.hangOnError ? grunt.log.warn : grunt.fail.warn
+                const warn = options.force || hangOnError ? grunt.log.warn : grunt.fail.warn
                 warn('Taking snapshots failed.')
-                if (options.hangOnError) {
+                if (hangOnError) {
                   warn('Letting the browser run for your investigation.\nTerminate this process or interrupt it by Ctrl+C, once you are finished.')
                 }
               }
             })
             .then(() => {
-              if (!(failed && options.hangOnError)) {
+              if (!hangOnError) {
                 done()
               }
             })
@@ -265,7 +279,7 @@ module.exports = grunt => {
           .keys(command)
           .forEach(key => {
             if (!(instructionKeys.includes(key) || additionalKeys.includes(key))) {
-              throw new Error('Unrecognized instruction: "' + key + '".')
+              throw new Error('Unrecognised instruction: "' + key + '".')
             }
           })
         if (!(commandInstructions.some(instruction => instruction.detected) || file)) {
@@ -294,19 +308,7 @@ module.exports = grunt => {
           }), viewportSet)
         .then(() => {
           if (file) {
-            if (snapshots && screenshots) {
-              increaseFileCount(file)
-              return performInstruction(
-                Promise.all([makeSnapshot(), makeScreenshot()]))
-            }
-            if (snapshots) {
-              increaseFileCount(file)
-              return performInstruction(makeSnapshot())
-            }
-            if (screenshots) {
-              increaseFileCount(file)
-              return performInstruction(makeScreenshot())
-            }
+            return makeSnapshotAndScreenshot()
           }
         })
 
@@ -316,6 +318,22 @@ module.exports = grunt => {
               resolve => setTimeout(resolve, instructionDelay)))
           }
           return promise
+        }
+
+        function makeSnapshotAndScreenshot () {
+          if (snapshots && screenshots) {
+            increaseFileCount(file)
+            return performInstruction(
+              Promise.all([makeSnapshot(), makeScreenshot()]))
+          }
+          if (snapshots) {
+            increaseFileCount(file)
+            return performInstruction(makeSnapshot())
+          }
+          if (screenshots) {
+            increaseFileCount(file)
+            return performInstruction(makeScreenshot())
+          }
         }
 
         function makeSnapshot () {
@@ -329,53 +347,19 @@ module.exports = grunt => {
         }
 
         function saveContent (html) {
-          let fileName = file.toLowerCase()
-          fileName = fileName.endsWith('.html') ||
-                     fileName.endsWith('.htm') ? file : file + '.html'
+          let fileName = makeSnapshotName(file)
           if (fileNumbering) {
             fileName = numberFileName(fileName, fileNumbering)
           }
-          fileName = join(snapshots, fileName)
-          grunt.log.ok('Write snapshot to "' + fileName + '".')
-          const directory = dirname(fileName)
-          return ensureDirectory(directory)
-            .then(() => new Promise((resolve, reject) =>
-              writeFile(fileName, commandOptions.doctype + html,
-                error => {
-                  if (error) {
-                    reject(error)
-                  } else {
-                    ++snapshotCount
-                    resolve()
-                  }
-                })
-            ))
+          return writeContent(html, snapshots, fileName, commandOptions)
         }
 
         function saveImage (png) {
-          let fileName = file.toLowerCase()
-          fileName = fileName.endsWith('.html')
-                     ? file.substr(0, file.length - 5)
-                     : fileName.endsWith('.htm')
-                     ? file.substr(0, file.length - 4) : file
+          let fileName = makeScreenshotName(file)
           if (fileNumbering) {
             fileName = numberFileName(fileName, fileNumbering)
           }
-          fileName = join(screenshots, fileName + '.png')
-          grunt.log.ok('Write screenshot to "' + fileName + '".')
-          const directory = dirname(fileName)
-          return ensureDirectory(directory)
-            .then(() => new Promise((resolve, reject) =>
-              writeFile(fileName, Buffer.from(png.value, 'base64'),
-                error => {
-                  if (error) {
-                    reject(error)
-                  } else {
-                    ++screenshotCount
-                    resolve()
-                  }
-                })
-            ))
+          return writeImage(png, screenshots, fileName)
         }
 
         function increaseFileCount (file) {
@@ -413,6 +397,89 @@ module.exports = grunt => {
           }
           return fileName
         }
+      }
+
+      function makeSnapshotName (fileName) {
+        fileName = fileName.toLowerCase()
+        return fileName.endsWith('.html') ||
+               fileName.endsWith('.htm') ? fileName : fileName + '.html'
+      }
+
+      function makeScreenshotName (fileName) {
+        fileName = fileName.toLowerCase()
+        return fileName.endsWith('.html')
+               ? fileName.substr(0, fileName.length - 5)
+               : fileName.endsWith('.htm')
+               ? fileName.substr(0, fileName.length - 4) : fileName
+      }
+
+      function makeFailureSnapshotAndScreenshot () {
+        if (snapshots && screenshots) {
+          return Promise.all([makeFailureSnapshot(), makeFailureScreenshot()])
+        }
+        if (snapshots) {
+          return makeFailureSnapshot()
+        }
+        if (screenshots) {
+          return makeFailureScreenshot()
+        }
+        return Promise.resolve()
+      }
+
+      function makeFailureSnapshot () {
+        return client.getHTML('html')
+                     .then(saveFailureContent)
+      }
+
+      function makeFailureScreenshot () {
+        return client.screenshot()
+                     .then(saveFailureImage)
+      }
+
+      function saveFailureContent (html) {
+        const fileName = makeSnapshotName(snapshotOnError)
+        return writeContent(html, snapshots, fileName, options)
+      }
+
+      function saveFailureImage (png) {
+        const fileName = makeScreenshotName(snapshotOnError)
+        return writeImage(png, screenshots, fileName)
+      }
+
+      function writeContent (html, snapshots, fileName, options) {
+        fileName = join(snapshots, fileName)
+        grunt.log.ok('Write snapshot to "' + fileName + '".')
+        const directory = dirname(fileName)
+        return ensureDirectory(directory)
+          .then(() => new Promise((resolve, reject) =>
+            writeFile(fileName, options.doctype + html,
+              error => {
+                if (error) {
+                  reject(error)
+                } else {
+                  ++snapshotCount
+                  resolve()
+                }
+              })
+          ))
+      }
+
+      function writeImage (png, screenshots, fileName) {
+        fileName = join(screenshots, fileName + '.png')
+        grunt.log.ok('Write screenshot to "' + fileName + '".')
+        const directory = dirname(fileName)
+        return ensureDirectory(directory)
+          .then(() => new Promise((resolve, reject) =>
+            writeFile(fileName, Buffer.from(png.value, 'base64'),
+              error => {
+                if (error) {
+                  reject(error)
+                } else {
+                  ++screenshotCount
+                  resolve()
+                }
+              })
+          ))
       }
 
       function ensureArray (item) {

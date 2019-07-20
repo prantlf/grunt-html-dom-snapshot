@@ -97,5 +97,11 @@ exports['html-dom-snapshot'] = {
     const snapshot = fs.existsSync('test/snapshots/abort.html')
     test.ok(!snapshot, 'abort.html')
     test.done()
+  },
+
+  'invalid-go': function (test) {
+    test.ok(fs.existsSync('test/snapshots/_last-error.html'), '_last-error.html')
+    test.ok(fs.existsSync('test/screenshots/_last-error.png'), '_last-error.png')
+    test.done()
   }
 }
