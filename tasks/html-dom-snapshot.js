@@ -1,12 +1,3 @@
-// grunt-html-dom-snapshot
-// https://github.com/prantlf/grunt-html-dom-snapshot
-//
-// Copyright (c) 2017-2018 Ferdinand Prantl
-// Licensed under the MIT license.
-//
-// Takes snapshots of the HTML markup on web pages - their immediate DOM
-// content - and screenshots of their viewport - how they look like.
-
 'use strict'
 
 const {writeFile} = require('fs')
