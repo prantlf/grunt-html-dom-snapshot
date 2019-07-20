@@ -205,7 +205,6 @@ module.exports = function (grunt) {
           },
           {
             scroll: {
-              selector: 'input',
               offset: {
                 top: 0,
                 left: 0

@@ -10,13 +10,13 @@ module.exports = {
     if (typeof scroll === 'string') {
       scroll = {selector: scroll}
     }
-    const selector = scroll.selector
-    if (selector) {
-      grunt.verbose.writeln('Move cursor to "' + selector + '".')
-      return client.scroll(selector)
+    const offset = scroll.offset
+    if (offset) {
+      grunt.verbose.writeln('Move cursor to ' + JSON.stringify(offset) + '.')
+      return client.scroll(offset.left, offset.top)
     }
-    const offset = scroll.offset || {}
-    grunt.verbose.writeln('Move cursor to ' + JSON.stringify(offset) + '.')
-    return client.scroll(offset.left, offset.top)
+    const selector = scroll.selector
+    grunt.verbose.writeln('Move cursor to "' + selector + '".')
+    return client.scroll(selector)
   }
 }
