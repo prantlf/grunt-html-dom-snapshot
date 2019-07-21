@@ -614,6 +614,7 @@ module.exports = function (grunt) {
   grunt.loadTasks(coverage ? 'coverage/tasks' : 'tasks')
 
   const test = ['clean', 'standard',
+    'selenium_standalone:server:install',
     'selenium_standalone:server:start',
     'connect', 'html-dom-snapshot',
     'selenium_standalone:server:stop', 'nodeunit']
