@@ -15,7 +15,7 @@ const instructionKeys = [
   'isEnabled', 'isExisting', 'isFocused', 'isSelected', 'isVisible',
   'isVisibleWithinViewport', 'isNotEnabled', 'isNotExisting',
   'isNotFocused', 'isNotSelected', 'isNotVisible',
-  'isNotVisibleWithinViewport', 'abort'
+  'isNotVisibleWithinViewport', 'break', 'abort'
 ]
 const instructions = instructionKeys.map(instruction =>
   require('./instructions/' + instruction))
@@ -242,10 +242,12 @@ module.exports = grunt => {
 
       function performConditionalCommand (ifCommands, command) {
         grunt.verbose.writeln('Testing a condition.')
-        const promise = new Promise(resolve => {
+        const promise = new Promise((resolve, reject) => {
           performCommands(ifCommands)
-            .then(() => resolve(performConditionalBranch(command.then, true)))
-            .catch(() => resolve(performConditionalBranch(command.else, false)))
+            .then(() => performConditionalBranch(command.then, true)
+              .then(resolve, reject))
+            .catch(() => performConditionalBranch(command.else, false)
+              .then(resolve, reject))
         })
         promise.finally(() => grunt.verbose.writeln('The conditional command ended.'))
         return promise
@@ -269,8 +271,15 @@ module.exports = grunt => {
             performCommands(whileCommands)
               .then(() => {
                 performLoopBody(command.do, 'Continuing with')
-                  .then(() => resolve(runWhile()))
-                  .catch(error => reject(error))
+                  .then(() => runWhile()
+                    .then(resolve, reject))
+                  .catch(error => {
+                    if (error.break) {
+                      resolve()
+                    } else {
+                      reject(error)
+                    }
+                  })
               })
               .catch(() => resolve())
           })
@@ -291,9 +300,16 @@ module.exports = grunt => {
                 grunt.verbose.writeln('Testing a condition after loop.')
                 performCommands(untilCommands)
                   .then(() => resolve())
-                  .catch(() => resolve(runUntil()))
+                  .catch(() => runUntil()
+                    .then(resolve, reject))
               })
-              .catch(error => reject(error))
+              .catch(error => {
+                if (error.break) {
+                  resolve()
+                } else {
+                  reject(error)
+                }
+              })
           })
         }
 
@@ -309,8 +325,15 @@ module.exports = grunt => {
             updatePromise(reject)
             if (counter++ < totalCount) {
               performLoopBody(command.do, 'Repeating ' + counter + '/' + totalCount)
-                .then(() => resolve(runRepeat(totalCount)))
-                .catch(error => reject(error))
+                .then(() => runRepeat(totalCount)
+                  .then(resolve, reject))
+                .catch(error => {
+                  if (error.break) {
+                    resolve()
+                  } else {
+                    reject(error)
+                  }
+                })
             } else {
               resolve()
             }

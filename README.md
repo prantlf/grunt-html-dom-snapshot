@@ -308,6 +308,7 @@ One of the [instructions] has to be present in every command, otherwise its exec
 * [isNotSelected](INSTRUCTIONS.md#isnotselected)
 * [isNotVisible](INSTRUCTIONS.md#isnotvisible)
 * [isNotVisibleWithinViewport](INSTRUCTIONS.md#isnotvisiblewithinviewport)
+* [break](INSTRUCTIONS.md#break)
 * [abort](INSTRUCTIONS.md#abort)
 * [file](INSTRUCTIONS.md#file)
 
@@ -609,7 +610,7 @@ your code using Grunt.
 
 ## Release History
 
- * 2019-07-20  [v3.0.0]  Report unrecognised instructions as errors
+ * 2019-07-21  [v3.0.0]  Report unrecognised instructions as errors, introduce new instructions (focus, while-do, do-until, repeat-do, break)
  * 2019-07-08  [v2.2.0]  Optionally hang the browser in case of failure to be able to inspect the web page in developer tools
  * 2018-11-26  [v2.0.0]  Use headless Chrome instead of PhantomJS by default, introduce conditional if-then-else instructions
  * 2018-05-14  [v1.3.0]  Allow saving snapshots to sub-directories, file numbering per-directory, add `scroll` instruction

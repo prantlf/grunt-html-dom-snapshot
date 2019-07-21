@@ -450,9 +450,19 @@ module.exports = function (grunt) {
           },
           {
             repeat: 2,
-            do: {
-              click: 'input'
-            }
+            do: [
+              {
+                click: 'input'
+              },
+              {
+                if: {
+                  isFocused: 'input'
+                },
+                then: {
+                  break: 'input is in focus'
+                }
+              }
+            ]
           },
           {
             isFocused: 'input'

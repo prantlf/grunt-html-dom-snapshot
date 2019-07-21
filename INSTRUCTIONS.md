@@ -38,6 +38,7 @@ One of the instructions has to be present in every command. These properties are
 - [isNotSelected](#isnotselected)
 - [isNotVisible](#isnotvisible)
 - [isNotVisibleWithinViewport](#isnotvisiblewithinviewport)
+- [break](#break)
 - [abort](#abort)
 - [file](#file)
 
@@ -782,10 +783,49 @@ The input string should contain selector of the element to check.
 }
 ```
 
+## break
+Type: `String`
+
+Interrupts executing commands in a loop and advances to the next command on the level of the interrupted loop.
+
+```js
+{
+  url: 'https://google.com',
+  wait: '#lst-ib'
+},
+{
+  repeat: 10,
+  do: [
+    {
+      click: '#lst-ib'
+    },
+    {
+      if: {
+        isFocused: '#lst-ib'
+      },
+      then: {
+        break: 'input is in focus'
+      }
+    }
+  ]
+}
+```
+
 ## abort
 Type: `String`
 
-Stops executing firther commands and fails current Grunt task with the specified message. It can be used to stop the tests at a specific point and investigate the situation in the web browser.
+Stops executing further commands and fails current Grunt task with the specified message. It can be used to stop the tests at a specific point and investigate the situation in the web browser.
+
+```js
+{
+  url: 'https://google.com',
+  wait: '#lst-ib',
+  file: 'google'
+},
+{
+  abort: 'after the page loads'
+}
+```
 
 ## file
 Type: `String`
