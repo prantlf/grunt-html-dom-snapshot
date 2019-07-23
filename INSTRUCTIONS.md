@@ -132,7 +132,7 @@ At first the sub-commands from the `do` instruction are performed. Then the sub-
 {
   do: {
     keys: ['Tab']
-  }
+  },
   until: {
     isFocused: '#lst-ib'
   }
@@ -276,7 +276,7 @@ Set value of an input element either by providing the new value or using [keyboa
     selector: '#lst-ib',
     value: 'Hi'
   }
-}
+},
 {
   setValue: {
     selector: '#lst-ib',
@@ -381,13 +381,13 @@ Triggers a click event on an element with the specified selector.
 ## keys
 Type: `String|Array`
 
-Sends either a text (string) typed by keys, or single keystrokes (array) to the browser.
+Sends either a text (string) typed by keys, or single keystrokes (array) to the browser. Special keys are documented here https://w3c.github.io/webdriver/#keyboard-actions
 
 ```js
 {
   url: 'https://google.com',
   click: 'input[name=btnK]',
-  keys: 'test',
+  keys: ['abc', 'Enter'],
   file: 'google'
 }
 ```
@@ -795,7 +795,7 @@ Interrupts executing commands in a loop and advances to the next command on the 
 },
 {
   repeat: 10,
-  do: [
+  do: {
     {
       click: '#lst-ib'
     },
@@ -807,7 +807,7 @@ Interrupts executing commands in a loop and advances to the next command on the 
         break: 'input is in focus'
       }
     }
-  ]
+  }
 }
 ```
 
