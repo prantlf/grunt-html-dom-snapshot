@@ -63,6 +63,7 @@ module.exports = function (grunt) {
 
     'html-dom-snapshot': {
       options: {
+        verbose: true,
         webdriver: {
           desiredCapabilities: {
             browserName: 'chrome',
@@ -495,7 +496,7 @@ module.exports = function (grunt) {
           force: true
         },
         commands: [
-          {invalid: {}}
+          { invalid: {} }
         ]
       },
       'invalid-file': {
@@ -555,7 +556,7 @@ module.exports = function (grunt) {
           force: true
         },
         commands: [
-          {wait: true}
+          { wait: true }
         ]
       },
       'abort': {
@@ -563,8 +564,8 @@ module.exports = function (grunt) {
           force: true
         },
         commands: [
-          {abort: 'Stop.'},
-          {file: 'aborted'}
+          { abort: 'Stop.' },
+          { file: 'aborted' }
         ]
       }
     },
@@ -578,9 +579,10 @@ module.exports = function (grunt) {
         seleniumDownloadURL: 'http://selenium-release.storage.googleapis.com',
         drivers: {
           chrome: {
-            version: '74.0.3729.6',
+            version: '77.0.3865.40',
             arch: process.arch,
-            baseURL: 'https://chromedriver.storage.googleapis.com'
+            baseURL: 'https://chromedriver.storage.googleapis.com',
+            binary: '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary'
           }
           // https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
           // edge: {
@@ -588,16 +590,16 @@ module.exports = function (grunt) {
           // },
           // https://github.com/mozilla/geckodriver/releases
           // firefox: {
-          //   version: '0.24.0'
+          //   version: '0.25.0'
           // },
           // https://selenium-release.storage.googleapis.com/
           // ie: {
-          //   version: '3.14.0',
+          //   version: '3.150',
           //   arch: 'ia32'
           // },
           // https://selenium-release.storage.googleapis.com/
           // safari: {
-          //   version: '2.53'
+          //   version: '2.48'
           // }
         }
       }
