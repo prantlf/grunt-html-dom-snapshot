@@ -9,12 +9,12 @@ module.exports = {
     let keys = command.keys
     const separateKeys = Array.isArray(keys)
     const message = separateKeys
-                    ? 'Send keys "' + keys.join('", "') + '".'
-                    : 'Send text "' + keys + '".'
+      ? 'Send keys "' + keys.join('", "') + '".'
+      : 'Send text "' + keys + '".'
     if (!separateKeys) {
       keys = keys.split('')
     }
-    grunt.verbose.writeln(message)
+    grunt.output.writeln(message)
     return client.keys(keys)
   }
 }

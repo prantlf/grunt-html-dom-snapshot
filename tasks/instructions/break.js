@@ -7,7 +7,7 @@ module.exports = {
 
   perform: function (grunt, target, client, command) {
     const reason = command.break
-    grunt.verbose.writeln('Breaking the loop: "' + reason + '".')
+    grunt.output.writeln('Breaking the loop: "' + reason + '".')
     var error = new Error('Break the loop')
     error.break = reason
     throw error

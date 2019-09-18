@@ -9,7 +9,7 @@ module.exports = {
     const setValue = command.setValue
     const selector = setValue.selector
     const value = setValue.value
-    grunt.verbose.writeln('Set value of "' + selector +
+    grunt.output.writeln('Set value of "' + selector +
                           '" to "' + value + '".')
     return client.setValue(selector, value)
   }

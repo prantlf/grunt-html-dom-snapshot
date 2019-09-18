@@ -9,7 +9,7 @@ module.exports = {
     const addValue = command.addValue
     const selector = addValue.selector
     const value = addValue.value
-    grunt.verbose.writeln('Add "' + value + '" to value of "' +
+    grunt.output.writeln('Add "' + value + '" to value of "' +
                           selector + '".')
     return client.addValue(selector, value)
   }

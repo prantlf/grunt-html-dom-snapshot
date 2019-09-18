@@ -1,8 +1,8 @@
 'use strict'
 
-const {writeFile} = require('fs')
+const { writeFile } = require('fs')
 const pad = require('pad-left')
-const {basename, dirname, isAbsolute, join} = require('path')
+const { basename, dirname, isAbsolute, join } = require('path')
 const mkdirp = require('mkdirp')
 // Instructions are listed explicitly here to ensure their right execution
 // order in a command object. In this order they will be looked for and
@@ -53,7 +53,8 @@ module.exports = grunt => {
         fileNumberSeparator: '.',
         hangOnError: false,
         snapshotOnError: '_last-error',
-        force: false
+        force: false,
+        verbose: false
       })
       const target = this.target
       const pages = data.pages
@@ -74,6 +75,7 @@ module.exports = grunt => {
       let screenshotCount = 0
       let failed
       let commands
+      grunt.output = options.verbose ? grunt.log : grunt.verbose
       if (browserCapabilities) {
         grunt.log.warn('The property "browserCapabilities" is deprecated. ' +
                       'Use "webdriver.desiredCapabilities" with the same content.')
@@ -95,15 +97,15 @@ module.exports = grunt => {
       // TODO: Remove this, as soon as the moveTo command is re-implemented.
       webdriver.deprecationWarnings = false
 
-      grunt.verbose.writeln('Open web browser window for the target "' +
+      grunt.output.writeln('Open web browser window for the target "' +
                             target + '".')
       let client = webdriverio.remote(webdriver)
       client.init()
-            .then(setViewportSize)
-            .then(gatherCommands)
-            .then(performComplexCommands)
-            .then(() => {
-              grunt.log.ok(commands.length + ' ' +
+        .then(setViewportSize)
+        .then(gatherCommands)
+        .then(performComplexCommands)
+        .then(() => {
+          grunt.log.ok(commands.length + ' ' +
                   grunt.util.pluralize(commands.length, 'command/commands') +
                   ' performed, ' + urlCount + ' ' +
                   grunt.util.pluralize(urlCount, 'page/pages') +
@@ -112,38 +114,38 @@ module.exports = grunt => {
                   ' and ' + screenshotCount + ' ' +
                   grunt.util.pluralize(screenshotCount, 'screenshot/screenshots') +
                   ' written.')
-              return stop(false)
-            })
-            .catch(error => {
-              failed = true
-              grunt.verbose.error(error.stack)
-              grunt.log.error(error)
-            })
-            .then(() => {
-              if (failed && snapshotOnError) {
-                return makeFailureSnapshotAndScreenshot()
-                  .then(() => true, () => false)
-              }
-            })
-            .then(() => {
-              if (failed && !hangOnError) {
-                return stop(false)
-              }
-            })
-            .then(() => {
-              if (failed) {
-                const warn = options.force || hangOnError ? grunt.log.warn : grunt.fail.warn
-                warn('Taking snapshots failed.')
-                if (hangOnError) {
-                  warn('Letting the browser run for your investigation.\nTerminate this process or interrupt it by Ctrl+C, once you are finished.')
-                }
-              }
-            })
-            .then(() => {
-              if (!hangOnError) {
-                done()
-              }
-            })
+          return stop(false)
+        })
+        .catch(error => {
+          failed = true
+          grunt.output.error(error.stack)
+          grunt.log.error(error)
+        })
+        .then(() => {
+          if (failed && snapshotOnError) {
+            return makeFailureSnapshotAndScreenshot()
+              .then(() => true, () => false)
+          }
+        })
+        .then(() => {
+          if (failed && !hangOnError) {
+            return stop(false)
+          }
+        })
+        .then(() => {
+          if (failed) {
+            const warn = options.force || hangOnError ? grunt.log.warn : grunt.fail.warn
+            warn('Taking snapshots failed.')
+            if (hangOnError) {
+              warn('Letting the browser run for your investigation.\nTerminate this process or interrupt it by Ctrl+C, once you are finished.')
+            }
+          }
+        })
+        .then(() => {
+          if (!hangOnError) {
+            done()
+          }
+        })
 
       process
         .on('SIGINT', stop.bind(null, true))
@@ -182,7 +184,7 @@ module.exports = grunt => {
             .reduce((scenarios, scenario) =>
               scenarios.concat(grunt.file.expand(scenario)), [])
             .reduce((scenarios, scenario) => {
-              grunt.verbose.writeln('Load scenario  "' + scenario + '".')
+              grunt.output.writeln('Load scenario  "' + scenario + '".')
               if (!isAbsolute(scenario)) {
                 scenario = join(currentDirectory, scenario)
               }
@@ -199,7 +201,7 @@ module.exports = grunt => {
       }
 
       function setViewportSize () {
-        grunt.verbose.writeln('Resize viewport to ' + lastViewport.width +
+        grunt.output.writeln('Resize viewport to ' + lastViewport.width +
                               'x' + lastViewport.height + '.')
         return client.setViewportSize(lastViewport)
       }
@@ -241,7 +243,7 @@ module.exports = grunt => {
       }
 
       function performConditionalCommand (ifCommands, command) {
-        grunt.verbose.writeln('Testing a condition.')
+        grunt.output.writeln('Testing a condition.')
         const promise = new Promise((resolve, reject) => {
           performCommands(ifCommands)
             .then(() => performConditionalBranch(command.then, true)
@@ -249,15 +251,15 @@ module.exports = grunt => {
             .catch(() => performConditionalBranch(command.else, false)
               .then(resolve, reject))
         })
-        promise.finally(() => grunt.verbose.writeln('The conditional command ended.'))
+        promise.finally(() => grunt.output.writeln('The conditional command ended.'))
         return promise
       }
 
       function performConditionalBranch (branch, result) {
         const commands = ensureArray(branch)
-        grunt.verbose.writeln('The condition evaluated to ' + result + '.')
+        grunt.output.writeln('The condition evaluated to ' + result + '.')
         if (commands) {
-          grunt.verbose.writeln('Continuing with the conditional branch.')
+          grunt.output.writeln('Continuing with the conditional branch.')
           return performComplexCommands(commands)
         }
         return Promise.resolve()
@@ -267,7 +269,7 @@ module.exports = grunt => {
         function runWhile () {
           return new Promise((resolve, reject) => {
             updatePromise(reject)
-            grunt.verbose.writeln('Testing a condition before loop.')
+            grunt.output.writeln('Testing a condition before loop.')
             performCommands(whileCommands)
               .then(() => {
                 performLoopBody(command.do, 'Continuing with')
@@ -297,7 +299,7 @@ module.exports = grunt => {
             updatePromise(reject)
             performLoopBody(command.do, 'Starting with')
               .then(() => {
-                grunt.verbose.writeln('Testing a condition after loop.')
+                grunt.output.writeln('Testing a condition after loop.')
                 performCommands(untilCommands)
                   .then(() => resolve())
                   .catch(() => runUntil()
@@ -353,7 +355,7 @@ module.exports = grunt => {
       function performLoopBody (body, prefix) {
         const commands = ensureArray(body)
         if (commands) {
-          grunt.verbose.writeln(prefix + ' the loop body.')
+          grunt.output.writeln(prefix + ' the loop body.')
           return performComplexCommands(commands)
         }
         return Promise.resolve()
@@ -369,7 +371,7 @@ module.exports = grunt => {
           if (promise instanceof Promise) {
             promise.finally(() => {
               clearTimeout(timer)
-              grunt.verbose.writeln('The loop ended.')
+              grunt.output.writeln('The loop ended.')
             })
           } else {
             rejectAll = promise
@@ -435,14 +437,14 @@ module.exports = grunt => {
             const detected = instruction.detected
             if (detected) {
               return performInstruction(instruction.perform(grunt, target,
-                 client, command, commandOptions, detected))
+                client, command, commandOptions, detected))
             }
           }), viewportSet)
-        .then(() => {
-          if (file) {
-            return makeSnapshotAndScreenshot()
-          }
-        })
+          .then(() => {
+            if (file) {
+              return makeSnapshotAndScreenshot()
+            }
+          })
 
         function performInstruction (promise) {
           if (instructionDelay) {
@@ -470,12 +472,12 @@ module.exports = grunt => {
 
         function makeSnapshot () {
           return client.getHTML('html')
-                      .then(saveContent)
+            .then(saveContent)
         }
 
         function makeScreenshot () {
           return client.screenshot()
-                      .then(saveImage)
+            .then(saveImage)
         }
 
         function saveContent (html) {
@@ -540,9 +542,9 @@ module.exports = grunt => {
       function makeScreenshotName (fileName) {
         fileName = fileName.toLowerCase()
         return fileName.endsWith('.html')
-               ? fileName.substr(0, fileName.length - 5)
-               : fileName.endsWith('.htm')
-               ? fileName.substr(0, fileName.length - 4) : fileName
+          ? fileName.substr(0, fileName.length - 5)
+          : fileName.endsWith('.htm')
+            ? fileName.substr(0, fileName.length - 4) : fileName
       }
 
       function makeFailureSnapshotAndScreenshot () {
@@ -560,12 +562,12 @@ module.exports = grunt => {
 
       function makeFailureSnapshot () {
         return client.getHTML('html')
-                     .then(saveFailureContent)
+          .then(saveFailureContent)
       }
 
       function makeFailureScreenshot () {
         return client.screenshot()
-                     .then(saveFailureImage)
+          .then(saveFailureImage)
       }
 
       function saveFailureContent (html) {

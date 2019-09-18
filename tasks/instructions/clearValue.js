@@ -7,7 +7,7 @@ module.exports = {
 
   perform: function (grunt, target, client, command) {
     const clearValue = command.clearValue
-    grunt.verbose.writeln('Clear value of "' + clearValue + '".')
+    grunt.output.writeln('Clear value of "' + clearValue + '".')
     return client.clearElement(clearValue)
   }
 }

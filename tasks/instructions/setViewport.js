@@ -17,11 +17,11 @@ module.exports = {
     }
     if (setViewport.width === lastViewport.width &&
         setViewport.height === lastViewport.height) {
-      grunt.verbose.writeln('Retaining ' + prefix + 'viewport size ' +
+      grunt.output.writeln('Retaining ' + prefix + 'viewport size ' +
         setViewport.width + 'x' + setViewport.height + '.')
       return Promise.resolve()
     }
-    grunt.verbose.writeln('Resize viewport to ' + prefix +
+    grunt.output.writeln('Resize viewport to ' + prefix +
       setViewport.width + 'x' + setViewport.height + '.')
     lastViewport.width = setViewport.width
     lastViewport.height = setViewport.height

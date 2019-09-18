@@ -7,7 +7,7 @@ module.exports = {
 
   perform: function (grunt, target, client, command) {
     const reason = command.abort
-    grunt.verbose.writeln('Aborting: "' + reason + '".')
+    grunt.output.writeln('Aborting: "' + reason + '".')
     throw new Error('Aborted: "' + reason +
                     '" in the target "' + target + '".\n' +
                     JSON.stringify(command))

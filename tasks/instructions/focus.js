@@ -13,7 +13,7 @@ module.exports = {
 
   perform: function (grunt, target, client, command) {
     const focus = command.focus
-    grunt.verbose.writeln('Focus "' + focus + '".')
+    grunt.output.writeln('Focus "' + focus + '".')
     return client.execute(function (selector) {
       var element = document.querySelector(selector)
       if (!element) {
@@ -21,10 +21,10 @@ module.exports = {
       }
       element.focus()
     }, focus)
-    .then(function (value) {
-      if (value === false) {
-        throw new Error('"' + focus + '" does not exist.')
-      }
-    })
+      .then(function (value) {
+        if (value === false) {
+          throw new Error('"' + focus + '" does not exist.')
+        }
+      })
   }
 }

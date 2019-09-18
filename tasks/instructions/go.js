@@ -13,7 +13,7 @@ module.exports = {
                       '" in the target "' + target + '".\n' +
                       JSON.stringify(command))
     }
-    grunt.verbose.writeln('Perform navigation: "' + go + '".')
+    grunt.output.writeln('Perform navigation: "' + go + '".')
     return client[go]()
   }
 }

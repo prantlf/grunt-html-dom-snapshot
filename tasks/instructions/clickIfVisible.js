@@ -6,15 +6,14 @@ module.exports = {
   },
 
   perform: function (grunt, target, client, command) {
-    console.log('target "' + target + '".')
     const clickIfVisible = command.clickIfVisible
-    grunt.verbose.writeln('Click on "' + clickIfVisible + '" if visible.')
+    grunt.output.writeln('Checking visibility of "' + clickIfVisible + '"...')
     client.isVisible(clickIfVisible).then(function (value) {
       if (value === true) {
-        grunt.verbose.writeln('Visible: "' + clickIfVisible + '".')
+        grunt.output.writeln('Click on "' + clickIfVisible + '".')
         return client.click(clickIfVisible)
       } else {
-        grunt.verbose.writeln('Not visible: "' + clickIfVisible + '".')
+        grunt.output.writeln('"' + clickIfVisible + '" is not visible.')
       }
     })
   }
