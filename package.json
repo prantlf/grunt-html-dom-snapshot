@@ -39,12 +39,12 @@
   "devDependencies": {
     "grunt": "1.0.4",
     "grunt-contrib-clean": "2.0.0",
-    "grunt-contrib-connect": "2.0.0",
+    "grunt-contrib-connect": "2.1.0",
     "grunt-contrib-nodeunit": "2.0.0",
     "grunt-coveralls": "2.0.0",
     "grunt-istanbul": "0.8.0",
     "grunt-selenium-standalone": "1.0.1",
-    "grunt-standard": "3.1.0"
+    "grunt-standard": "3.2.0"
   },
   "peerDependencies": {
     "grunt": ">=1.0.4"
