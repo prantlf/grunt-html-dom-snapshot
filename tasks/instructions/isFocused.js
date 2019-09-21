@@ -8,7 +8,8 @@ module.exports = {
   perform: function (grunt, target, client, command) {
     const isFocused = command.isFocused
     grunt.log.ok('Checking if "' + isFocused + '" is focused.')
-    return client.hasFocus(isFocused)
+    return client.$(isFocused)
+      .then(element => element.isFocused())
       .then(function (value) {
         if (value !== true) {
           throw new Error('"' + isFocused + '" is not focused.')

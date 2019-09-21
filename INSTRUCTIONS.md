@@ -18,7 +18,9 @@ One of the instructions has to be present in every command. These properties are
 - [selectOptionByValue](#selectoptionbyvalue)
 - [moveCursor](#movecursor)
 - [click](#click)
+- [clickIfVisible](#clickIfVisible)
 - [keys](#keys)
+- [elementSendKeys](#elementSendKeys)
 - [wait](#wait)
 - [hasAttribute](#hasattribute)
 - [hasClass](#hasclass)
@@ -365,6 +367,19 @@ Moves the mouse cursor to an element with the specified selector. If an object i
 }
 ```
 
+## clickIfVisible
+Type: `String`
+
+Triggers a click event on an element with the specified selector, if the elment is visible. Otherwise continues silently.
+
+```js
+{
+  url: 'https://google.com',
+  clickIfVisible: 'input[name=btnK]',
+  file: 'google'
+}
+```
+
 ## click
 Type: `String`
 
@@ -388,6 +403,26 @@ Sends either a text (string) typed by keys, or single keystrokes (array) to the 
   url: 'https://google.com',
   click: 'input[name=btnK]',
   keys: 'test',
+  file: 'google'
+}
+```
+
+## elementSendKeys
+Type: `Object`
+
+Sends either a text (string), or single keystrokes (array) to an element in the browser. The object should contain the following properties:
+
+* `selector` - `String` - selector of the element to send the keys or text to.
+* `text` - `String` - the text to send to the element.
+* `keys` - `Array<String>` - the keystrokes to send to the element.
+
+```js
+{
+  url: 'https://google.com',
+  elementSendKeys: {
+    selector: 'input[name=btnK]',
+    text: 'test'
+  },
   file: 'google'
 }
 ```
@@ -433,7 +468,8 @@ If the selector is prefixed by the exclamation mark ("!"), the waiting waiting w
 {
   url: 'https://google.com',
   wait: function (browser) {
-    return browser.waitForExist('#footer', 1000);
+    return browser.$('#footer')
+      .then(element => element.waitForExist(1000));
   },
   file: 'google'
 }

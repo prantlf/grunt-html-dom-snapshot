@@ -26,6 +26,7 @@ module.exports = {
     lastViewport.width = setViewport.width
     lastViewport.height = setViewport.height
     lastViewport.explicit = true
-    return client.setViewportSize(setViewport)
+    return client.setWindowRect(
+      null, null, setViewport.width, setViewport.height)
   }
 }

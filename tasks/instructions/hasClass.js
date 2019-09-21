@@ -12,7 +12,8 @@ module.exports = {
     const expectedList = expected.split(/ +/)
     grunt.log.ok('Looking for classes "' + expected + '" at "' +
                  selector + '".')
-    return client.getAttribute(selector, 'class')
+    return client.$(selector)
+      .then(element => element.getAttribute('class'))
       .then(function (actual) {
         const actualList = (actual || '').split(/ +/)
         const method = hasClass.allRequired ? 'every' : 'some'

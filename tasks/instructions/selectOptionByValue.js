@@ -11,6 +11,7 @@ module.exports = {
     const value = selectOptionByValue.value
     grunt.log.ok('Selecting option with value "' + value + '" for "' +
                  selector + '".')
-    return client.selectByValue(selector, value)
+    return client.$(selector)
+      .then(element => element.selectByAttribute('value', value))
   }
 }

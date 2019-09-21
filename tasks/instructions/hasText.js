@@ -11,7 +11,8 @@ module.exports = {
     const expected = hasText.value
     grunt.log.ok('Comparing text at "' + selector + '" to "' +
                  expected + '".')
-    return client.getText(selector)
+    return client.$(selector)
+      .then(element => element.getText())
       .then(function (actual) {
         if (actual != expected) { // eslint-disable-line eqeqeq
           throw new Error('Text at "' + selector + '" was not "' +

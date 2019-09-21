@@ -14,6 +14,8 @@ This module provides a grunt multi-task for taking "snapshots" of the HTML marku
 
 In addition, recent versions can save "screenshots" of browser viewport at the same time to support visual testing by comparing the look of the page with the baseline picture. Actually, this task is quickly evolving to offer end-to-end test capabilities too.
 
+See the [migration documentation] about compatibility of older versions with the latest v4.
+
 Additional Grunt tasks, which are usually used to support test automation:
 
 * [grunt-accessibility] - checks accessibility of HTML markup according to the [WCAG] standard
@@ -72,9 +74,10 @@ Default options support the most usual usage scenario:
 'html-dom-snapshot': {
   options: {
     webdriver: {
-      desiredCapabilities: {
+      logLevel: 'warn',
+      capabilities: {
         browserName: 'chrome',
-        chromeOptions: {
+        'goog:chromeOptions': {
           args: ['--headless']
         }
       }
@@ -109,7 +112,7 @@ Make sure, that you have the stable version of Chrome installed, if you leave th
 Type: `Object`
 Default value: see above
 
-Chooses the web browser to take snapshots with, Selenium host and other parameters supported by WebdriverIO as input for the  `webdriverio.remote` method. This object has to contain the property `desiredCapabilities` with `browserName` and optionally other properties depending on the web browser driver. The following browser names are the most usually used: `chrome`, `edge`, `firefox`, `ie`, `phantomjs`, `safari`. Depending on what browser you specify, you will need to load the corresponding Selenium driver. These are current versions of the drivers:
+Chooses the web browser to take snapshots with, Selenium host and other parameters supported by WebdriverIO as input for the  `webdriverio.remote` method. This object has to contain the property `capabilities` with `browserName` and optionally other properties depending on the web browser driver. The following browser names are the most usually used: `chrome`, `edge`, `firefox`, `ie`, `phantomjs`, `safari`. Depending on what browser you specify, you will need to load the corresponding Selenium driver. These are current versions of the drivers:
 
 ```js
 'selenium_standalone': {
@@ -118,7 +121,7 @@ Chooses the web browser to take snapshots with, Selenium host and other paramete
     seleniumDownloadURL: 'http://selenium-release.storage.googleapis.com',
     drivers: {
       chrome: {
-        version: '74.0.3729.6',
+        version: '77.0.3865.40',
         arch: process.arch,
         baseURL: 'https://chromedriver.storage.googleapis.com'
       },
@@ -147,6 +150,8 @@ Chooses the web browser to take snapshots with, Selenium host and other paramete
   }
 }
 ```
+
+Th other often used property is `logLevel`, set to "warn" by default. Valid values are "trace", "debug", "info", "warn", "error" and "silent".
 
 #### viewport
 Type: `Object`
@@ -288,7 +293,9 @@ One of the [instructions] has to be present in every command, otherwise its exec
 * [selectOptionByValue](INSTRUCTIONS.md#selectoptionbyvalue)
 * [moveCursor](INSTRUCTIONS.md#movecursor)
 * [click](INSTRUCTIONS.md#click)
+* [clickIfVisible](INSTRUCTIONS.md#clickIfVisible)
 * [keys](INSTRUCTIONS.md#keys)
+* [elementSendKeys](INSTRUCTIONS.md#elementSendKeys)
 * [wait](INSTRUCTIONS.md#wait)
 * [hasAttribute](INSTRUCTIONS.md#hasattribute)
 * [hasClass](INSTRUCTIONS.md#hasclass)
@@ -349,8 +356,12 @@ The following array of commands within the `commands` property will change locat
 },
 {
   wait: function (browser) {
-    return browser.click('#search')
-        .waitForExist('#results', 1000);
+    return browser.$('#search')
+      .then(element => {
+        element.click();
+        return element;
+      })
+      .then(element => element.waitForExist(1000));
   },
   file: 'results-shown'
 }
@@ -484,7 +495,7 @@ grunt.initConfig({
       seleniumDownloadURL: 'https://selenium-release.storage.googleapis.com',
       drivers: {
         chrome: {
-          version: '71.0.3578.33',
+          version: '77.0.3865.40',
           arch: process.arch,
           baseURL: 'https://chromedriver.storage.googleapis.com'
         }
@@ -543,8 +554,8 @@ The `phantomjs` binary will be accessible in `./node_modules/.bin`. If you do no
 'html-dom-snapshot': {
   options: {
     webdriver: {
-      desiredCapabilities: {
-        browserName: phantomjs'
+      capabilities: {
+        browserName: 'phantomjs'
       }
     }
   }
@@ -559,9 +570,9 @@ The default configuration of this task will choose Chrome in the headless mode s
 'html-dom-snapshot': {
   options: {
     webdriver: {
-      desiredCapabilities: {
+      capabilities: {
         browserName: 'chrome',
-        chromeOptions: {
+        'goog:chromeOptions': {
           args: ['--headless']
         }
       }
@@ -576,24 +587,24 @@ If you want to run Chrome in the windowed mode, override the `chromeOptions` obj
 'html-dom-snapshot': {
   options: {
     webdriver: {
-      desiredCapabilities: {
+      capabilities: {
         browserName: 'chrome',
-        chromeOptions: {}
+        'goog:chromeOptions': {}
       }
     }
   }
 }
 ```
 
-If you want to run Chrome in Travis CI, override the `chromeOptions` object with yours and disable the sandbox with `--no-sandbox`. **Chrome sandbox appears not working in Docker containers used by Travis**, but Chrome enbales it by default there. For example:
+If you want to run Chrome in Travis CI, override the `goog:chromeOptions` object with yours and disable the sandbox with `--no-sandbox`. **Chrome sandbox appears not working in Docker containers used by Travis**, but Chrome enbales it by default there. For example:
 
 ```js
 'html-dom-snapshot': {
   options: {
     webdriver: {
-      desiredCapabilities: {
+      capabilities: {
         browserName: 'chrome',
-        chromeOptions: {
+        'goog:chromeOptions': {
           args: ['--headless', '--no-sandbox']
         }
       }
@@ -610,6 +621,7 @@ your code using Grunt.
 
 ## Release History
 
+ * 2019-09-21  [v4.0.0]  Upgrade to WebDriverIO 5, add the instruction "elementSendKeys"
  * 2019-07-21  [v3.0.0]  Report unrecognised instructions as errors, introduce new instructions (focus, while-do, do-until, repeat-do, break)
  * 2019-07-08  [v2.2.0]  Optionally hang the browser in case of failure to be able to inspect the web page in developer tools
  * 2018-11-26  [v2.0.0]  Use headless Chrome instead of PhantomJS by default, introduce conditional if-then-else instructions
@@ -635,6 +647,7 @@ Copyright (c) 2017-2019 Ferdinand Prantl
 
 Licensed under the MIT license.
 
+[migration documentation]: ./MIGRATION.md
 [node]: https://nodejs.org
 [npm]: https://npmjs.org
 [package.json]: https://docs.npmjs.com/files/package.json

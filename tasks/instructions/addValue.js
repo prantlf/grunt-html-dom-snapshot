@@ -11,6 +11,7 @@ module.exports = {
     const value = addValue.value
     grunt.output.writeln('Add "' + value + '" to value of "' +
                           selector + '".')
-    return client.addValue(selector, value)
+    return client.$(selector)
+      .then(element => element.addValue(value))
   }
 }

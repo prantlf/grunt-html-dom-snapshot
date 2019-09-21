@@ -21,12 +21,13 @@ module.exports = {
             wait = wait.substr(1)
             grunt.output.writeln('Wait for "' + wait +
                                   '" disappearing ' + timeout + 'ms.')
-            return client.waitForExist(wait,
-              options.selectorTimeout, true)
+            return client.$(wait)
+              .then(element => element.waitForExist(timeout, true))
           }
           grunt.output.writeln('Wait for "' + wait +
                                 '" appearing.' + timeout + 'ms.')
-          return client.waitForExist(wait, timeout)
+          return client.$(wait)
+            .then(element => element.waitForExist(timeout))
         } else if (typeof wait === 'number') {
           grunt.output.writeln('Wait for ' + wait + 'ms.')
           return new Promise(function (resolve) {

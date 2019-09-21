@@ -14,6 +14,7 @@ module.exports = {
     const offset = moveCursor.offset || {}
     grunt.output.writeln('Move cursor to "' + selector +
                           '", offset ' + JSON.stringify(offset) + '.')
-    return client.moveToObject(selector, offset.left, offset.top)
+    return client.$(selector)
+      .then(element => element.moveTo(offset.left, offset.top))
   }
 }

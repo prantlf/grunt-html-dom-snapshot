@@ -10,13 +10,12 @@ module.exports = {
     if (typeof scroll === 'string') {
       scroll = { selector: scroll }
     }
-    const offset = scroll.offset
-    if (offset) {
-      grunt.output.writeln('Move cursor to ' + JSON.stringify(offset) + '.')
-      return client.scroll(offset.left, offset.top)
+    if (scroll.offset) {
+      throw new Error('Scrolling to an offset is not supported.')
     }
     const selector = scroll.selector
-    grunt.output.writeln('Move cursor to "' + selector + '".')
-    return client.scroll(selector)
+    grunt.output.writeln('Scroll to "' + selector + '".')
+    return client.$(selector)
+      .then(element => element.scrollIntoView())
   }
 }
