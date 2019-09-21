@@ -261,8 +261,12 @@ module.exports = grunt => {
             .catch(() => performConditionalBranch(command.else, false)
               .then(resolve, reject))
         })
-        promise.finally(() => grunt.output.writeln('The conditional command ended.'))
+        promise.then(reportEnd, reportEnd)
         return promise
+
+        function reportEnd () {
+          grunt.output.writeln('The conditional command ended.')
+        }
       }
 
       function performConditionalBranch (branch, result) {
@@ -379,13 +383,15 @@ module.exports = grunt => {
 
         return function (promise) {
           if (promise instanceof Promise) {
-            promise.finally(() => {
-              clearTimeout(timer)
-              grunt.output.writeln('The loop ended.')
-            })
+            promise.then(finishLoop, finishLoop)
           } else {
             rejectAll = promise
           }
+        }
+
+        function finishLoop () {
+          clearTimeout(timer)
+          grunt.output.writeln('The loop ended.')
         }
       }
 
