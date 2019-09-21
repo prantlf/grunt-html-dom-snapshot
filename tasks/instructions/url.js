@@ -8,6 +8,6 @@ module.exports = {
   perform: function (grunt, target, client, command) {
     const url = command.url
     grunt.log.ok('Navigate to "' + url + '".')
-    return client.url(url)
+    return client.navigateTo(url)
   }
 }

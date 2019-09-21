@@ -8,7 +8,8 @@ module.exports = {
   perform: function (grunt, target, client, command) {
     const isExisting = command.isExisting
     grunt.log.ok('Checking if "' + isExisting + '" exists.')
-    return client.isExisting(isExisting)
+    return client.$(isExisting)
+      .then(element => element.isExisting())
       .then(function (value) {
         if (value !== true) {
           throw new Error('"' + isExisting + '" does not exist.')

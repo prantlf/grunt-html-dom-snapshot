@@ -11,6 +11,7 @@ module.exports = {
     const value = setValue.value
     grunt.output.writeln('Set value of "' + selector +
                           '" to "' + value + '".')
-    return client.setValue(selector, value)
+    return client.$(selector)
+      .then(element => element.setValue(value))
   }
 }

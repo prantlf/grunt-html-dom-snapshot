@@ -65,9 +65,9 @@ module.exports = function (grunt) {
       options: {
         verbose: true,
         webdriver: {
-          desiredCapabilities: {
+          capabilities: {
             browserName: 'chrome',
-            chromeOptions: {
+            'goog:chromeOptions': {
               args: ['--headless', '--no-sandbox']
             }
           }
@@ -123,7 +123,8 @@ module.exports = function (grunt) {
           {
             url: 'http://localhost:8881/test/pages/dynamic-custom.html',
             wait: function (browser) {
-              return browser.waitForExist('.dynamic', 1000)
+              return browser.$('.dynamic')
+                .then(element => element.waitForExist(1000))
             },
             file: 'dynamic-custom'
           },
@@ -196,7 +197,8 @@ module.exports = function (grunt) {
             moveCursor: 'input',
             click: 'input',
             wait: function (browser) {
-              return browser.hasFocus('input')
+              return browser.$('input')
+                .then(element => element.isFocused())
                 .then(function (value) {
                   if (value !== true) {
                     throw new Error('click failed')
@@ -205,15 +207,11 @@ module.exports = function (grunt) {
             }
           },
           {
-            scroll: {
-              offset: {
-                top: 0,
-                left: 0
-              }
-            },
+            scroll: 'body',
             clickIfVisible: 'input',
             wait: function (browser) {
-              return browser.hasFocus('input')
+              return browser.$('input')
+                .then(element => element.isFocused())
                 .then(function (value) {
                   if (value === false) {
                     throw new Error('clickIfVisible on body failed')
@@ -227,7 +225,8 @@ module.exports = function (grunt) {
               value: 'Hi'
             },
             wait: function (browser) {
-              return browser.getValue('input')
+              return browser.$('input')
+                .then(element => element.getValue())
                 .then(function (value) {
                   if (value !== 'Hi') {
                     throw new Error('setValue failed')
@@ -241,7 +240,8 @@ module.exports = function (grunt) {
               value: ' there!'
             },
             wait: function (browser) {
-              return browser.getValue('input')
+              return browser.$('input')
+                .then(element => element.getValue())
                 .then(function (value) {
                   if (value !== 'Hi there!') {
                     throw new Error('addValue failed')
@@ -252,7 +252,8 @@ module.exports = function (grunt) {
           {
             clearValue: 'input',
             wait: function (browser) {
-              return browser.getValue('input')
+              return browser.$('input')
+                .then(element => element.getValue())
                 .then(function (value) {
                   if (value !== '') {
                     throw new Error('clearValue failed')
@@ -264,7 +265,8 @@ module.exports = function (grunt) {
             click: 'input',
             keys: 'test',
             wait: function (browser) {
-              return browser.getValue('input')
+              return browser.$('input')
+                .then(element => element.getValue())
                 .then(function (value) {
                   if (value !== 'test') {
                     throw new Error('sending text failed')
@@ -273,9 +275,26 @@ module.exports = function (grunt) {
             }
           },
           {
+            clearValue: 'input',
+            elementSendKeys: {
+              selector: 'input',
+              text: 'Test'
+            },
+            wait: function (browser) {
+              return browser.$('input')
+                .then(element => element.getValue())
+                .then(function (value) {
+                  if (value !== 'Test') {
+                    throw new Error('sending text to an element failed')
+                  }
+                })
+            }
+          },
+          {
             keys: ['Home', 'Delete'],
             wait: function (browser) {
-              return browser.getValue('input')
+              return browser.$('input')
+                .then(element => element.getValue())
                 .then(function (value) {
                   if (value !== 'est') {
                     throw new Error('sending key strokes failed', value)
@@ -322,7 +341,8 @@ module.exports = function (grunt) {
           coverage ? { wait: 1 } : {
             focus: 'body',
             wait: function (browser) {
-              return browser.hasFocus('body')
+              return browser.$('body')
+                .then(element => element.isFocused())
                 .then(function (value) {
                   if (value !== false) {
                     throw new Error('focus on body failed')
@@ -333,7 +353,8 @@ module.exports = function (grunt) {
           {
             clickIfVisible: 'input',
             wait: function (browser) {
-              return browser.hasFocus('input')
+              return browser.$('input')
+                .then(element => element.isFocused())
                 .then(function (value) {
                   if (value !== false) {
                     throw new Error('clickIfVisible on invisible input failed')
@@ -501,9 +522,9 @@ module.exports = function (grunt) {
       },
       'invalid-file': {
         options: {
-          browserCapabilities: {
+          capabilities: {
             browserName: 'chrome',
-            chromeOptions: {
+            'goog:chromeOptions': {
               args: ['--headless', '--no-sandbox']
             }
           },

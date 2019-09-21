@@ -10,8 +10,8 @@ const mkdirp = require('mkdirp')
 const instructionKeys = [
   'setViewport', 'url', 'go', 'scroll', 'focus', 'clearValue', 'setValue',
   'addValue', 'selectOptionByIndex', 'selectOptionByValue', 'moveCursor',
-  'click', 'clickIfVisible', 'keys', 'wait', 'hasAttribute', 'hasClass',
-  'hasValue', 'hasText', 'hasInnerHtml', 'hasOuterHtml',
+  'click', 'clickIfVisible', 'keys', 'elementSendKeys', 'wait', 'hasAttribute',
+  'hasClass', 'hasValue', 'hasText', 'hasInnerHtml', 'hasOuterHtml',
   'isEnabled', 'isExisting', 'isFocused', 'isSelected', 'isVisible',
   'isVisibleWithinViewport', 'isNotEnabled', 'isNotExisting',
   'isNotFocused', 'isNotSelected', 'isNotVisible',
@@ -27,14 +27,15 @@ module.exports = grunt => {
   grunt.registerMultiTask('html-dom-snapshot',
     'Takes snapshots of the HTML markup on web pages - their immediate DOM content - and screenshots of their viewport - how they look like.',
     function () {
-      const webdriverio = require('webdriverio')
+      const { remote } = require('webdriverio')
       const done = this.async()
       const data = this.data
       const options = this.options({
         webdriver: {
-          desiredCapabilities: {
+          logLevel: 'warn',
+          capabilities: {
             browserName: 'chrome',
-            chromeOptions: {
+            'goog:chromeOptions': {
               args: ['--headless']
             }
           }
@@ -64,6 +65,7 @@ module.exports = grunt => {
       const viewport = options.viewport
       const webdriver = options.webdriver
       const browserCapabilities = options.browserCapabilities
+      const desiredCapabilities = options.desiredCapabilities
       const hangOnError = options.hangOnError
       const snapshotOnError = options.snapshotOnError
       const lastViewport = {
@@ -81,6 +83,11 @@ module.exports = grunt => {
                       'Use "webdriver.desiredCapabilities" with the same content.')
         webdriver.desiredCapabilities = browserCapabilities
         delete options.browserCapabilities
+      } else if (desiredCapabilities) {
+        grunt.log.warn('The property "desiredCapabilities" is deprecated. ' +
+                      'Use "webdriver.desiredCapabilities" with the same content.')
+        webdriver.capabilities = desiredCapabilities
+        delete options.desiredCapabilities
       }
       if (pages) {
         grunt.log.warn('The property "pages" is deprecated. ' +
@@ -94,13 +101,15 @@ module.exports = grunt => {
       } else {
         snapshots = options.snapshots
       }
-      // TODO: Remove this, as soon as the moveTo command is re-implemented.
-      webdriver.deprecationWarnings = false
+      if (!webdriver.logLevel) {
+        webdriver.logLevel = 'warn'
+      }
 
       grunt.output.writeln('Open web browser window for the target "' +
                             target + '".')
-      let client = webdriverio.remote(webdriver)
-      client.init()
+      let client
+      remote(webdriver)
+        .then(browser => (client = browser))
         .then(setViewportSize)
         .then(gatherCommands)
         .then(performComplexCommands)
@@ -163,10 +172,10 @@ module.exports = grunt => {
           client = null
           grunt.log.writeln('Closing the browser in one second...')
           const result = oldClient
-            .end()
+            .deleteSession()
             // Workaround for hanging chromedriver; for more information
             // see https://github.com/vvo/selenium-standalone/issues/351
-            .pause(1000)
+            .then(() => oldClient.pause(1000))
           // The promise returned from pause() appears to never resolve.
           setTimeout(exitProcess, 1500)
           return result
@@ -203,7 +212,8 @@ module.exports = grunt => {
       function setViewportSize () {
         grunt.output.writeln('Resize viewport to ' + lastViewport.width +
                               'x' + lastViewport.height + '.')
-        return client.setViewportSize(lastViewport)
+        return client.setWindowRect(
+          null, null, lastViewport.width, lastViewport.height)
       }
 
       function ensureDirectory (name) {
@@ -471,12 +481,13 @@ module.exports = grunt => {
         }
 
         function makeSnapshot () {
-          return client.getHTML('html')
+          return client.$('html')
+            .then(element => element.getHTML(true))
             .then(saveContent)
         }
 
         function makeScreenshot () {
-          return client.screenshot()
+          return client.takeScreenshot()
             .then(saveImage)
         }
 
@@ -561,12 +572,13 @@ module.exports = grunt => {
       }
 
       function makeFailureSnapshot () {
-        return client.getHTML('html')
+        return client.$('html')
+          .then(element => element.getHTML(true))
           .then(saveFailureContent)
       }
 
       function makeFailureScreenshot () {
-        return client.screenshot()
+        return client.takeScreenshot()
           .then(saveFailureImage)
       }
 
@@ -604,7 +616,7 @@ module.exports = grunt => {
         const directory = dirname(fileName)
         return ensureDirectory(directory)
           .then(() => new Promise((resolve, reject) =>
-            writeFile(fileName, Buffer.from(png.value, 'base64'),
+            writeFile(fileName, Buffer.from(png, 'base64'),
               error => {
                 if (error) {
                   reject(error)

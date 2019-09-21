@@ -11,7 +11,8 @@ module.exports = {
     const expected = hasOuterHtml.value
     grunt.log.ok('Comparing outer HTML at "' + selector + '" to "' +
                  expected + '".')
-    return client.getHTML(selector, true)
+    return client.$(selector)
+      .then(element => element.getHTML(true))
       .then(function (actual) {
         if (actual != expected) { // eslint-disable-line eqeqeq
           throw new Error('Outer HTML at "' + selector + '" was not "' +

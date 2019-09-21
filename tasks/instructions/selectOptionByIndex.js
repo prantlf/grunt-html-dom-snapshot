@@ -11,6 +11,7 @@ module.exports = {
     const index = selectOptionByIndex.index
     grunt.log.ok('Selecting option with index "' + index + '" for "' +
                  selector + '".')
-    return client.selectByIndex(selector, index)
+    return client.$(selector)
+      .then(element => element.selectByIndex(index))
   }
 }

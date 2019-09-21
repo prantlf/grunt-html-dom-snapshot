@@ -12,7 +12,8 @@ module.exports = {
     const expected = hasAttribute.value
     grunt.log.ok('Looking for attribute "' + name + '" with value "' +
                  expected + '" at "' + selector + '".')
-    return client.getAttribute(selector, name)
+    return client.$(selector)
+      .then(element => element.getAttribute(name))
       .then(function (actual) {
         if (actual != expected) { // eslint-disable-line eqeqeq
           throw new Error('Value of attribute "' + name + '" at "' +

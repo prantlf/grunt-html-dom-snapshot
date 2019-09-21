@@ -1,5 +1,7 @@
 'use strict'
 
+const { findElement } = require('./utils/elements')
+
 module.exports = {
   detect: function (command) {
     return !!command.clickIfVisible
@@ -8,13 +10,19 @@ module.exports = {
   perform: function (grunt, target, client, command) {
     const clickIfVisible = command.clickIfVisible
     grunt.output.writeln('Checking visibility of "' + clickIfVisible + '"...')
-    client.isVisible(clickIfVisible).then(function (value) {
-      if (value === true) {
-        grunt.output.writeln('Click on "' + clickIfVisible + '".')
-        return client.click(clickIfVisible)
-      } else {
-        grunt.output.writeln('"' + clickIfVisible + '" is not visible.')
-      }
-    })
+    let clickable
+    return findElement(client, clickIfVisible)
+      .then(element => {
+        clickable = element
+        return client.isElementDisplayed(element)
+      })
+      .then(function (value) {
+        if (value === true) {
+          grunt.output.writeln('Click on "' + clickIfVisible + '".')
+          return client.elementClick(clickable)
+        } else {
+          grunt.output.writeln('"' + clickIfVisible + '" is not visible.')
+        }
+      })
   }
 }

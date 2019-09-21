@@ -23,7 +23,7 @@
     }
   ],
   "engines": {
-    "node": ">= 6"
+    "node": ">= 8"
   },
   "scripts": {
     "lint": "grunt standard",
@@ -34,7 +34,7 @@
   "dependencies": {
     "mkdirp": "0.5.1",
     "pad-left": "2.1.0",
-    "webdriverio": "4.14.1"
+    "webdriverio": "5.13.1"
   },
   "devDependencies": {
     "grunt": "1.0.4",
