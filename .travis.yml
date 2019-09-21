@@ -4,6 +4,7 @@ notifications:
 node_js:
   - node
   - lts/*
+  - 8
 addons:
   chrome: stable
 before_script :
