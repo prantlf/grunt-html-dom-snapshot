@@ -134,7 +134,7 @@ At first the sub-commands from the `do` instruction are performed. Then the sub-
 {
   do: {
     keys: ['Tab']
-  }
+  },
   until: {
     isFocused: '#lst-ib'
   }
@@ -278,7 +278,7 @@ Set value of an input element either by providing the new value or using [keyboa
     selector: '#lst-ib',
     value: 'Hi'
   }
-}
+},
 {
   setValue: {
     selector: '#lst-ib',
@@ -406,6 +406,8 @@ Sends either a text (string) typed by keys, or single keystrokes (array) to the 
   file: 'google'
 }
 ```
+
+ Special keys are listed in the [WebDriver documentation](https://w3c.github.io/webdriver/#keyboard-actions).
 
 ## elementSendKeys
 Type: `Object`
