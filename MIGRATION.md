@@ -28,7 +28,7 @@ You will probably not notice any breaking changes in your scripts during this up
 
 Old code:
 
-```json
+```js
 {
   "doNotForget": "focus the other elements later",
   "click": "input",
@@ -38,7 +38,7 @@ Old code:
 
 New code:
 
-```json
+```js
 {
   // TODO: Focus the other elements later.
   "click": "input",
