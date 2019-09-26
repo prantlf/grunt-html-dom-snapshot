@@ -34,7 +34,7 @@
   "dependencies": {
     "mkdirp": "0.5.1",
     "pad-left": "2.1.0",
-    "webdriverio": "5.13.1"
+    "webdriverio": "5.13.2"
   },
   "devDependencies": {
     "grunt": "1.0.4",
