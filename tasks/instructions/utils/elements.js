@@ -2,10 +2,10 @@ function checkError (result) {
   if (result) {
     const error = result.error
     if (error) {
-      const exception = new Error(result.message)
-      exception.name = error
-      exception.data = result.data
-      exception.stacktrace = result.stacktrace
+      const exception = new Error(error.message)
+      exception.name = error.error
+      exception.data = error.data
+      exception.stacktrace = error.stacktrace
       throw exception
     }
   }
