@@ -10,12 +10,13 @@ const mkdirp = require('mkdirp')
 const instructionKeys = [
   'setViewport', 'url', 'go', 'scroll', 'focus', 'clearValue', 'setValue',
   'addValue', 'selectOptionByIndex', 'selectOptionByValue', 'moveCursor',
-  'click', 'clickIfVisible', 'keys', 'elementSendKeys', 'wait', 'hasAttribute',
-  'hasClass', 'hasValue', 'hasText', 'hasInnerHtml', 'hasOuterHtml',
+  'click', 'clickIfVisible', 'keys', 'elementSendKeys', 'wait',
   'isExisting', 'isVisible', 'isVisibleWithinViewport', 'isEnabled',
   'isSelected', 'isFocused', 'isNotExisting', 'isNotVisible',
   'isNotVisibleWithinViewport', 'isNotEnabled', 'isNotFocused',
-  'isNotSelected', 'break', 'abort'
+  'isNotSelected', 'hasAttribute', 'hasClass', 'hasValue', 'hasText',
+  'hasInnerHtml', 'hasOuterHtml',
+  'break', 'abort'
 ]
 const instructions = instructionKeys.map(instruction =>
   require('./instructions/' + instruction))
