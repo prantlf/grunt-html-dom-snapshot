@@ -12,10 +12,10 @@ const instructionKeys = [
   'addValue', 'selectOptionByIndex', 'selectOptionByValue', 'moveCursor',
   'click', 'clickIfVisible', 'keys', 'elementSendKeys', 'wait', 'hasAttribute',
   'hasClass', 'hasValue', 'hasText', 'hasInnerHtml', 'hasOuterHtml',
-  'isEnabled', 'isExisting', 'isFocused', 'isSelected', 'isVisible',
-  'isVisibleWithinViewport', 'isNotEnabled', 'isNotExisting',
-  'isNotFocused', 'isNotSelected', 'isNotVisible',
-  'isNotVisibleWithinViewport', 'break', 'abort'
+  'isExisting', 'isVisible', 'isVisibleWithinViewport', 'isEnabled',
+  'isSelected', 'isFocused', 'isNotExisting', 'isNotVisible',
+  'isNotVisibleWithinViewport', 'isNotEnabled', 'isNotFocused',
+  'isNotSelected', 'break', 'abort'
 ]
 const instructions = instructionKeys.map(instruction =>
   require('./instructions/' + instruction))
