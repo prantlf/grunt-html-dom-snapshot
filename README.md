@@ -236,6 +236,8 @@ Default value: false
 
 If set to `true`, it suppresses failures, which happened during taking snapshots. Instead of making the Grunt fail, the errors will be written only to the console.
 
+This option can be set for the whole task or within a single command object.
+
 ### Sub-tasks
 
 File names for snapshots can be used as sub-task names. Separate sub-tasks initialize separate instance of the webdriver:

@@ -458,6 +458,16 @@ module.exports = grunt => {
                 client, command, commandOptions, detected))
             }
           }), viewportSet)
+          .catch(error => {
+            const force = command.options && command.options.force
+            if (force) {
+              grunt.output.warn(error.stack)
+              grunt.log.warn(error)
+              grunt.log.warn('Ignoring the command execution failure.')
+            } else {
+              throw error
+            }
+          })
           .then(() => {
             if (file) {
               return makeSnapshotAndScreenshot()
