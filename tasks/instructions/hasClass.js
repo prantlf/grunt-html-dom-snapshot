@@ -1,17 +1,22 @@
 'use strict'
 
+const { checkSingleElement } = require('./utils/elements')
+
 module.exports = {
   detect: function (command) {
     return !!command.hasClass
   },
 
-  perform: function (grunt, target, client, command) {
+  perform: async function (grunt, target, client, command, options) {
     const hasClass = command.hasClass
     const selector = hasClass.selector
     const expected = hasClass.value || ''
     const expectedList = expected.split(/ +/)
     grunt.log.ok('Looking for classes "' + expected + '" at "' +
                  selector + '".')
+    if (options.singleElementSelections) {
+      await checkSingleElement(client, selector)
+    }
     return client.$(selector)
       .then(element => element.getAttribute('class'))
       .then(function (actual) {

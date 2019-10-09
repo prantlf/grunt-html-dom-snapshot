@@ -96,6 +96,7 @@ Default options support the most usual usage scenario:
     fileNumberSeparator: '.',
     hangOnError: false,
     snapshotOnError: '_last-error',
+    singleElementSelections: false,
     force: false
   },
   'google': {
@@ -220,6 +221,14 @@ Type: `String`
 Default value: '_last-error'
 
 If set to a non-empty string, if will be used as a file name for an automatically taken snapshot and screenshot (if those are enabled), if the task execution fails.
+
+### singleElementSelections
+Type: `Boolean`
+Default value: false
+
+If set to `true`, it will enforce every selector match either one or none elements. If any selector matches multiple elements, the instruction will fail. Tests usually address just one element. This setting helps to uncover errors like checking `isFocus` for multiple elements, which has unpredictable results.
+
+This option can be set for the whole task or within a single command object.
 
 #### force
 Type: `Boolean`

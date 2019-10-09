@@ -338,6 +338,19 @@ module.exports = function (grunt) {
               value: '<div class="class" tabindex="0">Text</div>'
             }
           },
+          {
+            options: {
+              singleElementSelections: true
+            },
+            isExisting: 'select'
+          },
+          {
+            options: {
+              singleElementSelections: true,
+              force: true
+            },
+            isExisting: 'option'
+          },
           coverage ? { wait: 1 } : {
             focus: 'body',
             wait: function (browser) {

@@ -1,5 +1,7 @@
 'use strict'
 
+const { checkSingleElement } = require('./utils/elements')
+
 module.exports = {
   detect: function (command) {
     return !!command.wait
@@ -28,6 +30,11 @@ module.exports = {
                                 '" appearing.' + timeout + 'ms.')
           return client.$(wait)
             .then(element => element.waitForExist(timeout))
+            .then(() => {
+              if (options.singleElementSelections) {
+                return checkSingleElement(client, wait)
+              }
+            })
         } else if (typeof wait === 'number') {
           grunt.output.writeln('Wait for ' + wait + 'ms.')
           return new Promise(function (resolve) {

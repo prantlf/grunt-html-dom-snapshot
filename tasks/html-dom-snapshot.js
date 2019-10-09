@@ -55,6 +55,7 @@ module.exports = grunt => {
         fileNumberSeparator: '.',
         hangOnError: false,
         snapshotOnError: '_last-error',
+        singleElementSelections: false,
         force: false,
         verbose: false
       })

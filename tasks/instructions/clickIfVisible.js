@@ -1,16 +1,19 @@
 'use strict'
 
-const { findElement } = require('./utils/elements')
+const { findElement, checkSingleElement } = require('./utils/elements')
 
 module.exports = {
   detect: function (command) {
     return !!command.clickIfVisible
   },
 
-  perform: function (grunt, target, client, command) {
+  perform: async function (grunt, target, client, command, options) {
     const clickIfVisible = command.clickIfVisible
     grunt.output.writeln('Checking visibility of "' + clickIfVisible + '"...')
     let clickable
+    if (options.singleElementSelections) {
+      await checkSingleElement(client, clickIfVisible)
+    }
     return findElement(client, clickIfVisible)
       .then(element => {
         clickable = element

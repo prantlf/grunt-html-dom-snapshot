@@ -1,15 +1,18 @@
 'use strict'
 
-const { findElement } = require('./utils/elements')
+const { findElement, checkSingleElement } = require('./utils/elements')
 
 module.exports = {
   detect: function (command) {
     return !!command.isVisible
   },
 
-  perform: function (grunt, target, client, command) {
+  perform: async function (grunt, target, client, command, options) {
     const isVisible = command.isVisible
     grunt.log.ok('Checking if "' + isVisible + '" is visible.')
+    if (options.singleElementSelections) {
+      await checkSingleElement(client, isVisible)
+    }
     return findElement(client, isVisible)
       .then(element => client.isElementDisplayed(element))
       .then(function (value) {

@@ -19,4 +19,13 @@ function findElement (browser, selector) {
     })
 }
 
-module.exports = { findElement }
+function checkSingleElement (browser, selector) {
+  return browser.$$(selector)
+    .then(elements => {
+      if (elements.length > 1) {
+        throw new Error(`Multiple elements matched "${selector}".`)
+      }
+    })
+}
+
+module.exports = { findElement, checkSingleElement }
