@@ -632,6 +632,7 @@ your code using Grunt.
 
 ## Release History
 
+ * 2019-09-21  [v5.1.0]  Reorder checking instructions, enforce single-element matching
  * 2019-09-21  [v4.0.0]  Upgrade to WebDriverIO 5, add the instruction "elementSendKeys"
  * 2019-07-21  [v3.0.0]  Report unrecognised instructions as errors, introduce new instructions (focus, while-do, do-until, repeat-do, break)
  * 2019-07-08  [v2.2.0]  Optionally hang the browser in case of failure to be able to inspect the web page in developer tools
@@ -680,6 +681,8 @@ Licensed under the MIT license.
 [grunt-reg-viz]: https://github.com/prantlf/grunt-reg-viz
 [grunt-selenium-standalone]: https://github.com/zs-zs/grunt-selenium-standalone
 [keyboard key identifiers]: https://w3c.github.io/webdriver/webdriver-spec.html#keyboard-actions
+[v5.1.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v5.1.0
+[v4.0.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v4.0.0
 [v3.0.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v3.0.0
 [v2.2.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v2.2.0
 [v2.0.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v2.0.0
