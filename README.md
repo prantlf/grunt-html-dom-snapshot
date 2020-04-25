@@ -632,7 +632,7 @@ your code using Grunt.
 
 ## Release History
 
- * 2019-09-21  [v6.0.0]  Upgrade to WebDriverIO 6
+ * 2020-04-25  [v6.0.0]  Upgrade to WebDriverIO 6
  * 2019-09-21  [v5.1.0]  Reorder checking instructions, enforce single-element matching
  * 2019-09-21  [v4.0.0]  Upgrade to WebDriverIO 5, add the instruction "elementSendKeys"
  * 2019-07-21  [v3.0.0]  Report unrecognised instructions as errors, introduce new instructions (focus, while-do, do-until, repeat-do, break)
