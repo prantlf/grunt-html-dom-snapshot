@@ -15,7 +15,9 @@ I recommend you upgrading `grunt-html-dom-snapshot` regularly. Functionality and
 
 ## 5 to 6
 
-[WebdriverIO] limited the [elementSendKeys] method to behave just like the [WebDriver protocol requires](https://w3c.github.io/webdriver/#dfn-element-send-keys), which affects [`elementSendKeys`](INSTRUCTIONS.md#elementSendKeys) instruction. An array of keys to press cannot be sent any more. Only a string with letters to type. If you need to send special keys like "Delete", for example focus the element by [`focus`](INSTRUCTIONS.md#focus) and then use [`keys`](INSTRUCTIONS.md#keys).
+[WebdriverIO] limited the [elementSendKeys] method to behave just like the [WebDriver protocol requires](https://w3c.github.io/webdriver/#dfn-element-send-keys), which affects [`elementSendKeys`](INSTRUCTIONS.md#elementSendKeys) instruction. **An array of keys to press cannot be sent any more. Only a string with letters to type.** If you need to send special keys like "Delete", for example focus the element by [`focus`](INSTRUCTIONS.md#focus) and then use [`keys`](INSTRUCTIONS.md#keys).
+
+The automated build on Travis started to fail with the Node.js 8, although the dependent modules should still work with it. **You should upgrade Node.js in your environment to the version 10 or newer**, to be on the safe side, and check, that everything still works.
 
 See the [release notes for v6] for more information.
 
