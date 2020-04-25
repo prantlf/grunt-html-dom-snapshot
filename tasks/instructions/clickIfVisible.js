@@ -17,7 +17,9 @@ module.exports = {
     return findElement(client, clickIfVisible)
       .then(element => {
         clickable = element
-        return client.isElementDisplayed(element)
+        return client
+          .$(clickIfVisible)
+          .then(element => element.isDisplayed(element))
       })
       .then(function (value) {
         if (value === true) {

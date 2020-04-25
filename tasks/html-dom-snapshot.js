@@ -28,7 +28,7 @@ module.exports = grunt => {
   grunt.registerMultiTask('html-dom-snapshot',
     'Takes snapshots of the HTML markup on web pages - their immediate DOM content - and screenshots of their viewport - how they look like.',
     function () {
-      const { remote } = require('webdriverio')
+      const { remote } = require('webDRIVERio')
       const done = this.async()
       const data = this.data
       const options = this.options({
@@ -219,14 +219,7 @@ module.exports = grunt => {
       }
 
       function ensureDirectory (name) {
-        return new Promise((resolve, reject) =>
-          mkdirp(name, error => {
-            if (error) {
-              reject(error)
-            } else {
-              resolve()
-            }
-          }))
+        return mkdirp(name)
       }
 
       function performComplexCommands (subCommands) {

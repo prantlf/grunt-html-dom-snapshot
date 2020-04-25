@@ -14,7 +14,7 @@ This module provides a grunt multi-task for taking "snapshots" of the HTML marku
 
 In addition, recent versions can save "screenshots" of browser viewport at the same time to support visual testing by comparing the look of the page with the baseline picture. Actually, this task is quickly evolving to offer end-to-end test capabilities too.
 
-See the [migration documentation] about compatibility of older versions with the latest v4.
+See the [migration documentation] about compatibility of older versions with the latest v6.
 
 Additional Grunt tasks, which are usually used to support test automation:
 
@@ -24,7 +24,7 @@ Additional Grunt tasks, which are usually used to support test automation:
 * [grunt-html] - validates HTML markup according to the [W3C HTML] standard
 * [grunt-html-html-report-converter] - converts JSON report of `grunt-html` to HTML
 * [grunt-reg-viz] - compares images and generates report with differences
-* [grunt-selenium-standalone] - runs a standalone Selenium server
+* [@prantlf/grunt-selenium-standalone] - runs a standalone Selenium server
 
 # Table of Contents
 
@@ -43,11 +43,11 @@ Additional Grunt tasks, which are usually used to support test automation:
 
 ## Installation
 
-You need [node >= 4][node], [npm] and [grunt >= 0.4.5][Grunt] installed
+You need [node >= 8][node], [npm] and [grunt >= 1.0.0][Grunt] installed
 and your project build managed by a [Gruntfile] with the necessary modules
 listed in [package.json].  If you have not used Grunt before, be sure to
 check out the [Getting Started] guide, as it explains how to create a
-Gruntfile as well as install and use Grunt plugins.  Once youin are familiar
+Gruntfile as well as install and use Grunt plugins.  Once you are familiar
 with that process, you may install this plugin with this command:
 
 ```shell
@@ -118,11 +118,11 @@ Chooses the web browser to take snapshots with, Selenium host and other paramete
 ```js
 'selenium_standalone': {
   serverConfig: {
-    seleniumVersion: '3.141.5', // 3.7.1 or older is needed for phantomjs
+    seleniumVersion: '3.141.59', // 3.7.1 or older is needed for phantomjs
     seleniumDownloadURL: 'http://selenium-release.storage.googleapis.com',
     drivers: {
       chrome: {
-        version: '77.0.3865.40',
+        version: '81.0.4044.69',
         arch: process.arch,
         baseURL: 'https://chromedriver.storage.googleapis.com'
       },
@@ -132,11 +132,11 @@ Chooses the web browser to take snapshots with, Selenium host and other paramete
       },
       // https://github.com/mozilla/geckodriver/releases
       firefox: {
-        version: '0.24.0'
+        version: '0.26.0'
       },
       // https://selenium-release.storage.googleapis.com/
       ie: {
-        version: '3.14.0',
+        version: '3.150.0',
         arch: 'ia32'
       },
       // https://selenium-release.storage.googleapis.com/
@@ -468,7 +468,7 @@ grunt.registerTask('default', ['html-dom-snapshot', ...]);
 
 ## Example
 
-When [webdriverio] is called, it needs to connect to a [Selenium] server. The easiest way, how to get it running is using the [selenium-standalone] Grunt task, which downloads, starts and stop the server. If the usage scenario is to validate static files or a mocked web application, a local web server like [grunt-contrib-connect] is usually added. And additional checking tasks like [grunt-html] pr [grunt-accessibility]. The complete Grunt initialization could look like this:
+When [webdriverio] is called, it needs to connect to a [Selenium] server. The easiest way, how to get it running is using the [@prantlf/grunt-selenium-standalone] Grunt task, which downloads, starts and stop the server. If the usage scenario is to validate static files or a mocked web application, a local web server like [grunt-contrib-connect] is usually added. And additional checking tasks like [grunt-html] pr [grunt-accessibility]. The complete Grunt initialization could look like this:
 
 ```js
 grunt.initConfig({
@@ -502,11 +502,11 @@ grunt.initConfig({
 
   'selenium_standalone': { // Provides a local Selenium server.
     serverConfig: {
-      seleniumVersion: '3.141.5',
+      seleniumVersion: '3.141.59',
       seleniumDownloadURL: 'https://selenium-release.storage.googleapis.com',
       drivers: {
         chrome: {
-          version: '77.0.3865.40',
+          version: '81.0.4044.69',
           arch: process.arch,
           baseURL: 'https://chromedriver.storage.googleapis.com'
         }
@@ -515,12 +515,12 @@ grunt.initConfig({
   }
 });
 
+grunt.loadNpmTasks('@prantlf/grunt-selenium-standalone');
 grunt.loadNpmTasks('grunt-accessibility');
 grunt.loadNpmTasks('grunt-contrib-clean');
 grunt.loadNpmTasks('grunt-contrib-connect');
 grunt.loadNpmTasks('grunt-html');
 grunt.loadNpmTasks('grunt-html-dom-snapshot');
-grunt.loadNpmTasks('grunt-selenium-standalone');
 
 grunt.registerTask('default', [
   'selenium_standalone:serverConfig:install',
@@ -533,14 +533,14 @@ grunt.registerTask('default', [
 The installation of the necessary Grunt tasks:
 
 ```bash
-npm install grunt-html-dom-snapshot grunt-selenium-standalone \
+npm install grunt-html-dom-snapshot @prantlf/grunt-selenium-standalone \
             grunt-contrib-clean grunt-contrib-connect \
             grunt-accessibility grunt-html --save-dev
 ```
 
 ### Notes
 
-You will need to **install [Java] 8 or newer** to get the Selenium server running via the [selenium-standalone] Grunt task.
+You will need to **install [Java] 8 or newer** to get the Selenium server running via the [@prantlf/grunt-selenium-standalone] Grunt task.
 
 **If you want to use the PhantomJS driver, you will need to install the `phantomjs-prebuilt` module**. For example:
 
@@ -632,6 +632,7 @@ your code using Grunt.
 
 ## Release History
 
+ * 2019-09-21  [v6.0.0]  Upgrade to WebDriverIO 6
  * 2019-09-21  [v5.1.0]  Reorder checking instructions, enforce single-element matching
  * 2019-09-21  [v4.0.0]  Upgrade to WebDriverIO 5, add the instruction "elementSendKeys"
  * 2019-07-21  [v3.0.0]  Report unrecognised instructions as errors, introduce new instructions (focus, while-do, do-until, repeat-do, break)
@@ -655,7 +656,7 @@ your code using Grunt.
 
 ## License
 
-Copyright (c) 2017-2019 Ferdinand Prantl
+Copyright (c) 2017-2020 Ferdinand Prantl
 
 Licensed under the MIT license.
 
@@ -669,7 +670,6 @@ Licensed under the MIT license.
 [Selenium]: http://www.seleniumhq.org/download/
 [webdriverio]: http://webdriver.io/
 [WebdriverIO API]: http://webdriver.io/api.html
-[selenium-standalone]: https://github.com/zs-zs/grunt-selenium-standalone
 [Java]: https://java.com/en/download/
 [W3C HTML]: https://www.w3.org/standards/techs/html
 [WCAG]: https://www.w3.org/WAI/intro/wcag
@@ -679,8 +679,9 @@ Licensed under the MIT license.
 [grunt-html]: https://github.com/jzaefferer/grunt-html
 [grunt-html-html-report-converter]: https://github.com/prantlf/grunt-html-html-report-converter
 [grunt-reg-viz]: https://github.com/prantlf/grunt-reg-viz
-[grunt-selenium-standalone]: https://github.com/zs-zs/grunt-selenium-standalone
+[@prantlf/grunt-selenium-standalone]: https://github.com/prantlf/grunt-selenium-standalone
 [keyboard key identifiers]: https://w3c.github.io/webdriver/webdriver-spec.html#keyboard-actions
+[v6.0.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v6.0.0
 [v5.1.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v5.1.0
 [v4.0.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v4.0.0
 [v3.0.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v3.0.0

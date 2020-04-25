@@ -24,12 +24,12 @@ module.exports = {
             grunt.output.writeln('Wait for "' + wait +
                                   '" disappearing ' + timeout + 'ms.')
             return client.$(wait)
-              .then(element => element.waitForExist(timeout, true))
+              .then(element => element.waitForExist({ timeout, reverse: true }))
           }
           grunt.output.writeln('Wait for "' + wait +
                                 '" appearing.' + timeout + 'ms.')
           return client.$(wait)
-            .then(element => element.waitForExist(timeout))
+            .then(element => element.waitForExist({ timeout }))
             .then(() => {
               if (options.singleElementSelections) {
                 return checkSingleElement(client, wait)

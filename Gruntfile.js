@@ -319,7 +319,7 @@ module.exports = function (grunt) {
             hasAttribute: {
               selector: 'input',
               name: 'disabled',
-              value: 'true'
+              value: 'disabled'
             },
             hasValue: {
               selector: 'input',
@@ -609,11 +609,11 @@ module.exports = function (grunt) {
         stopOnExit: true
       },
       server: {
-        seleniumVersion: '3.141.5',
+        seleniumVersion: '3.141.59',
         seleniumDownloadURL: 'http://selenium-release.storage.googleapis.com',
         drivers: {
           chrome: {
-            version: '77.0.3865.40',
+            version: '81.0.4044.69',
             arch: process.arch,
             baseURL: 'https://chromedriver.storage.googleapis.com',
             binary: '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary'
@@ -640,12 +640,12 @@ module.exports = function (grunt) {
     }
   })
 
+  grunt.loadNpmTasks('@prantlf/grunt-selenium-standalone')
   grunt.loadNpmTasks('grunt-contrib-clean')
   grunt.loadNpmTasks('grunt-contrib-connect')
   grunt.loadNpmTasks('grunt-contrib-nodeunit')
   grunt.loadNpmTasks('grunt-coveralls')
   grunt.loadNpmTasks('grunt-istanbul')
-  grunt.loadNpmTasks('grunt-selenium-standalone')
   grunt.loadNpmTasks('grunt-standard')
   grunt.loadTasks(coverage ? 'coverage/tasks' : 'tasks')
 

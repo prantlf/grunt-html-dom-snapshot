@@ -1,6 +1,6 @@
 'use strict'
 
-const { findElement, checkSingleElement } = require('./utils/elements')
+const { checkSingleElement } = require('./utils/elements')
 
 module.exports = {
   detect: function (command) {
@@ -13,8 +13,8 @@ module.exports = {
     if (options.singleElementSelections) {
       await checkSingleElement(client, isNotVisible)
     }
-    return findElement(client, isNotVisible)
-      .then(element => client.isElementDisplayed(element))
+    return client.$(isNotVisible)
+      .then(element => element.isDisplayed(element))
       .then(function (value) {
         if (value !== false) {
           throw new Error('"' + isNotVisible + '" is visible.')

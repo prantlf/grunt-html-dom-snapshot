@@ -6,10 +6,36 @@ I recommend you upgrading `grunt-html-dom-snapshot` regularly. Functionality and
 
 # Upgrade Instructions
 
+- [5 to 6](#5-to-6)
+- [4 to 5](#4-to-5)
 - [3 to 4](#3-to-4)
 - [2 to 3](#2-to-3)
 - [1 to 2](#1-to-2)
 - [0 to 1](#0-to-1)
+
+## 5 to 6
+
+[WebdriverIO] limited the [elementSendKeys] method to behave just like the [WebDriver protocol requires](https://w3c.github.io/webdriver/#dfn-element-send-keys), which affects [`elementSendKeys`](INSTRUCTIONS.md#elementSendKeys) instruction. An array of keys to press cannot be sent any more. Only a string with letters to type. If you need to send special keys like "Delete", for example focus the element by [`focus`](INSTRUCTIONS.md#focus) and then use [`keys`](INSTRUCTIONS.md#keys).
+
+See the [release notes for v6] for more information.
+
+## 4 to 5
+
+THe evaluation order of the "is" instructions has changed. **If you used more than one "is" instructions in a single command block**, check if the scenario still works, when the instructions follow this order:
+
+* isExisting
+* isVisible
+* isVisibleWithinViewport
+* isEnabled
+* isSelected
+* isFocused
+* isNotExisting
+* isNotVisible
+* isNotVisibleWithinViewport
+* isNotEnabled
+* isNotFocused
+
+See the [release notes for v5] for more information.
 
 ## 3 to 4
 
@@ -19,6 +45,8 @@ Although you may not notice any breaking changes, **v4 upgraded to [WebdriverIO]
 
 * [scroll](INSTRUCTIONS.md#scroll) does not support the `offset` parameter any more. Remove it. Scrolling will be performed to the center of the element.
 * [isVisible](INSTRUCTIONS.md#isvisible), [isNotVisible](INSTRUCTIONS.md#isnotvisible) and [clickIfVisible](INSTRUCTIONS.md#clickIfVisible) use the function [isElementDisplayed] which should work in the same way like the removed [isVisible], but you should still check if your visibility checks still work.
+
+See the [release notes for v4] for more information.
 
 ## 2 to 3
 
@@ -119,6 +147,9 @@ See the [release notes for v1] for more information.
 [Node.js]: https://nodejs.org
 [isElementDisplayed]: https://webdriver.io/docs/api/webdriver.html#iselementdisplayed
 [isVisible]: http://v4.webdriver.io/api/state/isVisible.html
+[elementSendKeys]: https://webdriver.io/docs/api/webdriver.html#elementsendkeys
+[release notes for v6]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v6.0.0
+[release notes for v5]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v5.0.0
 [release notes for v4]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v4.0.0
 [release notes for v3]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v3.0.0
 [release notes for v2]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v2.0.0
