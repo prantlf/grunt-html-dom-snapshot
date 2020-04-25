@@ -28,7 +28,7 @@ module.exports = grunt => {
   grunt.registerMultiTask('html-dom-snapshot',
     'Takes snapshots of the HTML markup on web pages - their immediate DOM content - and screenshots of their viewport - how they look like.',
     function () {
-      const { remote } = require('webDRIVERio')
+      const { remote } = require('webdriverio')
       const done = this.async()
       const data = this.data
       const options = this.options({
