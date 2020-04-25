@@ -412,11 +412,10 @@ Sends either a text (string) typed by keys, or single keystrokes (array) to the 
 ## elementSendKeys
 Type: `Object`
 
-Sends either a text (string), or single keystrokes (array) to an element in the browser. The object should contain the following properties:
+Sends a text (string) to an element in the browser. The object should contain the following properties:
 
 * `selector` - `String` - selector of the element to send the keys or text to.
 * `text` - `String` - the text to send to the element.
-* `keys` - `Array<String>` - the keystrokes to send to the element.
 
 ```js
 {
