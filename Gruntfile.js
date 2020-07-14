@@ -124,7 +124,7 @@ module.exports = function (grunt) {
             url: 'http://localhost:8881/test/pages/dynamic-custom.html',
             wait: function (browser) {
               return browser.$('.dynamic')
-                .then(element => element.waitForExist(1000))
+                .then(element => element.waitForExist({ timeout: 1000 }))
             },
             file: 'dynamic-custom'
           },

@@ -372,7 +372,7 @@ The following array of commands within the `commands` property will change locat
         element.click();
         return element;
       })
-      .then(element => element.waitForExist(1000));
+      .then(element => element.waitForExist({ timeout: 1000 }));
   },
   file: 'results-shown'
 }

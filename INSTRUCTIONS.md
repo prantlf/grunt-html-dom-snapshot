@@ -470,7 +470,7 @@ If the selector is prefixed by the exclamation mark ("!"), the waiting waiting w
   url: 'https://google.com',
   wait: function (browser) {
     return browser.$('#footer')
-      .then(element => element.waitForExist(1000));
+      .then(element => element.waitForExist({ timeout: 1000 }));
   },
   file: 'google'
 }

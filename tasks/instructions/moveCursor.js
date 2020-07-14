@@ -20,6 +20,6 @@ module.exports = {
       await checkSingleElement(client, selector)
     }
     return client.$(selector)
-      .then(element => element.moveTo(offset.left, offset.top))
+      .then(element => element.moveTo({ xOffset: offset.left, yOffset: offset.top }))
   }
 }
