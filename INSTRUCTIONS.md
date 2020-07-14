@@ -203,9 +203,9 @@ Navigates (changes the current window location) to the specified URL.
 If it is omitted, the command will reuse the location from the previous command. A command without URL can cause some page changes, wait for an element state and/or save a snapshot.
 
 ## go
-Type: `String`: 'back', 'forward' or 'refresh'
+Type: `String`: 'back', 'forward', 'refresh' or 'reload'
 
-Navigates backwards or forwards using the browser history, or refreshes the current page.
+Navigates backwards or forwards using the browser history, or refreshes the current page, or reloads the whole browser session.
 
 ```js
 {
