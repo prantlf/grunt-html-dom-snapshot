@@ -10,7 +10,7 @@ addons:
 before_script :
   - npm install -g grunt-cli
 after_success:
-  - npm run coveralls
+#  - npx codecov --disable=gcov
   - npx semantic-release
 branches:
   except:
