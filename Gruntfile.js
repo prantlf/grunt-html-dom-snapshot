@@ -37,12 +37,6 @@ module.exports = function (grunt) {
       }
     },
 
-    coveralls: {
-      tests: {
-        src: 'coverage/lcov.info'
-      }
-    },
-
     nodeunit: {
       tests: ['test/*.js']
     },
@@ -604,56 +598,23 @@ module.exports = function (grunt) {
       }
     },
 
-    'selenium_standalone': {
-      options: {
-        stopOnExit: true
-      },
-      server: {
-        seleniumVersion: '3.141.59',
-        seleniumDownloadURL: 'http://selenium-release.storage.googleapis.com',
-        drivers: {
-          chrome: {
-            version: '81.0.4044.69',
-            arch: process.arch,
-            baseURL: 'https://chromedriver.storage.googleapis.com',
-            binary: '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary'
-          }
-          // https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
-          // edge: {
-          //   version: '6.17134'
-          // },
-          // https://github.com/mozilla/geckodriver/releases
-          // firefox: {
-          //   version: '0.25.0'
-          // },
-          // https://selenium-release.storage.googleapis.com/
-          // ie: {
-          //   version: '3.150',
-          //   arch: 'ia32'
-          // },
-          // https://selenium-release.storage.googleapis.com/
-          // safari: {
-          //   version: '2.48'
-          // }
-        }
-      }
+    chromedriver: {
+      default: {}
     }
   })
 
-  grunt.loadNpmTasks('@prantlf/grunt-selenium-standalone')
+  grunt.loadNpmTasks('grunt-chromedriver')
   grunt.loadNpmTasks('grunt-contrib-clean')
   grunt.loadNpmTasks('grunt-contrib-connect')
   grunt.loadNpmTasks('grunt-contrib-nodeunit')
-  grunt.loadNpmTasks('grunt-coveralls')
   grunt.loadNpmTasks('grunt-istanbul')
   grunt.loadNpmTasks('grunt-standard')
   grunt.loadTasks(coverage ? 'coverage/tasks' : 'tasks')
 
   const test = ['clean', 'standard',
-    'selenium_standalone:server:install',
-    'selenium_standalone:server:start',
+    'chromedriver:default:start',
     'connect', 'html-dom-snapshot',
-    'selenium_standalone:server:stop', 'nodeunit']
+    'chromedriver:default:stop', 'nodeunit']
   const report = coverage ? ['storeCoverage', 'makeReport'] : []
   grunt.registerTask('default', test.concat(report))
 }

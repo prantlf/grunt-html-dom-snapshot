@@ -28,21 +28,19 @@
   "scripts": {
     "lint": "grunt standard",
     "test": "grunt",
-    "coverage": "grunt instrument && GRUNT_HTML_DOM_SNAPSHOT_COVERAGE=1 grunt",
-    "coveralls": "test `node --version | cut -c 2,3` -eq 10 && npm run coverage && grunt coveralls"
+    "coverage": "grunt instrument && GRUNT_HTML_DOM_SNAPSHOT_COVERAGE=1 grunt"
   },
   "dependencies": {
     "mkdirp": "1.0.4",
     "pad-left": "2.1.0",
-    "webdriverio": "6.2.0"
+    "webdriverio": "6.4.0"
   },
   "devDependencies": {
-    "@prantlf/grunt-selenium-standalone": "1.0.3",
     "grunt": "1.0.4",
+    "grunt-chromedriver": "0.0.1",
     "grunt-contrib-clean": "2.0.0",
-    "grunt-contrib-connect": "2.1.0",
+    "grunt-contrib-connect": "3.0.0",
     "grunt-contrib-nodeunit": "2.1.0",
-    "grunt-coveralls": "2.0.0",
     "grunt-istanbul": "0.8.0",
     "grunt-standard": "3.2.0"
   },

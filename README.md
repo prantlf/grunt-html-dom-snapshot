@@ -1,20 +1,21 @@
 # grunt-html-dom-snapshot
 [![NPM version](https://badge.fury.io/js/grunt-html-dom-snapshot.png)](http://badge.fury.io/js/grunt-html-dom-snapshot)
 [![Build Status](https://travis-ci.org/prantlf/grunt-html-dom-snapshot.png)](https://travis-ci.org/prantlf/grunt-html-dom-snapshot)
-[![Coverage Status](https://coveralls.io/repos/github/prantlf/grunt-html-dom-snapshot/badge.svg?branch=master)](https://coveralls.io/github/prantlf/grunt-html-dom-snapshot?branch=master)
 [![Dependency Status](https://david-dm.org/prantlf/grunt-html-dom-snapshot.svg)](https://david-dm.org/prantlf/grunt-html-dom-snapshot)
 [![devDependency Status](https://david-dm.org/prantlf/grunt-html-dom-snapshot/dev-status.svg)](https://david-dm.org/prantlf/grunt-html-dom-snapshot#info=devDependencies)
 [![devDependency Status](https://david-dm.org/prantlf/grunt-html-dom-snapshot/peer-status.svg)](https://david-dm.org/prantlf/grunt-html-dom-snapshot#info=peerDependencies)
 
 [![NPM Downloads](https://nodei.co/npm/grunt-html-dom-snapshot.png?downloads=true&stars=true)](https://www.npmjs.com/package/grunt-html-dom-snapshot)
 
-This module provides a grunt multi-task for taking "snapshots" of the HTML markup on web pages - of their immediate DOM content - and saving them to HTML files. It can be used to obtain content of web pages, which are built dynamically by JavaScript, and check it for validity and accessibility. It uses [webdriverio] and [Selenium] to control the selected web browser.
+This module provides a grunt multi-task for taking "snapshots" of the HTML markup on web pages - of their immediate DOM content - and saving them to HTML files. It can be used to obtain content of web pages, which are built dynamically by JavaScript, and check it for validity and accessibility. It uses [webdriverio] to control the selected web browser.
 
 ![Sample page](https://raw.githubusercontent.com/prantlf/grunt-html-dom-snapshot/master/assets/sample-page.png) ![Right arrow](https://raw.githubusercontent.com/prantlf/grunt-html-dom-snapshot/master/assets/arrow-right.png) ![Sample snapshot](https://raw.githubusercontent.com/prantlf/grunt-html-dom-snapshot/master/assets/sample-snapshot.png)
 
 In addition, recent versions can save "screenshots" of browser viewport at the same time to support visual testing by comparing the look of the page with the baseline picture. Actually, this task is quickly evolving to offer end-to-end test capabilities too.
 
 See the [migration documentation] about compatibility of older versions with the latest v6.
+
+Recent versions of this documentation show how to use WebDrivers directly fror controlling the web browser ([grunt-chromedriver], [grunt-geckodriver] and [grunt-safaridriver]). It needs neither Java not [Selenum] installed. See the [version 6.0.1] or older for examples how to use the full [Selenium].
 
 Additional Grunt tasks, which are usually used to support test automation:
 
@@ -24,6 +25,9 @@ Additional Grunt tasks, which are usually used to support test automation:
 * [grunt-html] - validates HTML markup according to the [W3C HTML] standard
 * [grunt-html-html-report-converter] - converts JSON report of `grunt-html` to HTML
 * [grunt-reg-viz] - compares images and generates report with differences
+* [grunt-chromedriver] - runs a standalone chromedriver - no need for Selenium
+* [grunt-geckodriver] - runs a standalone geckodriver - no need for Selenium
+* [grunt-safaridriver] - runs a standalone safaridriver - no need for Selenium
 * [@prantlf/grunt-selenium-standalone] - runs a standalone Selenium server
 
 # Table of Contents
@@ -113,46 +117,21 @@ Make sure, that you have the stable version of Chrome installed, if you leave th
 Type: `Object`
 Default value: see above
 
-Chooses the web browser to take snapshots with, Selenium host and other parameters supported by WebdriverIO as input for the  `webdriverio.remote` method. This object has to contain the property `capabilities` with `browserName` and optionally other properties depending on the web browser driver. The following browser names are the most usually used: `chrome`, `edge`, `firefox`, `ie`, `phantomjs`, `safari`. Depending on what browser you specify, you will need to load the corresponding Selenium driver. These are current versions of the drivers:
+Chooses the web browser to take snapshots with, and other parameters supported by WebdriverIO as input for the  `webdriverio.remote` method. This object has to contain the property `capabilities` with `browserName` and optionally other properties depending on the web browser driver. The following browser names are the most usually used: `chrome`, `firefox`, `safari`. Depending on what browser you specify, you will need to load the corresponding WebDdriver. These are the tasks to load the drivers:
 
 ```js
-'selenium_standalone': {
-  serverConfig: {
-    seleniumVersion: '3.141.59', // 3.7.1 or older is needed for phantomjs
-    seleniumDownloadURL: 'http://selenium-release.storage.googleapis.com',
-    drivers: {
-      chrome: {
-        version: '81.0.4044.69',
-        arch: process.arch,
-        baseURL: 'https://chromedriver.storage.googleapis.com'
-      },
-      // https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
-      edge: {
-        version: '6.17134'
-      },
-      // https://github.com/mozilla/geckodriver/releases
-      firefox: {
-        version: '0.26.0'
-      },
-      // https://selenium-release.storage.googleapis.com/
-      ie: {
-        version: '3.150.0',
-        arch: 'ia32'
-      },
-      // https://selenium-release.storage.googleapis.com/
-      safari: {
-        version: '2.53'
-      },
-      // https://bitbucket.org/ariya/phantomjs/downloads/
-      phantomjs: {
-        version: '2.1.1'
-      }
-    }
-  }
-}
+chromedriver: {
+  default: { port: 4445 }
+},
+geckodriver: {
+  default: { port: 4446 }
+},
+safaridriver: {
+  default: { port: 4447 }
+},
 ```
 
-Th other often used property is `logLevel`, set to "warn" by default. Valid values are "trace", "debug", "info", "warn", "error" and "silent".
+The other often used property is `logLevel`, set to "warn" by default. Valid values are "trace", "debug", "info", "warn", "error" and "silent".
 
 #### viewport
 Type: `Object`
@@ -468,7 +447,7 @@ grunt.registerTask('default', ['html-dom-snapshot', ...]);
 
 ## Example
 
-When [webdriverio] is called, it needs to connect to a [Selenium] server. The easiest way, how to get it running is using the [@prantlf/grunt-selenium-standalone] Grunt task, which downloads, starts and stop the server. If the usage scenario is to validate static files or a mocked web application, a local web server like [grunt-contrib-connect] is usually added. And additional checking tasks like [grunt-html] pr [grunt-accessibility]. The complete Grunt initialization could look like this:
+When [webdriverio] is called, it needs to connect to a WebDriver or to the [Selenium] server. The easiest way, how to get it running, is using [grunt-chromedriver], [grunt-geckodriver], [grunt-safaridriver], or [@prantlf/grunt-selenium-standalone] Grunt tasks, which download, start and stop the browser. If the usage scenario is to validate static files or a mocked web application, a local web server like [grunt-contrib-connect] is usually added. And additional checking tasks like [grunt-html] pr [grunt-accessibility]. The complete Grunt initialisation could look like this:
 
 ```js
 grunt.initConfig({
@@ -500,82 +479,38 @@ grunt.initConfig({
     }
   },
 
-  'selenium_standalone': { // Provides a local Selenium server.
-    serverConfig: {
-      seleniumVersion: '3.141.59',
-      seleniumDownloadURL: 'https://selenium-release.storage.googleapis.com',
-      drivers: {
-        chrome: {
-          version: '81.0.4044.69',
-          arch: process.arch,
-          baseURL: 'https://chromedriver.storage.googleapis.com'
-        }
-      }
-    }
+  chromedriver: { // Launches the Chrome executable
+    default: {}
   }
 });
 
-grunt.loadNpmTasks('@prantlf/grunt-selenium-standalone');
 grunt.loadNpmTasks('grunt-accessibility');
+grunt.loadNpmTasks('grunt-chromedriver');
 grunt.loadNpmTasks('grunt-contrib-clean');
 grunt.loadNpmTasks('grunt-contrib-connect');
 grunt.loadNpmTasks('grunt-html');
 grunt.loadNpmTasks('grunt-html-dom-snapshot');
 
 grunt.registerTask('default', [
-  'selenium_standalone:serverConfig:install',
-  'selenium_standalone:serverConfig:start',
+  'chromedriver:default:start',
   'connect', 'clean', 'html-dom-snapshot',
-  'selenium_standalone:serverConfig:stop',
+  'chromedriver:default:stop',
   'htmllint', 'accessibility']);
 ```
 
 The installation of the necessary Grunt tasks:
 
-```bash
-npm install grunt-html-dom-snapshot @prantlf/grunt-selenium-standalone \
-            grunt-contrib-clean grunt-contrib-connect \
-            grunt-accessibility grunt-html --save-dev
+```sh
+npm install grunt-html-dom-snapshot grunt-chromedriver \
+  grunt-contrib-clean grunt-contrib-connect \
+  grunt-accessibility grunt-html --save-dev
 ```
 
 ### Notes
 
-You will need to **install [Java] 8 or newer** to get the Selenium server running via the [@prantlf/grunt-selenium-standalone] Grunt task.
+Chrome, Chromium and Firefox support a headless mode. It simplifies automated testing, because you need no graphic subsystem like X.Org installed.
 
-**If you want to use the PhantomJS driver, you will need to install the `phantomjs-prebuilt` module**. For example:
-
-```shell
-$ npm install phantomjs-prebuilt --save-dev
-```
-
-The `phantomjs` binary will be accessible in `./node_modules/.bin`. If you do not start the Selenium server using `npm test` or other `npm run` command, you will havew to add this directory to your `PATH`, otherwise the PhantomJS driver will not find the executable. Additionally, **PhantomJS 2.1.1 works only with the Selenium driver version 3.7.1 or older**. For example:
-
-```js
-'selenium_standalone': {
-  serverConfig: {
-    seleniumVersion: '3.7.1',
-    seleniumDownloadURL: 'http://selenium-release.storage.googleapis.com',
-    drivers: {
-      phantomjs: {
-        version: '2.1.1'
-      }
-    }
-  }
-},
-'html-dom-snapshot': {
-  options: {
-    webdriver: {
-      capabilities: {
-        browserName: 'phantomjs'
-      }
-    }
-  }
-}
-```
-
-If you want to test with a headless browser, you may want to **prefer Chrome to PhantomJS**. Chrome can run in the headless mode too and PhantomJS is not developed any more. If you do - and it is the default, **make sure that a stable version of Chrome has been installed** on your machine.
-
-The default configuration of this task will choose Chrome in the headless mode starting from the version 2.0.0 and newer:
+The default configuration of this task will choose Chrome in the headless mode:
 
 ```js
 'html-dom-snapshot': {
@@ -583,12 +518,13 @@ The default configuration of this task will choose Chrome in the headless mode s
     webdriver: {
       capabilities: {
         browserName: 'chrome',
-        'goog:chromeOptions': {
-          args: ['--headless']
-        }
+        'goog:chromeOptions': { args: ['--headless'] }
       }
     }
   }
+},
+chromedriver: {
+  default: {}
 }
 ```
 
@@ -604,10 +540,13 @@ If you want to run Chrome in the windowed mode, override the `chromeOptions` obj
       }
     }
   }
+},
+chromedriver: {
+  default: {}
 }
 ```
 
-If you want to run Chrome in Travis CI, override the `goog:chromeOptions` object with yours and disable the sandbox with `--no-sandbox`. **Chrome sandbox appears not working in Docker containers used by Travis**, but Chrome enbales it by default there. For example:
+If you want to run Chrome in Travis CI, override the `goog:chromeOptions` object with yours and disable the sandbox with `--no-sandbox`:
 
 ```js
 'html-dom-snapshot': {
@@ -615,12 +554,46 @@ If you want to run Chrome in Travis CI, override the `goog:chromeOptions` object
     webdriver: {
       capabilities: {
         browserName: 'chrome',
-        'goog:chromeOptions': {
-          args: ['--headless', '--no-sandbox']
-        }
+        'goog:chromeOptions': { args: ['--headless', '--no-sandbox'] }
       }
     }
   }
+},
+chromedriver: {
+  default: {}
+}
+```
+
+The following configuration will choose Firefox in the headless mode:
+
+```js
+'html-dom-snapshot': {
+  options: {
+    webdriver: {
+      capabilities: {
+        browserName: 'firefox',
+        'moz:firefoxOptions': { args: ['-headless'] }
+      }
+    }
+  }
+},
+geckodriver: {
+  default: {}
+}
+```
+
+The following configuration will choose Safari in the windowed mode:
+
+```js
+'html-dom-snapshot': {
+  options: {
+    webdriver: {
+      capabilities: { browserName: 'safari' }
+    }
+  }
+},
+safaridriver: {
+  default: {}
 }
 ```
 
@@ -680,7 +653,11 @@ Licensed under the MIT license.
 [grunt-html-html-report-converter]: https://github.com/prantlf/grunt-html-html-report-converter
 [grunt-reg-viz]: https://github.com/prantlf/grunt-reg-viz
 [@prantlf/grunt-selenium-standalone]: https://github.com/prantlf/grunt-selenium-standalone
+[grunt-chromedriver]: https://github.com/prantlf/grunt-chromedriver
+[grunt-geckodriver]: https://github.com/prantlf/grunt-geckodriver
+[grunt-safaridriver]: https://github.com/prantlf/grunt-safaridriver
 [keyboard key identifiers]: https://w3c.github.io/webdriver/webdriver-spec.html#keyboard-actions
+[version 6.0.1]: https://github.com/prantlf/grunt-html-dom-snapshot/tree/v6.0.1#readme
 [v6.0.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v6.0.0
 [v5.1.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v5.1.0
 [v4.0.0]: https://github.com/prantlf/grunt-html-dom-snapshot/releases/tag/v4.0.0
